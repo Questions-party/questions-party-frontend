@@ -84,6 +84,8 @@ export const wordsAPI = {
   
   getStats: () => api.get('/words/stats'),
   
+  getPartsOfSpeech: () => api.get('/words/parts-of-speech'),
+  
   exportWords: () => api.get('/words/export'),
   
   getRandomWords: (params?: any) => api.get('/words/random', { params })

@@ -40,14 +40,6 @@
                 <div class="py-1">
                   <MenuItem>
                     <button
-                      @click="$emit('edit', word)"
-                      class="block w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors"
-                    >
-                      {{ $t('words.edit') }}
-                    </button>
-                  </MenuItem>
-                  <MenuItem>
-                    <button
                       @click="$emit('delete', word)"
                       class="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-secondary transition-colors"
                     >
@@ -61,15 +53,20 @@
         </div>
         
         <!-- Part of speech -->
-        <div v-if="word.partOfSpeech" class="flex items-center">
+        <div v-if="word.primaryPartOfSpeech" class="flex items-center">
           <span class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-800 text-xs rounded-md font-medium">
-            {{ word.partOfSpeech }}
+            {{ $t(`words.${word.primaryPartOfSpeech}`) }}
           </span>
         </div>
         
         <!-- Definition -->
-        <div v-if="word.definition" class="text-sm text-secondary">
-          <p class="line-clamp-3">{{ word.definition }}</p>
+        <div v-if="word.primaryDefinition" class="text-sm text-secondary">
+          <p class="line-clamp-3">{{ word.primaryDefinition }}</p>
+        </div>
+
+        <!-- WordNet processing status -->
+        <div v-if="!word.wordNetProcessed" class="text-xs text-yellow-600 dark:text-yellow-400">
+          {{ $t('words.processingWordNet') }}
         </div>
         
         <!-- Usage statistics -->
@@ -87,13 +84,20 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline'
 import { useI18n } from 'vue-i18n'
 
+interface WordDefinition {
+  text: string
+  partOfSpeech: string
+}
+
 interface Props {
   word: {
     _id: string
     word: string
-    definition?: string
-    partOfSpeech?: string
+    definitions: WordDefinition[]
+    primaryDefinition?: string
+    primaryPartOfSpeech?: string
     usageCount: number
+    wordNetProcessed: boolean
     createdAt: string
   }
   selected: boolean
@@ -103,7 +107,6 @@ defineProps<Props>()
 
 defineEmits<{
   'toggle-select': []
-  'edit': [word: Props['word']]
   'delete': [word: Props['word']]
 }>()
 

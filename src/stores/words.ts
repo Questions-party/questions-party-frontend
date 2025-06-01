@@ -4,27 +4,33 @@ import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import { wordsAPI } from '../services/api.ts'
 
+interface WordDefinition {
+  text: string
+  partOfSpeech: string
+}
+
 interface Word {
   _id: string
   word: string
-  userId: string
-  definition?: string
-  partOfSpeech?: string
+  userIds: string[]
+  definitions: WordDefinition[]
+  primaryDefinition?: string
+  primaryPartOfSpeech?: string
   usageCount: number
+  wordNetProcessed: boolean
   createdAt: string
   updatedAt: string
 }
 
 interface NewWord {
   word: string
-  definition?: string
-  partOfSpeech?: string
 }
 
 interface WordStats {
   totalWords: number
   totalUsage: number
-  mostUsedWord?: Word
+  mostUsedWords: Word[]
+  partOfSpeechStats: { _id: string, count: number }[]
 }
 
 export const useWordsStore = defineStore('words', () => {
@@ -33,11 +39,34 @@ export const useWordsStore = defineStore('words', () => {
   const selectedWords = ref<Set<string>>(new Set())
   const loading = ref(false)
   const stats = ref<WordStats | null>(null)
+  const partsOfSpeech = ref<string[]>([])
+  const currentFilter = ref<string>('all')
+  const searchQuery = ref<string>('')
   const toast = useToast()
   const { t } = useI18n()
 
+  const filteredWords = computed(() => {
+    let filtered = words.value
+
+    // Apply part of speech filter
+    if (currentFilter.value && currentFilter.value !== 'all') {
+      filtered = filtered.filter(word => word.primaryPartOfSpeech === currentFilter.value)
+    }
+
+    // Apply search filter
+    if (searchQuery.value.trim()) {
+      const query = searchQuery.value.toLowerCase().trim()
+      filtered = filtered.filter(word => 
+        word.word.toLowerCase().includes(query) ||
+        word.primaryDefinition?.toLowerCase().includes(query)
+      )
+    }
+
+    return filtered
+  })
+
   const sortedWords = computed(() => {
-    return [...words.value].sort((a, b) => 
+    return [...filteredWords.value].sort((a, b) => 
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   })
@@ -52,7 +81,15 @@ export const useWordsStore = defineStore('words', () => {
   const fetchWords = async () => {
     loading.value = true
     try {
-      const response = await wordsAPI.getWords()
+      const params: any = {}
+      if (currentFilter.value && currentFilter.value !== 'all') {
+        params.partOfSpeech = currentFilter.value
+      }
+      if (searchQuery.value.trim()) {
+        params.search = searchQuery.value.trim()
+      }
+
+      const response = await wordsAPI.getWords(params)
       
       if (response.data.success) {
         words.value = response.data.words
@@ -71,6 +108,17 @@ export const useWordsStore = defineStore('words', () => {
     }
   }
 
+  const fetchPartsOfSpeech = async () => {
+    try {
+      const response = await wordsAPI.getPartsOfSpeech()
+      if (response.data.success) {
+        partsOfSpeech.value = response.data.partsOfSpeech
+      }
+    } catch (error) {
+      console.error('Failed to fetch parts of speech:', error)
+    }
+  }
+
   const addWord = async (newWord: NewWord) => {
     // Check if word already exists
     const existingWord = words.value.find(w => w.word.toLowerCase() === newWord.word.toLowerCase())
@@ -86,9 +134,22 @@ export const useWordsStore = defineStore('words', () => {
       if (response.data.success) {
         words.value.unshift(response.data.word)
         toast.success(t('words.wordAdded'))
+        // Refresh parts of speech if a new one was added
+        if (response.data.word.primaryPartOfSpeech && !partsOfSpeech.value.includes(response.data.word.primaryPartOfSpeech)) {
+          await fetchPartsOfSpeech()
+        }
         return { success: true, word: response.data.word }
       } else {
         const message = response.data.message || t('common.error')
+        // Check if it's a spelling error
+        if (response.data.error === 'SPELLING_ERROR') {
+          const suggestions = response.data.suggestions || []
+          const suggestionText = suggestions.length > 0 
+            ? t('words.spellingErrorWithSuggestions', { suggestions: suggestions.join(', ') })
+            : t('words.spellingError')
+          toast.error(suggestionText)
+          return { success: false, message: suggestionText, suggestions }
+        }
         toast.error(message)
         return { success: false, message }
       }
@@ -101,7 +162,7 @@ export const useWordsStore = defineStore('words', () => {
     }
   }
 
-  const updateWord = async (id: string, updatedWord: Partial<NewWord>) => {
+  const updateWord = async (id: string, updatedWord: { usageCount?: number }) => {
     loading.value = true
     try {
       const response = await wordsAPI.updateWord(id, updatedWord)
@@ -151,9 +212,12 @@ export const useWordsStore = defineStore('words', () => {
     }
   }
 
-  const getRandomWords = async (count: number = 10, excludeUserWords: boolean = false) => {
+  const getRandomWords = async (count: number = 10, excludeUserWords: boolean = false, partOfSpeech?: string) => {
     try {
-      const params = { count, excludeUserWords }
+      const params: any = { count, excludeUserWords }
+      if (partOfSpeech) {
+        params.partOfSpeech = partOfSpeech
+      }
       const response = await wordsAPI.getRandomWords(params)
       
       if (response.data.success) {
@@ -178,6 +242,22 @@ export const useWordsStore = defineStore('words', () => {
     }
   }
 
+  const setFilter = (filter: string) => {
+    currentFilter.value = filter
+    fetchWords()
+  }
+
+  const setSearchQuery = (query: string) => {
+    searchQuery.value = query
+    fetchWords()
+  }
+
+  const clearFilters = () => {
+    currentFilter.value = 'all'
+    searchQuery.value = ''
+    fetchWords()
+  }
+
   const toggleWordSelection = (wordId: string) => {
     if (selectedWords.value.has(wordId)) {
       selectedWords.value.delete(wordId)
@@ -191,10 +271,10 @@ export const useWordsStore = defineStore('words', () => {
   }
 
   const selectAllWords = () => {
-    const wordsToSelect = words.value.slice(0, maxWordLength.value)
+    const wordsToSelect = filteredWords.value.slice(0, maxWordLength.value)
     selectedWords.value = new Set(wordsToSelect.map(w => w._id))
     
-    if (words.value.length > maxWordLength.value) {
+    if (filteredWords.value.length > maxWordLength.value) {
       toast.info(t('words.maxSelectionInfo'))
     }
   }
@@ -213,19 +293,25 @@ export const useWordsStore = defineStore('words', () => {
 
   return {
     maxWordLength,
-    words,
-    sortedWords,
+    words: sortedWords,
     selectedWords: selectedWordsList,
     selectedWordsCount,
     canGenerate,
     loading,
     stats,
+    partsOfSpeech,
+    currentFilter,
+    searchQuery,
     fetchWords,
+    fetchPartsOfSpeech,
     addWord,
     updateWord,
     deleteWord,
     getRandomWords,
     fetchStats,
+    setFilter,
+    setSearchQuery,
+    clearFilters,
     toggleWordSelection,
     selectAllWords,
     deselectAllWords,
