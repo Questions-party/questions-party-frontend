@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
-import { authAPI } from '../services/api'
+import { authAPI } from '../services/api.ts'
 
 interface User {
   id: string
@@ -75,6 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     try {
       const response = await authAPI.register(credentials)
+      console.log('register result:'+response)
       
       if (response.data.success) {
         setAuth(response.data.user, response.data.token)

@@ -177,8 +177,8 @@ import {
   EllipsisVerticalIcon, 
   ShareIcon 
 } from '@heroicons/vue/24/outline'
-import { useAuthStore } from '../stores/auth'
-import { useGenerationsStore } from '../stores/generations'
+import { useAuthStore } from '../stores/auth.ts'
+import { useGenerationsStore } from '../stores/generations.ts'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 

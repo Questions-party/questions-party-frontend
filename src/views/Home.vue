@@ -210,7 +210,7 @@ import {
   AcademicCapIcon,
   CheckCircleIcon
 } from '@heroicons/vue/24/outline'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../stores/auth.ts'
 
 const authStore = useAuthStore()
 </script>

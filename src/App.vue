@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useThemeStore } from './stores/theme'
-import { useAuthStore } from './stores/auth'
+import { useThemeStore } from './stores/theme.ts'
+import { useAuthStore } from './stores/auth.ts'
 import NavBar from './components/NavBar.vue'
 import Footer from './components/Footer.vue'
 

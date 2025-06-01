@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
-import { wordsAPI } from '../services/api.js'
+import { wordsAPI } from '../services/api.ts'
 
 interface Word {
   _id: string
@@ -28,6 +28,7 @@ interface WordStats {
 }
 
 export const useWordsStore = defineStore('words', () => {
+  const maxWordLength = ref<number>(50)
   const words = ref<Word[]>([])
   const selectedWords = ref<Set<string>>(new Set())
   const loading = ref(false)
@@ -46,7 +47,7 @@ export const useWordsStore = defineStore('words', () => {
   })
 
   const selectedWordsCount = computed(() => selectedWords.value.size)
-  const canGenerate = computed(() => selectedWordsCount.value >= 1 && selectedWordsCount.value <= 50)
+  const canGenerate = computed(() => selectedWordsCount.value >= 1 && selectedWordsCount.value <= maxWordLength.value)
 
   const fetchWords = async () => {
     loading.value = true
@@ -181,7 +182,7 @@ export const useWordsStore = defineStore('words', () => {
     if (selectedWords.value.has(wordId)) {
       selectedWords.value.delete(wordId)
     } else {
-      if (selectedWords.value.size >= 50) {
+      if (selectedWords.value.size >= maxWordLength.value) {
         toast.warning(t('words.maxSelectionWarning'))
         return
       }
@@ -190,10 +191,10 @@ export const useWordsStore = defineStore('words', () => {
   }
 
   const selectAllWords = () => {
-    const wordsToSelect = words.value.slice(0, 50)
+    const wordsToSelect = words.value.slice(0, maxWordLength.value)
     selectedWords.value = new Set(wordsToSelect.map(w => w._id))
     
-    if (words.value.length > 50) {
+    if (words.value.length > maxWordLength.value) {
       toast.info(t('words.maxSelectionInfo'))
     }
   }
@@ -211,6 +212,7 @@ export const useWordsStore = defineStore('words', () => {
   }
 
   return {
+    maxWordLength,
     words,
     sortedWords,
     selectedWords: selectedWordsList,

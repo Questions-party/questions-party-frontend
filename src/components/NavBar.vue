@@ -258,8 +258,8 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/vue/24/outline'
-import { useAuthStore } from '../stores/auth'
-import { useThemeStore } from '../stores/theme'
+import { useAuthStore } from '../stores/auth.ts'
+import { useThemeStore } from '../stores/theme.ts'
 import { useI18n } from 'vue-i18n'
 
 const authStore = useAuthStore()

@@ -220,8 +220,8 @@
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 import {AcademicCapIcon, ArrowPathIcon, EyeIcon, SparklesIcon, UserPlusIcon, UsersIcon} from '@heroicons/vue/24/outline'
-import {useGenerationsStore} from '../stores/generations'
-import {useAuthStore} from '../stores/auth'
+import {useGenerationsStore} from '../stores/generations.ts'
+import {useAuthStore} from '../stores/auth.ts'
 import GenerationCard from '../components/GenerationCard.vue'
 
 const generationsStore = useGenerationsStore()

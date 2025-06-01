@@ -136,7 +136,6 @@
             :disabled="authStore.loading || !form.acceptTerms"
             class="w-full btn btn-primary flex justify-center items-center"
           >
-            <div v-if="authStore.loading" class="spinner mr-2"></div>
             {{ authStore.loading ? $t('common.loading') : $t('auth.registerButton') }}
           </button>
         </div>
@@ -153,7 +152,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../stores/auth.ts'
 import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
@@ -246,7 +245,7 @@ const handleRegister = async () => {
       email: form.email,
       password: form.password
     })
-    
+
     if (result.success) {
       router.push('/words')
     } else {

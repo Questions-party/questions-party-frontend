@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "skipLibCheck": true,
-    "module": "nodenext"
+    "module": "nodenext",
+    "allowImportingTsExtensions": true
   }
 }

@@ -205,10 +205,10 @@ import {
   ArrowDownTrayIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/vue/24/outline'
-import { useAuthStore } from '../stores/auth'
-import { useWordsStore } from '../stores/words'
-import { useGenerationsStore } from '../stores/generations'
-import { useThemeStore } from '../stores/theme'
+import { useAuthStore } from '../stores/auth.ts'
+import { useWordsStore } from '../stores/words.ts'
+import { useGenerationsStore } from '../stores/generations.ts'
+import { useThemeStore } from '../stores/theme.ts'
 import { useToast } from 'vue-toastification'
 import GenerationCard from '../components/GenerationCard.vue'
 import { useI18n } from 'vue-i18n'

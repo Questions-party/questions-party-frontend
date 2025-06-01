@@ -40,11 +40,11 @@
     <!-- Generation Interface (only for authenticated users) -->
     <div v-else>
       <!-- Selected Words Display -->
-      <div v-if="wordsStore.selectedWordsCount > 0" class="card">
+      <div v-if="wordsStore.selectedWordsCount > 0" class="card mb-4">
         <div class="card-header">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">
-              {{ $t('generation.selectedWords') }} ({{ wordsStore.selectedWordsCount }}/20)
+              {{ $t('generation.selectedWords') }} ({{ wordsStore.selectedWordsCount }}/{{wordsStore.maxWordLength}})
             </h3>
             <button
               @click="wordsStore.deselectAllWords()"
@@ -70,7 +70,7 @@
       </div>
 
       <!-- Word Selection Grid -->
-      <div class="space-y-4">
+      <div class="space-y-4 mb-4">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold">{{ $t('generation.chooseWords') }}</h3>
           <div class="flex items-center space-x-2">
@@ -106,9 +106,9 @@
             class="word-tag transition-all duration-200"
             :class="{
               'selected': wordsStore.isWordSelected(word._id),
-              'opacity-50 cursor-not-allowed': !wordsStore.isWordSelected(word._id) && wordsStore.selectedWordsCount >= 20
+              'opacity-50 cursor-not-allowed': !wordsStore.isWordSelected(word._id) && wordsStore.selectedWordsCount >= wordsStore.maxWordLength
             }"
-            :disabled="!wordsStore.isWordSelected(word._id) && wordsStore.selectedWordsCount >= 20"
+            :disabled="!wordsStore.isWordSelected(word._id) && wordsStore.selectedWordsCount >= wordsStore.maxWordLength"
           >
             {{ word.word }}
           </button>
@@ -272,9 +272,9 @@ import {
   UsersIcon,
   CheckCircleIcon
 } from '@heroicons/vue/24/outline'
-import { useGenerationsStore } from '../stores/generations'
-import { useWordsStore } from '../stores/words'
-import { useAuthStore } from '../stores/auth'
+import { useGenerationsStore } from '../stores/generations.ts'
+import { useWordsStore } from '../stores/words.ts'
+import { useAuthStore } from '../stores/auth.ts'
 import GenerationCard from '../components/GenerationCard.vue'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'

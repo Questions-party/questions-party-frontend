@@ -143,20 +143,34 @@ body {
 
 /* Word tag styles */
 .word-tag {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-all duration-200;
+  @apply inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-all duration-200;
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .word-tag.selected {
-  background-color: var(--accent-color);
-  @apply text-white;
-  border-color: var(--accent-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--accent-color);
+  box-shadow: 0 0 0 1px var(--accent-color);
 }
 
 .word-tag:hover {
   @apply transform scale-105 cursor-pointer;
+}
+
+/* Word Card Selected State - More specific styling for card selection */
+.card.word-card-selected {
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--accent-color);
+  box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.15), 0 0 0 1px var(--accent-color);
+  @apply rounded-lg;
+}
+
+[data-theme="dark"] .card.word-card-selected {
+  background-color: var(--bg-tertiary);
+  box-shadow: 0 4px 12px -2px rgba(96, 165, 250, 0.25), 0 0 0 1px var(--accent-color);
 }
 
 /* Navigation styles */

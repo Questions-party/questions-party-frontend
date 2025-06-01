@@ -221,7 +221,7 @@
 <script lang="ts" setup>
 import {onMounted, reactive, ref} from 'vue'
 import {ArrowPathIcon, BookOpenIcon, PlusIcon, SparklesIcon} from '@heroicons/vue/24/outline'
-import {useWordsStore} from '../stores/words'
+import {useWordsStore} from '../stores/words.ts'
 import WordCard from '../components/WordCard.vue'
 import { useI18n } from 'vue-i18n'
 

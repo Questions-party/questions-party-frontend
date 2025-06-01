@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useI18n } from 'vue-i18n'
+import { getCurrentLocale } from '../utils/i18n.js'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -15,12 +15,12 @@ const api = axios.create({
 // Request interceptor to add language header
 api.interceptors.request.use(
   (config) => {
-    // Get current locale from vue-i18n
-    const { locale } = useI18n()
+    // Get current locale from i18n utils
+    const locale = getCurrentLocale()
     
     // Add language header
-    if (locale.value) {
-      config.headers['x-language'] = locale.value
+    if (locale) {
+      config.headers['x-language'] = locale
     }
     
     // Add auth token if available
