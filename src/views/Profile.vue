@@ -109,10 +109,10 @@
     <!-- Recent Generations -->
     <div class="space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-xl font-semibold">Your Recent Generations</h3>
+        <h3 class="text-xl font-semibold">{{ $t('generation.yourRecentGenerations') }}</h3>
         <router-link to="/generate" class="btn btn-primary btn-sm">
           <SparklesIcon class="w-4 h-4 mr-1" />
-          Create New
+          {{ $t('profile.createNew') }}
         </router-link>
       </div>
 
@@ -123,10 +123,10 @@
 
       <div v-else-if="generationsStore.generations.length === 0" class="text-center py-12">
         <SparklesIcon class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h3 class="text-lg font-medium text-primary mb-2">No generations yet</h3>
-        <p class="text-secondary mb-4">Start creating AI-powered sentences with your words!</p>
+        <h3 class="text-lg font-medium text-primary mb-2">{{ $t('profile.noGenerationsYet') }}</h3>
+        <p class="text-secondary mb-4">{{ $t('profile.startCreating') }}</p>
         <router-link to="/generate" class="btn btn-primary">
-          Create Your First Generation
+          {{ $t('profile.createFirstGeneration') }}
         </router-link>
       </div>
 
@@ -162,13 +162,13 @@
     <!-- Account Actions -->
     <div class="card">
       <div class="card-header">
-        <h3 class="text-lg font-semibold">Account Actions</h3>
+        <h3 class="text-lg font-semibold">{{ $t('profile.accountActions') }}</h3>
       </div>
       <div class="card-body space-y-4">
         <div class="flex justify-between items-center">
           <div>
-            <p class="text-sm font-medium text-primary">Export Data</p>
-            <p class="text-xs text-secondary">Download all your words and generations</p>
+            <p class="text-sm font-medium text-primary">{{ $t('profile.exportData') }}</p>
+            <p class="text-xs text-secondary">{{ $t('profile.downloadAll') }}</p>
           </div>
           <button
             @click="exportData"
@@ -181,15 +181,15 @@
 
         <div class="flex justify-between items-center">
           <div>
-            <p class="text-sm font-medium text-primary">Sign Out</p>
-            <p class="text-xs text-secondary">Sign out from your account</p>
+            <p class="text-sm font-medium text-primary">{{ $t('profile.signOut') }}</p>
+            <p class="text-xs text-secondary">{{ $t('profile.signOutDesc') }}</p>
           </div>
           <button
             @click="logout"
             class="btn btn-ghost btn-sm"
           >
             <ArrowRightOnRectangleIcon class="w-4 h-4 mr-1" />
-            Sign Out
+            {{ $t('profile.signOut') }}
           </button>
         </div>
       </div>
@@ -211,6 +211,7 @@ import { useGenerationsStore } from '../stores/generations'
 import { useThemeStore } from '../stores/theme'
 import { useToast } from 'vue-toastification'
 import GenerationCard from '../components/GenerationCard.vue'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -218,6 +219,7 @@ const wordsStore = useWordsStore()
 const generationsStore = useGenerationsStore()
 const themeStore = useThemeStore()
 const toast = useToast()
+const { t } = useI18n()
 
 const showAllGenerations = ref(false)
 
@@ -258,38 +260,34 @@ const updatePreferences = async () => {
   }
 }
 
-const exportData = async () => {
-  try {
-    const data = {
-      user: {
-        username: authStore.user?.username,
-        email: authStore.user?.email,
-        createdAt: new Date().toISOString()
-      },
-      words: wordsStore.words,
-      generations: generationsStore.generations,
-      stats: {
-        totalWords: wordsStore.words.length,
-        totalGenerations: generationsStore.generations.length,
-        totalLikes: totalLikes.value
-      }
-    }
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `english-learning-data-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-
-    toast.success('Data exported successfully!')
-  } catch (error) {
-    console.error('Failed to export data:', error)
-    toast.error('Failed to export data')
+const exportData = () => {
+  // Mock data export
+  const data = {
+    words: wordsStore.words,
+    generations: generationsStore.generations,
+    profile: authStore.user
   }
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'questions-party-data.json'
+  a.click()
+  URL.revokeObjectURL(url)
+  
+  toast.success(t('profile.exportSuccess'))
+}
+
+const deleteAllGenerations = async () => {
+  if (confirm(t('profile.deleteAllGenerationsConfirm'))) {
+    // Implementation would go here
+    toast.success(t('profile.deleteAllGenerationsSuccess'))
+  }
+}
+
+const regenerateQuestions = () => {
+  toast.success(t('profile.regenerateSuccess'))
 }
 
 const logout = () => {

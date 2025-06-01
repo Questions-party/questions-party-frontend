@@ -1,18 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
 import { useToast } from 'vue-toastification'
-
-const API_BASE_URL = 'http://localhost:5000/api'
+import { useI18n } from 'vue-i18n'
+import { authAPI } from '../services/api'
 
 interface User {
   id: string
   username: string
   email: string
   preferences?: {
-    theme: 'light' | 'dark'
-    language: 'en' | 'zh'
-    showPublicGenerations: boolean
+    theme?: string
+    language?: string
+    showPublicGenerations?: boolean
   }
 }
 
@@ -28,15 +27,12 @@ interface RegisterCredentials {
 }
 
 export const useAuthStore = defineStore('auth', () => {
+  const toast = useToast()
+  const { t } = useI18n()
+  
   const user = ref<User | null>(null)
   const token = ref<string | null>(localStorage.getItem('token'))
   const loading = ref(false)
-  const toast = useToast()
-
-  // Set up axios interceptor for authentication
-  if (token.value) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
-  }
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
 
@@ -44,28 +40,30 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = userData
     token.value = authToken
     localStorage.setItem('token', authToken)
-    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`
   }
 
   const clearAuth = () => {
     user.value = null
     token.value = null
     localStorage.removeItem('token')
-    delete axios.defaults.headers.common['Authorization']
   }
 
   const login = async (credentials: LoginCredentials) => {
     loading.value = true
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials)
-      const { user: userData, token: authToken } = response.data
+      const response = await authAPI.login(credentials)
       
-      setAuth(userData, authToken)
-      toast.success('Login successful!')
-      
-      return { success: true }
+      if (response.data.success) {
+        setAuth(response.data.user, response.data.token)
+        toast.success(t('auth.loginSuccess'))
+        return { success: true }
+      } else {
+        const message = response.data.message || t('auth.loginFailed')
+        toast.error(message)
+        return { success: false, message }
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Login failed'
+      const message = error.response?.data?.message || t('auth.loginFailed')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -76,15 +74,19 @@ export const useAuthStore = defineStore('auth', () => {
   const register = async (credentials: RegisterCredentials) => {
     loading.value = true
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, credentials)
-      const { user: userData, token: authToken } = response.data
+      const response = await authAPI.register(credentials)
       
-      setAuth(userData, authToken)
-      toast.success('Registration successful!')
-      
-      return { success: true }
+      if (response.data.success) {
+        setAuth(response.data.user, response.data.token)
+        toast.success(t('auth.registerSuccess'))
+        return { success: true }
+      } else {
+        const message = response.data.message || t('auth.registerFailed')
+        toast.error(message)
+        return { success: false, message }
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Registration failed'
+      const message = error.response?.data?.message || t('auth.registerFailed')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -94,30 +96,39 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     clearAuth()
-    toast.info('Logged out successfully')
+    toast.info(t('auth.logoutSuccess'))
   }
 
   const fetchUser = async () => {
     if (!token.value) return
-
+    
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/me`)
-      user.value = response.data.user
+      const response = await authAPI.getMe()
+      if (response.data.success) {
+        user.value = response.data.user
+      }
     } catch (error) {
-      // Token is invalid, clear auth
-      clearAuth()
+      console.error('Failed to fetch user:', error)
+      logout()
     }
   }
 
   const updateProfile = async (profileData: Partial<User>) => {
     loading.value = true
     try {
-      const response = await axios.put(`${API_BASE_URL}/auth/profile`, profileData)
-      user.value = { ...user.value!, ...response.data.user }
-      toast.success('Profile updated successfully!')
-      return { success: true }
+      const response = await authAPI.updateProfile(profileData)
+      
+      if (response.data.success) {
+        user.value = { ...user.value, ...response.data.user }
+        toast.success(t('auth.profileUpdateSuccess'))
+        return { success: true }
+      } else {
+        const message = response.data.message || t('common.error')
+        toast.error(message)
+        return { success: false, message }
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Profile update failed'
+      const message = error.response?.data?.message || t('common.error')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -125,17 +136,24 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const updatePreferences = async (preferences: User['preferences']) => {
+  const updatePreferences = async (preferences: any) => {
     loading.value = true
     try {
-      const response = await axios.put(`${API_BASE_URL}/auth/preferences`, preferences)
-      if (user.value) {
-        user.value.preferences = { ...user.value.preferences, ...response.data.preferences }
+      const response = await authAPI.updatePreferences(preferences)
+      
+      if (response.data.success) {
+        if (user.value) {
+          user.value.preferences = { ...user.value.preferences, ...preferences }
+        }
+        toast.success(t('auth.preferencesUpdateSuccess'))
+        return { success: true }
+      } else {
+        const message = response.data.message || t('profile.preferencesError')
+        toast.error(message)
+        return { success: false, message }
       }
-      toast.success('Preferences updated successfully!')
-      return { success: true }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Preferences update failed'
+      const message = error.response?.data?.message || t('profile.preferencesError')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -149,8 +167,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    user: computed(() => user.value),
-    loading: computed(() => loading.value),
+    user,
+    token,
+    loading,
     isAuthenticated,
     login,
     register,

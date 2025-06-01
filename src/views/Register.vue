@@ -123,10 +123,10 @@
             class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />
           <label for="terms" class="ml-2 block text-sm text-secondary">
-            I agree to the
-            <a href="#" class="text-accent-color hover:underline">Terms of Service</a>
-            and
-            <a href="#" class="text-accent-color hover:underline">Privacy Policy</a>
+            {{ $t('auth.agreeToTerms') }}
+            <a href="#" class="text-accent-color hover:underline">{{ $t('auth.termsOfService') }}</a>
+            {{ $t('auth.agreeToTerms') }}
+            <a href="#" class="text-accent-color hover:underline">{{ $t('auth.privacyPolicy') }}</a>
           </label>
         </div>
 
@@ -154,9 +154,11 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
@@ -186,40 +188,40 @@ const validateForm = () => {
   let isValid = true
   
   if (!form.username) {
-    errors.username = 'Username is required'
+    errors.username = t('validation.usernameRequired')
     isValid = false
   } else if (form.username.length < 3) {
-    errors.username = 'Username must be at least 3 characters'
+    errors.username = t('validation.usernameMinLength')
     isValid = false
   } else if (form.username.length > 30) {
-    errors.username = 'Username must be less than 30 characters'
+    errors.username = t('validation.usernameMaxLength')
     isValid = false
   } else if (!/^[a-zA-Z0-9_]+$/.test(form.username)) {
-    errors.username = 'Username can only contain letters, numbers, and underscores'
+    errors.username = t('validation.usernamePattern')
     isValid = false
   }
   
   if (!form.email) {
-    errors.email = 'Email is required'
+    errors.email = t('validation.emailRequired')
     isValid = false
   } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-    errors.email = 'Please enter a valid email address'
+    errors.email = t('validation.invalidEmail')
     isValid = false
   }
   
   if (!form.password) {
-    errors.password = 'Password is required'
+    errors.password = t('validation.passwordRequired')
     isValid = false
   } else if (form.password.length < 6) {
-    errors.password = 'Password must be at least 6 characters'
+    errors.password = t('validation.passwordMinLength')
     isValid = false
   }
   
   if (!form.confirmPassword) {
-    errors.confirmPassword = 'Please confirm your password'
+    errors.confirmPassword = t('validation.confirmPasswordRequired')
     isValid = false
   } else if (form.password !== form.confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match'
+    errors.confirmPassword = t('validation.passwordMatch')
     isValid = false
   }
   
@@ -234,7 +236,7 @@ const handleRegister = async () => {
   }
   
   if (!form.acceptTerms) {
-    registerError.value = 'Please accept the terms and conditions'
+    registerError.value = t('auth.acceptTerms')
     return
   }
   
@@ -248,10 +250,10 @@ const handleRegister = async () => {
     if (result.success) {
       router.push('/words')
     } else {
-      registerError.value = result.message || 'Registration failed'
+      registerError.value = result.message || t('auth.registerFailed')
     }
   } catch (error) {
-    registerError.value = 'An unexpected error occurred'
+    registerError.value = t('auth.unexpectedError')
     console.error('Register error:', error)
   }
 }

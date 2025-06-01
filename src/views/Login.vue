@@ -76,7 +76,7 @@
               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <label for="remember-me" class="ml-2 block text-sm text-secondary">
-              Remember me
+              {{ $t('auth.rememberMe') }}
             </label>
           </div>
 
@@ -106,11 +106,11 @@
       <!-- Demo credentials info -->
       <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-          Demo Credentials
+          {{ $t('auth.demoCredentials') }}
         </h3>
         <p class="text-xs text-blue-600 dark:text-blue-300">
-          Email: demo@example.com<br>
-          Password: demo123
+          {{ $t('auth.demoEmail') }}<br>
+          {{ $t('auth.demoPassword') }}
         </p>
       </div>
     </div>
@@ -122,9 +122,11 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const showPassword = ref(false)
 const loginError = ref('')
@@ -145,22 +147,22 @@ const validateForm = () => {
   errors.password = ''
   
   if (!form.email) {
-    errors.email = 'Email is required'
+    errors.email = t('validation.emailRequired')
     return false
   }
   
   if (!/\S+@\S+\.\S+/.test(form.email)) {
-    errors.email = 'Please enter a valid email address'
+    errors.email = t('validation.invalidEmail')
     return false
   }
   
   if (!form.password) {
-    errors.password = 'Password is required'
+    errors.password = t('validation.passwordRequired')
     return false
   }
   
   if (form.password.length < 6) {
-    errors.password = 'Password must be at least 6 characters'
+    errors.password = t('validation.passwordMinLength')
     return false
   }
   
@@ -184,10 +186,10 @@ const handleLogin = async () => {
       const redirect = router.currentRoute.value.query.redirect as string
       router.push(redirect || '/words')
     } else {
-      loginError.value = result.message || 'Login failed'
+      loginError.value = result.message || t('auth.loginFailed')
     }
   } catch (error) {
-    loginError.value = 'An unexpected error occurred'
+    loginError.value = t('auth.unexpectedError')
     console.error('Login error:', error)
   }
 }

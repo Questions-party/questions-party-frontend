@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 py-8 max-w-7xl">
       <div class="text-center">
         <p class="text-muted text-sm">
-          &copy; {{ currentYear }} English Learning Platform. Built with Vue.js and Express.js.
+          &copy; {{ currentYear }} {{ $t('footer.copyright') }}
         </p>
       </div>
     </div>

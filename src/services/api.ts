@@ -1,0 +1,128 @@
+import axios from 'axios'
+import { useI18n } from 'vue-i18n'
+
+const API_BASE_URL = 'http://localhost:5000/api'
+
+// Create axios instance
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+// Request interceptor to add language header
+api.interceptors.request.use(
+  (config) => {
+    // Get current locale from vue-i18n
+    const { locale } = useI18n()
+    
+    // Add language header
+    if (locale.value) {
+      config.headers['x-language'] = locale.value
+    }
+    
+    // Add auth token if available
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle 401 errors (unauthorized)
+    if (error.response?.status === 401) {
+      // Clear token and redirect to login
+      localStorage.removeItem('token')
+      delete api.defaults.headers.common['Authorization']
+      
+      // Only redirect if not already on login page
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
+    }
+    
+    return Promise.reject(error)
+  }
+)
+
+export default api
+
+// Export specific API methods for different modules
+export const authAPI = {
+  login: (credentials: { email: string; password: string }) =>
+    api.post('/auth/login', credentials),
+  
+  register: (credentials: { username: string; email: string; password: string }) =>
+    api.post('/auth/register', credentials),
+  
+  getMe: () => api.get('/auth/me'),
+  
+  updateProfile: (data: any) => api.put('/auth/profile', data),
+  
+  updatePreferences: (preferences: any) => api.put('/auth/preferences', preferences)
+}
+
+export const wordsAPI = {
+  getWords: (params?: any) => api.get('/words', { params }),
+  
+  addWord: (word: any) => api.post('/words', word),
+  
+  updateWord: (id: string, word: any) => api.put(`/words/${id}`, word),
+  
+  deleteWord: (id: string) => api.delete(`/words/${id}`),
+  
+  getStats: () => api.get('/words/stats'),
+  
+  exportWords: () => api.get('/words/export'),
+  
+  getRandomWords: (params?: any) => api.get('/words/random', { params })
+}
+
+export const generationsAPI = {
+  generate: (data: { words: string[]; isPublic?: boolean }) =>
+    api.post('/generate', data),
+  
+  getUserGenerations: (params?: any) => api.get('/generations', { params }),
+  
+  getPublicGenerations: (params?: any) => api.get('/generations/public', { params }),
+  
+  getGeneration: (id: string) => api.get(`/generations/${id}`),
+  
+  toggleLike: (id: string) => api.post(`/generations/${id}/like`),
+  
+  updatePrivacy: (id: string, isPublic: boolean) =>
+    api.put(`/generations/${id}/privacy`, { isPublic }),
+  
+  deleteGeneration: (id: string) => api.delete(`/generations/${id}`)
+}
+
+export const aiConfigAPI = {
+  getConfigs: () => api.get('/ai-configs'),
+  
+  getConfig: (id: string) => api.get(`/ai-configs/${id}`),
+  
+  createConfig: (config: any) => api.post('/ai-configs', config),
+  
+  updateConfig: (id: string, config: any) => api.put(`/ai-configs/${id}`, config),
+  
+  deleteConfig: (id: string) => api.delete(`/ai-configs/${id}`),
+  
+  testConfig: (id: string, data?: any) => api.post(`/ai-configs/${id}/test`, data),
+  
+  createDefaultConfig: () => api.post('/ai-configs/default')
+}
+
+export const i18nAPI = {
+  getLanguageInfo: () => api.get('/i18n')
+} 

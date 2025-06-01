@@ -85,6 +85,7 @@
 <script setup lang="ts">
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { CheckIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   word: {
@@ -106,17 +107,19 @@ defineEmits<{
   'delete': [word: Props['word']]
 }>()
 
+const { t } = useI18n()
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
   
   if (diffInDays === 0) {
-    return 'Today'
+    return t('date.today')
   } else if (diffInDays === 1) {
-    return 'Yesterday'
+    return t('date.yesterday')
   } else if (diffInDays < 7) {
-    return `${diffInDays} days ago`
+    return t('date.daysAgo', { count: diffInDays })
   } else {
     return date.toLocaleDateString()
   }

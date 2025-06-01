@@ -9,6 +9,7 @@ const Words = () => import('../views/Words.vue')
 const Generate = () => import('../views/Generate.vue')
 const Community = () => import('../views/Community.vue')
 const Profile = () => import('../views/Profile.vue')
+const AIConfig = () => import('../views/AIConfig.vue')
 
 const routes = [
   {
@@ -37,13 +38,18 @@ const routes = [
   {
     path: '/generate',
     name: 'Generate',
-    component: Generate,
-    meta: { requiresAuth: true }
+    component: Generate
   },
   {
     path: '/community',
     name: 'Community',
     component: Community
+  },
+  {
+    path: '/ai-config',
+    name: 'AIConfig',
+    component: AIConfig,
+    meta: { requiresAuth: true }
   },
   {
     path: '/profile',

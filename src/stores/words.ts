@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
 import { useToast } from 'vue-toastification'
-
-const API_BASE_URL = 'http://localhost:5000/api'
+import { useI18n } from 'vue-i18n'
+import { wordsAPI } from '../services/api'
 
 interface Word {
   _id: string
@@ -34,6 +33,7 @@ export const useWordsStore = defineStore('words', () => {
   const loading = ref(false)
   const stats = ref<WordStats | null>(null)
   const toast = useToast()
+  const { t } = useI18n()
 
   const sortedWords = computed(() => {
     return [...words.value].sort((a, b) => 
@@ -45,32 +45,54 @@ export const useWordsStore = defineStore('words', () => {
     return Array.from(selectedWords.value)
   })
 
-  const canGenerate = computed(() => {
-    return selectedWords.value.size >= 1 && selectedWords.value.size <= 20
-  })
+  const selectedWordsCount = computed(() => selectedWords.value.size)
+  const canGenerate = computed(() => selectedWordsCount.value >= 1 && selectedWordsCount.value <= 20)
 
   const fetchWords = async () => {
     loading.value = true
     try {
-      const response = await axios.get(`${API_BASE_URL}/words`)
-      words.value = response.data.words
+      const response = await wordsAPI.getWords()
+      
+      if (response.data.success) {
+        words.value = response.data.words
+        return { success: true, words: response.data.words }
+      } else {
+        const message = response.data.message || t('common.error')
+        toast.error(message)
+        return { success: false, message }
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch words'
+      const message = error.response?.data?.message || t('common.error')
       toast.error(message)
+      return { success: false, message }
     } finally {
       loading.value = false
     }
   }
 
   const addWord = async (newWord: NewWord) => {
+    // Check if word already exists
+    const existingWord = words.value.find(w => w.word.toLowerCase() === newWord.word.toLowerCase())
+    if (existingWord) {
+      toast.error(t('words.wordExists'))
+      return { success: false, message: t('words.wordExists') }
+    }
+
     loading.value = true
     try {
-      const response = await axios.post(`${API_BASE_URL}/words`, newWord)
-      words.value.unshift(response.data.word)
-      toast.success('Word added successfully!')
-      return { success: true }
+      const response = await wordsAPI.addWord(newWord)
+      
+      if (response.data.success) {
+        words.value.unshift(response.data.word)
+        toast.success(t('words.wordAdded'))
+        return { success: true, word: response.data.word }
+      } else {
+        const message = response.data.message || t('common.error')
+        toast.error(message)
+        return { success: false, message }
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to add word'
+      const message = error.response?.data?.message || t('common.error')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -81,15 +103,22 @@ export const useWordsStore = defineStore('words', () => {
   const updateWord = async (id: string, updatedWord: Partial<NewWord>) => {
     loading.value = true
     try {
-      const response = await axios.put(`${API_BASE_URL}/words/${id}`, updatedWord)
-      const index = words.value.findIndex(w => w._id === id)
-      if (index !== -1) {
-        words.value[index] = response.data.word
+      const response = await wordsAPI.updateWord(id, updatedWord)
+      
+      if (response.data.success) {
+        const index = words.value.findIndex(w => w._id === id)
+        if (index !== -1) {
+          words.value[index] = { ...words.value[index], ...response.data.word }
+        }
+        toast.success(t('words.wordUpdated'))
+        return { success: true, word: response.data.word }
+      } else {
+        const message = response.data.message || t('common.error')
+        toast.error(message)
+        return { success: false, message }
       }
-      toast.success('Word updated successfully!')
-      return { success: true }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to update word'
+      const message = error.response?.data?.message || t('common.error')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -100,13 +129,20 @@ export const useWordsStore = defineStore('words', () => {
   const deleteWord = async (id: string) => {
     loading.value = true
     try {
-      await axios.delete(`${API_BASE_URL}/words/${id}`)
-      words.value = words.value.filter(w => w._id !== id)
-      selectedWords.value.delete(id)
-      toast.success('Word deleted successfully!')
-      return { success: true }
+      const response = await wordsAPI.deleteWord(id)
+      
+      if (response.data.success) {
+        words.value = words.value.filter(w => w._id !== id)
+        selectedWords.value.delete(id)
+        toast.success(t('words.wordDeleted'))
+        return { success: true }
+      } else {
+        const message = response.data.message || t('common.error')
+        toast.error(message)
+        return { success: false, message }
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to delete word'
+      const message = error.response?.data?.message || t('common.error')
       toast.error(message)
       return { success: false, message }
     } finally {
@@ -114,24 +150,29 @@ export const useWordsStore = defineStore('words', () => {
     }
   }
 
-  const getRandomWords = async (count: number = 5, includeAll: boolean = false) => {
+  const getRandomWords = async (count: number = 10, excludeUserWords: boolean = false) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/words/random`, {
-        params: { count, includeAll }
-      })
-      return response.data.words
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to get random words'
-      toast.error(message)
+      const params = { count, excludeUserWords }
+      const response = await wordsAPI.getRandomWords(params)
+      
+      if (response.data.success) {
+        return response.data.words
+      } else {
+        return []
+      }
+    } catch (error) {
+      console.error('Failed to fetch random words:', error)
       return []
     }
   }
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/words/stats`)
-      stats.value = response.data.stats
-    } catch (error: any) {
+      const response = await wordsAPI.getStats()
+      if (response.data.success) {
+        stats.value = response.data.stats
+      }
+    } catch (error) {
       console.error('Failed to fetch word stats:', error)
     }
   }
@@ -140,19 +181,20 @@ export const useWordsStore = defineStore('words', () => {
     if (selectedWords.value.has(wordId)) {
       selectedWords.value.delete(wordId)
     } else {
-      if (selectedWords.value.size < 20) {
-        selectedWords.value.add(wordId)
-      } else {
-        toast.warning('You can select maximum 20 words at a time')
+      if (selectedWords.value.size >= 20) {
+        toast.warning(t('words.maxSelectionWarning'))
+        return
       }
+      selectedWords.value.add(wordId)
     }
   }
 
   const selectAllWords = () => {
-    const wordsToSelect = words.value.slice(0, 20) // Limit to first 20 words
+    const wordsToSelect = words.value.slice(0, 20)
     selectedWords.value = new Set(wordsToSelect.map(w => w._id))
+    
     if (words.value.length > 20) {
-      toast.info('Only first 20 words were selected (maximum limit)')
+      toast.info(t('words.maxSelectionInfo'))
     }
   }
 
@@ -161,8 +203,7 @@ export const useWordsStore = defineStore('words', () => {
   }
 
   const getSelectedWordsText = () => {
-    const selectedWordObjects = words.value.filter(w => selectedWords.value.has(w._id))
-    return selectedWordObjects.map(w => w.word)
+    return selectedWordsList.value.map(id => words.value.find(w => w._id === id)?.word).filter(Boolean)
   }
 
   const isWordSelected = (wordId: string) => {
@@ -170,13 +211,13 @@ export const useWordsStore = defineStore('words', () => {
   }
 
   return {
-    words: computed(() => words.value),
+    words,
     sortedWords,
     selectedWords: selectedWordsList,
-    selectedWordsCount: computed(() => selectedWords.value.size),
+    selectedWordsCount,
     canGenerate,
-    loading: computed(() => loading.value),
-    stats: computed(() => stats.value),
+    loading,
+    stats,
     fetchWords,
     addWord,
     updateWord,
