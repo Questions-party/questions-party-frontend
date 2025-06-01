@@ -78,8 +78,8 @@
     "buildVocabulary": "Start building your vocabulary by adding your first word!",
     "clear": "Clear",
     "deleteConfirm": "Are you sure you want to delete \"{word}\"?",
-    "maxSelectionWarning": "You can select maximum 20 words at a time",
-    "maxSelectionInfo": "Only first 20 words were selected (maximum limit)"
+    "maxSelectionWarning": "You can select maximum 50 words at a time",
+    "maxSelectionInfo": "Only first 50 words were selected (maximum limit)"
   },
   "generation": {
     "title": "Generate Sentences",
@@ -87,7 +87,7 @@
     "explanation": "Grammar Explanation",
     "makePublic": "Make Public",
     "generating": "Generating...",
-    "selectWords": "Select 1-20 words to generate a sentence",
+    "selectWords": "Select 1-50 words to generate a sentence",
     "generationSuccess": "Sentence generated successfully!",
     "generationError": "Failed to generate sentence. Please try again.",
     "saveGeneration": "Save Generation",

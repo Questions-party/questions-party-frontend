@@ -36,6 +36,12 @@ interface PublicPagination {
   total: number
 }
 
+interface CommunityStatistics {
+  totalGenerations: number
+  totalWords: number
+  totalLikes: number
+}
+
 export const useGenerationsStore = defineStore('generations', () => {
   const toast = useToast()
   const { t } = useI18n()
@@ -43,8 +49,14 @@ export const useGenerationsStore = defineStore('generations', () => {
   const generations = ref<Generation[]>([])
   const publicGenerations = ref<Generation[]>([])
   const currentGeneration = ref<Generation | null>(null)
+  const statistics = ref<CommunityStatistics>({
+    totalGenerations: 0,
+    totalWords: 0,
+    totalLikes: 0
+  })
   const generating = ref(false)
   const loading = ref(false)
+  const statisticsLoading = ref(false)
   const publicPagination = ref<PublicPagination>({
     page: 1,
     limit: 10,
@@ -246,6 +258,26 @@ export const useGenerationsStore = defineStore('generations', () => {
     }
   }
 
+  const fetchStatistics = async () => {
+    statisticsLoading.value = true
+    try {
+      const response = await axios.get(`${API_BASE_URL}/generations/public/stats`)
+      
+      if (response.data.success) {
+        statistics.value = response.data.statistics
+        return { success: true, statistics: response.data.statistics }
+      } else {
+        console.error('Failed to fetch statistics:', response.data.message)
+        return { success: false, message: response.data.message }
+      }
+    } catch (error: any) {
+      console.error('Error fetching statistics:', error)
+      return { success: false, message: error.response?.data?.message || t('common.error') }
+    } finally {
+      statisticsLoading.value = false
+    }
+  }
+
   const clearCurrentGeneration = () => {
     currentGeneration.value = null
   }
@@ -254,8 +286,10 @@ export const useGenerationsStore = defineStore('generations', () => {
     generations,
     publicGenerations,
     currentGeneration,
+    statistics,
     generating,
     loading,
+    statisticsLoading,
     publicPagination,
     sortedGenerations,
     generateSentence,
@@ -266,6 +300,7 @@ export const useGenerationsStore = defineStore('generations', () => {
     deleteGeneration,
     refreshPublicGenerations,
     loadMorePublicGenerations,
+    fetchStatistics,
     clearCurrentGeneration
   }
 }) 

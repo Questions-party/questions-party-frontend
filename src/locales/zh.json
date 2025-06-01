@@ -78,8 +78,8 @@
     "buildVocabulary": "添加您的第一个单词，开始构建词汇库！",
     "clear": "清除",
     "deleteConfirm": "您确定要删除\"{word}\"吗？",
-    "maxSelectionWarning": "您一次最多只能选择20个单词",
-    "maxSelectionInfo": "只选择了前20个单词（最大限制）"
+    "maxSelectionWarning": "您一次最多只能选择50个单词",
+    "maxSelectionInfo": "只选择了前50个单词（最大限制）"
   },
   "generation": {
     "title": "生成句子",
@@ -87,7 +87,7 @@
     "explanation": "语法解释",
     "makePublic": "公开分享",
     "generating": "生成中...",
-    "selectWords": "选择1-20个单词来生成句子",
+    "selectWords": "选择1-50个单词来生成句子",
     "generationSuccess": "句子生成成功！",
     "generationError": "生成句子失败，请重试。",
     "saveGeneration": "保存生成结果",
