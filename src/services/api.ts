@@ -106,7 +106,9 @@ export const generationsAPI = {
   updatePrivacy: (id: string, isPublic: boolean) =>
     api.put(`/generations/${id}/privacy`, { isPublic }),
   
-  deleteGeneration: (id: string) => api.delete(`/generations/${id}`)
+  deleteGeneration: (id: string) => api.delete(`/generations/${id}`),
+  
+  deleteAllGenerations: () => api.delete('/generations/all')
 }
 
 export const aiConfigAPI = {

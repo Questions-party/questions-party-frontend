@@ -102,17 +102,6 @@
           <p class="text-sm text-red-600">{{ loginError }}</p>
         </div>
       </form>
-
-      <!-- Demo credentials info -->
-      <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-          {{ $t('auth.demoCredentials') }}
-        </h3>
-        <p class="text-xs text-blue-600 dark:text-blue-300">
-          {{ $t('auth.demoEmail') }}<br>
-          {{ $t('auth.demoPassword') }}
-        </p>
-      </div>
     </div>
   </div>
 </template>

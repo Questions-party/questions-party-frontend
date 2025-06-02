@@ -181,6 +181,22 @@
 
         <div class="flex justify-between items-center">
           <div>
+            <p class="text-sm font-medium text-primary">{{ $t('profile.deleteAllGenerations') }}</p>
+            <p class="text-xs text-secondary">{{ $t('profile.deleteAllGenerationsDesc') }}</p>
+          </div>
+          <button
+            @click="showDeleteAllDialog = true"
+            class="btn btn-sm"
+            :class="generationsStore.generations.length > 0 ? 'btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'btn-ghost opacity-50 cursor-not-allowed'"
+            :disabled="generationsStore.generations.length === 0"
+          >
+            <TrashIcon class="w-4 h-4 mr-1" />
+            {{ $t('common.delete') }}
+          </button>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <div>
             <p class="text-sm font-medium text-primary">{{ $t('profile.signOut') }}</p>
             <p class="text-xs text-secondary">{{ $t('profile.signOutDesc') }}</p>
           </div>
@@ -194,6 +210,20 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete All Generations Confirmation Dialog -->
+    <ConfirmDialog
+      :show="showDeleteAllDialog"
+      :title="$t('profile.deleteAllGenerationsConfirm')"
+      :message="$t('profile.deleteAllGenerationsMessage')"
+      :warning-message="$t('profile.deleteAllGenerationsWarning')"
+      :confirm-text="$t('common.delete')"
+      :cancel-text="$t('common.cancel')"
+      :loading="deleteAllLoading"
+      type="danger"
+      @confirm="confirmDeleteAllGenerations"
+      @cancel="showDeleteAllDialog = false"
+    />
   </div>
 </template>
 
@@ -203,7 +233,8 @@ import { useRouter } from 'vue-router'
 import { 
   SparklesIcon,
   ArrowDownTrayIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  TrashIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth.ts'
 import { useWordsStore } from '../stores/words.ts'
@@ -211,7 +242,9 @@ import { useGenerationsStore } from '../stores/generations.ts'
 import { useThemeStore } from '../stores/theme.ts'
 import { useToast } from 'vue-toastification'
 import GenerationCard from '../components/GenerationCard.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { useI18n } from 'vue-i18n'
+import { generationsAPI } from '../services/api.ts'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -222,6 +255,8 @@ const toast = useToast()
 const { t } = useI18n()
 
 const showAllGenerations = ref(false)
+const showDeleteAllDialog = ref(false)
+const deleteAllLoading = ref(false)
 
 const preferences = reactive({
   showPublicGenerations: authStore.user?.preferences?.showPublicGenerations ?? true
@@ -276,18 +311,25 @@ const exportData = () => {
   a.click()
   URL.revokeObjectURL(url)
   
-  toast.success(t('profile.exportSuccess'))
+  toast.success(t('profile.exportDataSuccess'))
 }
 
-const deleteAllGenerations = async () => {
-  if (confirm(t('profile.deleteAllGenerationsConfirm'))) {
-    // Implementation would go here
+const confirmDeleteAllGenerations = async () => {
+  deleteAllLoading.value = true
+  try {
+    await generationsAPI.deleteAllGenerations()
+    
+    // Clear the generations from the store
+    generationsStore.generations = []
+    
+    showDeleteAllDialog.value = false
     toast.success(t('profile.deleteAllGenerationsSuccess'))
+  } catch (error) {
+    console.error('Failed to delete all generations:', error)
+    toast.error(t('profile.deleteAllGenerationsError'))
+  } finally {
+    deleteAllLoading.value = false
   }
-}
-
-const regenerateQuestions = () => {
-  toast.success(t('profile.regenerateSuccess'))
 }
 
 const logout = () => {

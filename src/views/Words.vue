@@ -259,42 +259,17 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="closeDeleteModal">
-      <div class="bg-primary rounded-lg shadow-xl max-w-md w-full mx-4" @click.stop>
-        <div class="px-6 py-4">
-          <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full">
-            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-            </svg>
-          </div>
-          
-          <h3 class="text-lg font-semibold text-center text-primary mb-2">
-            {{ $t('words.delete') }} {{ $t('words.word') }}
-          </h3>
-          
-          <p class="text-center text-secondary mb-6">
-            {{ $t('words.deleteConfirm', { word: wordToDelete?.word }) }}
-          </p>
-          
-          <div class="flex justify-center space-x-3">
-            <button
-                @click="closeDeleteModal"
-                class="btn btn-ghost"
-            >
-              {{ $t('words.cancel') }}
-            </button>
-            <button
-                @click="confirmDelete"
-                :disabled="deleteLoading"
-                class="btn bg-red-600 hover:bg-red-700 text-white"
-            >
-              <div v-if="deleteLoading" class="spinner mr-2"></div>
-              {{ $t('words.delete') }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ConfirmDialog
+      :show="showDeleteModal"
+      :title="$t('words.delete') + ' ' + $t('words.word')"
+      :message="$t('words.deleteConfirm', { word: wordToDelete?.word })"
+      :confirm-text="$t('words.delete')"
+      :cancel-text="$t('words.cancel')"
+      :loading="deleteLoading"
+      type="danger"
+      @confirm="confirmDelete"
+      @cancel="closeDeleteModal"
+    />
   </div>
 </template>
 
@@ -303,6 +278,7 @@ import {onMounted, reactive, ref, computed} from 'vue'
 import {ArrowPathIcon, BookOpenIcon, PlusIcon, SparklesIcon} from '@heroicons/vue/24/outline'
 import {useWordsStore} from '../stores/words.ts'
 import WordCard from '../components/WordCard.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { useI18n } from 'vue-i18n'
 
 const wordsStore = useWordsStore()
