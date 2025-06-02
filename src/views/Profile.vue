@@ -130,7 +130,7 @@
         </router-link>
       </div>
 
-      <div v-else class="grid md:grid-cols-2 gap-6">
+      <div v-else class="grid grid-cols-1 gap-6">
         <GenerationCard
           v-for="generation in generationsStore.sortedGenerations.slice(0, 6)"
           :key="generation._id"
@@ -149,7 +149,7 @@
       </div>
 
       <!-- All Generations (when expanded) -->
-      <div v-if="showAllGenerations && generationsStore.generations.length > 6" class="grid md:grid-cols-2 gap-6">
+      <div v-if="showAllGenerations && generationsStore.generations.length > 6" class="grid grid-cols-1 gap-6">
         <GenerationCard
           v-for="generation in generationsStore.sortedGenerations.slice(6)"
           :key="generation._id"

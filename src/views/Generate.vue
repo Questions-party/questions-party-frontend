@@ -295,9 +295,7 @@
               </div>
               <div class="card-body">
                 <div class="prose dark:prose-invert max-w-none">
-                  <p class="text-lg leading-relaxed">
-                    "{{ generationsStore.currentGeneration.sentence }}"
-                  </p>
+                  <div class="text-lg leading-relaxed" v-html="parseMarkdown(generationsStore.currentGeneration.sentence)"></div>
                 </div>
                 <div class="mt-3 flex items-center text-sm text-secondary">
                   <SparklesIcon class="w-4 h-4 mr-1" />
@@ -316,7 +314,7 @@
               </div>
               <div class="card-body">
                 <div class="prose dark:prose-invert max-w-none text-sm">
-                  <div v-html="formatGrammarAnalysis(generationsStore.currentGeneration.explanation)"></div>
+                  <div v-html="parseMarkdown(formatGrammarAnalysis(generationsStore.currentGeneration.explanation))"></div>
                 </div>
               </div>
             </div>
@@ -364,7 +362,7 @@
           </span>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 gap-6">
           <GenerationCard
             v-for="generation in generationsStore.sortedGenerations.slice(0, 4)"
             :key="generation._id"
@@ -417,6 +415,7 @@ import { useAuthStore } from '../stores/auth.ts'
 import GenerationCard from '../components/GenerationCard.vue'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
 
 const wordsStore = useWordsStore()
 const generationsStore = useGenerationsStore()
@@ -503,6 +502,10 @@ const formatGrammarAnalysis = (text: string) => {
     .replace(/\n/g, '<br>')
     .replace(/^/, '<p>')
     .replace(/$/, '</p>')
+}
+
+const parseMarkdown = (text: string) => {
+  return marked(text || '')
 }
 </script>
 

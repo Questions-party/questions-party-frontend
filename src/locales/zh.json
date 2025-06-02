@@ -54,7 +54,9 @@
     "serverErrorUpdatingPreferences": "更新偏好设置时服务器错误",
     "userWithFieldExists": "此{field}的用户已存在",
     "fieldTaken": "此{field}已被占用",
-    "invalidCredentials": "无效凭据"
+    "invalidCredentials": "无效凭据",
+    "fontSettingsUpdatedSuccessfully": "字体设置更新成功",
+    "serverErrorUpdatingFontSettings": "更新字体设置时服务器错误"
   },
   "words": {
     "add": "添加单词",
@@ -165,7 +167,9 @@
     "retryCount": "重试 {count}",
     "advancedSettings": "高级设置",
     "showAdvanced": "显示高级设置",
-    "hideAdvanced": "隐藏高级设置"
+    "hideAdvanced": "隐藏高级设置",
+    "relatedGenerations": "相关生成",
+    "shareOnSocialMedia": "在社交媒体上分享"
   },
   "community": {
     "title": "社区生成",

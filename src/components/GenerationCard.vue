@@ -15,6 +15,18 @@
         </div>
         
         <div v-if="showActions && authStore.isAuthenticated" class="flex items-center space-x-2">
+          <!-- Font Configuration Toggle -->
+          <button
+            @click="showFontConfig = !showFontConfig"
+            class="p-1 rounded-md hover:bg-tertiary transition-colors"
+            :class="{ 'bg-tertiary': showFontConfig }"
+            title="Font Settings"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
+            </svg>
+          </button>
+          
           <button
             @click="toggleLike"
             :disabled="likingInProgress"
@@ -76,6 +88,87 @@
       </div>
     </div>
 
+    <!-- Font Configuration Panel -->
+    <div v-if="showFontConfig" class="border-b border-color bg-secondary/50 p-4">
+      <div class="flex flex-wrap gap-4 items-center text-sm">
+        <div class="flex items-center space-x-2">
+          <label class="font-medium">Font Size:</label>
+          <select 
+            v-model="fontSettings.size" 
+            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          >
+            <option value="text-xs">Extra Small</option>
+            <option value="text-sm">Small</option>
+            <option value="text-base">Normal</option>
+            <option value="text-lg">Large</option>
+            <option value="text-xl">Extra Large</option>
+            <option value="text-2xl">2X Large</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <label class="font-medium">Font Weight:</label>
+          <select 
+            v-model="fontSettings.weight" 
+            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          >
+            <option value="font-light">Light</option>
+            <option value="font-normal">Normal</option>
+            <option value="font-medium">Medium</option>
+            <option value="font-semibold">Semibold</option>
+            <option value="font-bold">Bold</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <label class="font-medium">Line Height:</label>
+          <select 
+            v-model="fontSettings.lineHeight" 
+            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          >
+            <option value="leading-tight">Tight</option>
+            <option value="leading-normal">Normal</option>
+            <option value="leading-relaxed">Relaxed</option>
+            <option value="leading-loose">Loose</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <label class="font-medium">Font Family:</label>
+          <select 
+            v-model="fontSettings.family" 
+            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          >
+            <option value="font-sans">Sans Serif</option>
+            <option value="font-serif">Serif</option>
+            <option value="font-mono">Monospace</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+          <label class="font-medium">Text Color:</label>
+          <select 
+            v-model="fontSettings.color" 
+            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          >
+            <option value="text-gray-700 dark:text-gray-300">Default</option>
+            <option value="text-gray-900 dark:text-gray-100">High Contrast</option>
+            <option value="text-blue-700 dark:text-blue-300">Blue</option>
+            <option value="text-green-700 dark:text-green-300">Green</option>
+            <option value="text-purple-700 dark:text-purple-300">Purple</option>
+            <option value="text-red-700 dark:text-red-300">Red</option>
+          </select>
+        </div>
+        
+        <button
+          @click="resetFontSettings"
+          class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+
     <div class="card-body space-y-4">
       <!-- Words Used -->
       <div class="flex flex-wrap gap-2">
@@ -89,8 +182,8 @@
       </div>
 
       <!-- Generated Sentence -->
-      <blockquote class="generation-sentence">
-        "{{ generation.sentence }}"
+      <blockquote class="generation-sentence" :class="fontClasses">
+        <span v-html="parseMarkdown(generation.sentence)"></span>
       </blockquote>
 
       <!-- AI Model Badge -->
@@ -108,8 +201,15 @@
 
       <!-- Grammar Explanation -->
       <div v-if="showExplanation" class="generation-explanation">
-        <h4 class="font-medium text-sm mb-2 text-primary">{{ $t('generation.explanation') }}</h4>
-        <p class="text-sm leading-relaxed">{{ generation.explanation }}</p>
+        <h4 class="font-medium text-sm mb-3 text-primary flex items-center">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+          </svg>
+          {{ $t('generation.explanation') }}
+        </h4>
+        <div class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/10 dark:via-emerald-900/10 dark:to-teal-900/10 p-4 rounded-lg border-l-4 border-emerald-400 shadow-sm">
+          <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(generation.explanation)"></div>
+        </div>
       </div>
 
       <!-- AI Thinking/Reasoning Text (if available) -->
@@ -120,8 +220,8 @@
           </svg>
           AI Reasoning Process
         </h4>
-        <div class="text-sm leading-relaxed bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
-          <p class="whitespace-pre-wrap">{{ generation.thinkingText }}</p>
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
+          <p class="whitespace-pre-wrap" :class="fontClasses">{{ generation.thinkingText }}</p>
         </div>
       </div>
       
@@ -170,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { 
   HeartIcon, 
@@ -181,6 +281,8 @@ import { useAuthStore } from '../stores/auth.ts'
 import { useGenerationsStore } from '../stores/generations.ts'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
+import { authAPI } from '../services/api.ts'
 
 interface Props {
   generation: any
@@ -199,6 +301,67 @@ const { t } = useI18n()
 const showExplanation = ref(false)
 const showThinking = ref(false)
 const likingInProgress = ref(false)
+const showFontConfig = ref(false)
+
+// Font settings configuration
+const fontSettings = reactive({
+  size: 'text-base',
+  weight: 'font-normal',
+  lineHeight: 'leading-relaxed',
+  family: 'font-sans',
+  color: 'text-gray-700 dark:text-gray-300'
+})
+
+// Computed property for font classes
+const fontClasses = computed(() => {
+  return `${fontSettings.size} ${fontSettings.weight} ${fontSettings.lineHeight} ${fontSettings.family} ${fontSettings.color}`
+})
+
+// Debounced save function for font settings
+let saveTimeout: number | null = null
+const saveFontSettings = () => {
+  if (saveTimeout) clearTimeout(saveTimeout)
+  saveTimeout = setTimeout(async () => {
+    if (authStore.isAuthenticated) {
+      // Save to backend for authenticated users
+      try {
+        await authStore.updateFontSettings(fontSettings)
+      } catch (error) {
+        console.error('Failed to save font settings:', error)
+      }
+    }
+    // Always save to localStorage as backup
+    localStorage.setItem('generationCard-fontSettings', JSON.stringify(fontSettings))
+  }, 500) // 500ms debounce
+}
+
+// Load font settings from user preferences or localStorage on mount
+onMounted(() => {
+  if (authStore.isAuthenticated && authStore.user?.preferences?.fontSettings) {
+    // Load from user preferences
+    Object.assign(fontSettings, authStore.user.preferences.fontSettings)
+  } else {
+    // Fallback to localStorage for non-authenticated users
+    const savedSettings = localStorage.getItem('generationCard-fontSettings')
+    if (savedSettings) {
+      Object.assign(fontSettings, JSON.parse(savedSettings))
+    }
+  }
+})
+
+// Watch for changes and save to localStorage
+watch(fontSettings, (newSettings) => {
+  saveFontSettings()
+}, { deep: true })
+
+// Reset font settings to default
+const resetFontSettings = () => {
+  fontSettings.size = 'text-base'
+  fontSettings.weight = 'font-normal'
+  fontSettings.lineHeight = 'leading-relaxed'
+  fontSettings.family = 'font-sans'
+  fontSettings.color = 'text-gray-700 dark:text-gray-300'
+}
 
 const isOwnGeneration = computed(() => {
   return authStore.user?.id === props.generation.userId._id
@@ -232,6 +395,10 @@ const formatDate = (dateString: string) => {
       t('date.dayAgo', { count: days }) : 
       t('date.daysAgo', { count: days })
   }
+}
+
+const parseMarkdown = (text: string) => {
+  return marked(text || '')
 }
 
 const toggleLike = async () => {

@@ -54,7 +54,9 @@
     "serverErrorUpdatingPreferences": "Server error updating preferences",
     "userWithFieldExists": "User with this {field} already exists",
     "fieldTaken": "This {field} is already taken",
-    "invalidCredentials": "Invalid credentials"
+    "invalidCredentials": "Invalid credentials",
+    "fontSettingsUpdatedSuccessfully": "Font settings updated successfully",
+    "serverErrorUpdatingFontSettings": "Server error updating font settings"
   },
   "words": {
     "add": "Add Word",
@@ -185,7 +187,9 @@
     "retryCount": "Retry {count}",
     "advancedSettings": "Advanced Settings",
     "showAdvanced": "Show Advanced Settings",
-    "hideAdvanced": "Hide Advanced Settings"
+    "hideAdvanced": "Hide Advanced Settings",
+    "relatedGenerations": "Related Generations",
+    "shareOnSocialMedia": "Share on Social Media"
   },
   "community": {
     "title": "Community Generations",

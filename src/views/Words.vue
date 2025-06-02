@@ -57,7 +57,7 @@
         </div>
         <div class="card-body">
           <form class="space-y-4" @submit.prevent="addWord">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 grid-cols-1 gap-4">
               <div>
                 <label class="block text-sm font-medium text-primary" for="word">
                   {{ $t('words.word') }} *

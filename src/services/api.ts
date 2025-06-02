@@ -70,7 +70,9 @@ export const authAPI = {
   
   updateProfile: (data: any) => api.put('/auth/profile', data),
   
-  updatePreferences: (preferences: any) => api.put('/auth/preferences', preferences)
+  updatePreferences: (preferences: any) => api.put('/auth/preferences', preferences),
+  
+  updateFontSettings: (fontSettings: any) => api.put('/auth/font-settings', fontSettings)
 }
 
 export const wordsAPI = {

@@ -12,6 +12,13 @@ interface User {
         theme?: string
         language?: string
         showPublicGenerations?: boolean
+        fontSettings?: {
+            size?: string
+            weight?: string
+            lineHeight?: string
+            family?: string
+            color?: string
+        }
     }
 }
 
@@ -161,6 +168,34 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    const updateFontSettings = async (fontSettings: any) => {
+        loading.value = true
+        try {
+            const response = await authAPI.updateFontSettings(fontSettings)
+
+            if (response.data.success) {
+                if (user.value) {
+                    user.value.preferences = {
+                        ...user.value.preferences,
+                        fontSettings: {...user.value.preferences?.fontSettings, ...fontSettings}
+                    }
+                }
+                toast.success(t('auth.fontSettingsUpdatedSuccessfully'))
+                return {success: true}
+            } else {
+                const message = response.data.message || t('auth.serverErrorUpdatingFontSettings')
+                toast.error(message)
+                return {success: false, message}
+            }
+        } catch (error: any) {
+            const message = error.response?.data?.message || t('auth.serverErrorUpdatingFontSettings')
+            toast.error(message)
+            return {success: false, message}
+        } finally {
+            loading.value = false
+        }
+    }
+
     // Initialize user if token exists
     if (token.value) {
         fetchUser()
@@ -176,7 +211,8 @@ export const useAuthStore = defineStore('auth', () => {
         logout,
         fetchUser,
         updateProfile,
-        updatePreferences
+        updatePreferences,
+        updateFontSettings
     }
 }, {
     persist: true

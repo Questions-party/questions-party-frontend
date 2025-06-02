@@ -10,6 +10,7 @@ const Generate = () => import('../views/Generate.vue')
 const Community = () => import('../views/Community.vue')
 const Profile = () => import('../views/Profile.vue')
 const AIConfig = () => import('../views/AIConfig.vue')
+const GenerationView = () => import('../views/GenerationView.vue')
 
 const routes = [
   {
@@ -44,6 +45,11 @@ const routes = [
     path: '/community',
     name: 'Community',
     component: Community
+  },
+  {
+    path: '/generation/:id',
+    name: 'GenerationView',
+    component: GenerationView
   },
   {
     path: '/ai-config',
