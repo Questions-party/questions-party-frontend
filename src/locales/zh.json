@@ -169,7 +169,15 @@
     "showAdvanced": "显示高级设置",
     "hideAdvanced": "隐藏高级设置",
     "relatedGenerations": "相关生成",
-    "shareOnSocialMedia": "在社交媒体上分享"
+    "shareOnSocialMedia": "在社交媒体上分享",
+    "grammarExplanationLanguage": "语法解释语言",
+    "combiningChineseEnglish": "中英文结合",
+    "combiningChineseEnglishDesc": "语法解释同时提供中文和英文，关键术语双语说明",
+    "pureEnglish": "纯英文",
+    "pureEnglishDesc": "语法解释完全使用英文",
+    "recommended": "推荐",
+    "languageOptionSaved": "语言偏好保存成功",
+    "chineseTranslation": "中文翻译"
   },
   "community": {
     "title": "社区生成",

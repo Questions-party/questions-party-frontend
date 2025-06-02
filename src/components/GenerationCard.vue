@@ -212,6 +212,19 @@
         </div>
       </div>
 
+      <!-- Chinese Translation -->
+      <div v-if="showChineseTranslation && generation.chineseTranslation" class="generation-chinese">
+        <h4 class="font-medium text-sm mb-3 text-primary flex items-center">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+          </svg>
+          中文翻译 (Chinese Translation)
+        </h4>
+        <div class="bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 dark:from-orange-900/10 dark:via-yellow-900/10 dark:to-amber-900/10 p-4 rounded-lg border-l-4 border-orange-400 shadow-sm">
+          <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(generation.chineseTranslation)"></div>
+        </div>
+      </div>
+
       <!-- AI Thinking/Reasoning Text (if available) -->
       <div v-if="showThinking && generation.thinkingText" class="generation-thinking">
         <h4 class="font-medium text-sm mb-2 text-primary flex items-center">
@@ -233,6 +246,13 @@
           class="text-sm text-accent-color hover:underline"
         >
           Show explanation →
+        </button>
+        <button
+          v-if="generation.chineseTranslation && !showChineseTranslation"
+          @click="showChineseTranslation = true"
+          class="text-sm text-orange-600 hover:underline"
+        >
+          Show Chinese translation →
         </button>
         <button
           v-if="generation.thinkingText && !showThinking"
@@ -300,6 +320,7 @@ const { t } = useI18n()
 
 const showExplanation = ref(false)
 const showThinking = ref(false)
+const showChineseTranslation = ref(false)
 const likingInProgress = ref(false)
 const showFontConfig = ref(false)
 

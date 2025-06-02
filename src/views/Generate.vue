@@ -165,6 +165,51 @@
                   leave-to-class="transform scale-95 opacity-0"
                 >
                   <div v-show="showAdvancedSettings" class="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-4">
+                    <!-- Grammar Language Option -->
+                    <div>
+                      <label class="block text-sm font-medium text-primary mb-2">
+                        {{ $t('generation.grammarExplanationLanguage') }}
+                      </label>
+                      <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                          <input
+                            v-model="grammarLanguageOption"
+                            type="radio"
+                            value="combined"
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                          />
+                          <div class="flex flex-col">
+                            <span class="text-sm font-medium text-primary">
+                              {{ $t('generation.combiningChineseEnglish') }}
+                            </span>
+                            <span class="text-xs text-secondary">
+                              {{ $t('generation.combiningChineseEnglishDesc') }}
+                            </span>
+                          </div>
+                          <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                            {{ $t('generation.recommended') }}
+                          </span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                          <input
+                            v-model="grammarLanguageOption"
+                            type="radio"
+                            value="pure"
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                          />
+                          <div class="flex flex-col">
+                            <span class="text-sm font-medium text-primary">
+                              {{ $t('generation.pureEnglish') }}
+                            </span>
+                            <span class="text-xs text-secondary">
+                              {{ $t('generation.pureEnglishDesc') }}
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <!-- Max Retries -->
                     <div>
                       <label class="block text-sm font-medium text-primary mb-2">
                         {{ $t('generation.maxRetries') }}
@@ -260,7 +305,7 @@
           </div>
 
           <!-- Three Structured Sections -->
-          <div class="grid lg:grid-cols-3 gap-6">
+          <div class="grid lg:grid-cols-2 gap-6">
             <!-- Section 1: Selected Words -->
             <div class="card">
               <div class="card-header">
@@ -303,19 +348,19 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Section 3: Grammar Analysis -->
-            <div class="card">
-              <div class="card-header">
-                <h4 class="text-lg font-semibold flex items-center">
-                  <AcademicCapIcon class="w-5 h-5 mr-2" />
-                  {{ $t('generation.grammarSection') }}
-                </h4>
-              </div>
-              <div class="card-body">
-                <div class="prose dark:prose-invert max-w-none text-sm">
-                  <div v-html="parseMarkdown(formatGrammarAnalysis(generationsStore.currentGeneration.explanation))"></div>
-                </div>
+          <!-- Grammar Analysis -->
+          <div v-if="generationsStore.currentGeneration.explanation" class="card">
+            <div class="card-header">
+              <h4 class="text-lg font-semibold flex items-center">
+                <CogIcon class="w-5 h-5 mr-2" />
+                Grammar Analysis
+              </h4>
+            </div>
+            <div class="card-body">
+              <div class="prose dark:prose-invert max-w-none text-sm">
+                <div v-html="parseMarkdown(generationsStore.currentGeneration.explanation)"></div>
               </div>
             </div>
           </div>
@@ -391,7 +436,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { 
   SparklesIcon, 
   BookOpenIcon, 
@@ -426,11 +471,30 @@ const { t } = useI18n()
 const isPublic = ref(true)
 const maxRetries = ref(3)
 const showAdvancedSettings = ref(false)
+const grammarLanguageOption = ref('combined')
+
+// Watch for changes in grammar language option and save to user preferences
+watch(grammarLanguageOption, async (newValue) => {
+  if (authStore.isAuthenticated) {
+    try {
+      await authStore.updatePreferences({
+        grammarExplanationLanguage: newValue
+      })
+    } catch (error) {
+      console.error('Failed to save grammar language preference:', error)
+    }
+  }
+}, { immediate: false })
 
 onMounted(async () => {
   if (authStore.isAuthenticated) {
     await wordsStore.fetchWords()
     await generationsStore.fetchUserGenerations()
+    
+    // Load user's grammar language preference
+    if (authStore.user?.preferences?.grammarExplanationLanguage) {
+      grammarLanguageOption.value = authStore.user.preferences.grammarExplanationLanguage
+    }
   }
 })
 
@@ -453,7 +517,8 @@ const generateSentence = async () => {
   const result = await generationsStore.generateSentence({
     words: selectedWordTexts,
     isPublic: isPublic.value,
-    maxRetries: maxRetries.value
+    maxRetries: maxRetries.value,
+    grammarLanguage: grammarLanguageOption.value
   })
 
   if (result.success) {
@@ -468,7 +533,8 @@ const regenerateWithSameWords = async () => {
   const result = await generationsStore.generateSentence({
     words: generationsStore.currentGeneration.words,
     isPublic: isPublic.value,
-    maxRetries: maxRetries.value
+    maxRetries: maxRetries.value,
+    grammarLanguage: grammarLanguageOption.value
   })
 }
 
@@ -492,16 +558,6 @@ const shareGeneration = () => {
       toast.error(t('generation.linkCopyFailed'))
     })
   }
-}
-
-const formatGrammarAnalysis = (text: string) => {
-  // Format grammar analysis with basic HTML structure
-  return text
-    .replace(/(\d+\.)/g, '<strong>$1</strong>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-    .replace(/^/, '<p>')
-    .replace(/$/, '</p>')
 }
 
 const parseMarkdown = (text: string) => {

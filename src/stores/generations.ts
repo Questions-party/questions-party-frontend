@@ -28,6 +28,7 @@ interface GenerationInput {
   words: string[]
   isPublic?: boolean
   maxRetries?: number
+  grammarLanguage?: string
 }
 
 interface RetryInfo {

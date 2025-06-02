@@ -189,7 +189,15 @@
     "showAdvanced": "Show Advanced Settings",
     "hideAdvanced": "Hide Advanced Settings",
     "relatedGenerations": "Related Generations",
-    "shareOnSocialMedia": "Share on Social Media"
+    "shareOnSocialMedia": "Share on Social Media",
+    "grammarExplanationLanguage": "Grammar Explanation Language",
+    "combiningChineseEnglish": "Combining Chinese and English",
+    "combiningChineseEnglishDesc": "Grammar explanations provided in both English and Chinese with key terms explained bilingually",
+    "pureEnglish": "Pure English",
+    "pureEnglishDesc": "Grammar explanations provided entirely in English",
+    "recommended": "Recommended",
+    "languageOptionSaved": "Language preference saved successfully",
+    "chineseTranslation": "Chinese Translation"
   },
   "community": {
     "title": "Community Generations",

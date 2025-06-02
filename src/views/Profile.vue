@@ -89,6 +89,30 @@
           </div>
         </div>
 
+        <!-- Grammar Explanation Language Setting -->
+        <div class="flex justify-between items-center">
+          <div>
+            <label class="text-sm font-medium text-primary">{{ $t('generation.grammarExplanationLanguage') }}</label>
+            <p class="text-xs text-secondary">Choose how grammar explanations are provided</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button
+              @click="updateGrammarLanguage('combined')"
+              class="btn btn-sm"
+              :class="preferences.grammarExplanationLanguage === 'combined' ? 'btn-primary' : 'btn-ghost'"
+            >
+              {{ $t('generation.combiningChineseEnglish') }}
+            </button>
+            <button
+              @click="updateGrammarLanguage('pure')"
+              class="btn btn-sm"
+              :class="preferences.grammarExplanationLanguage === 'pure' ? 'btn-primary' : 'btn-ghost'"
+            >
+              {{ $t('generation.pureEnglish') }}
+            </button>
+          </div>
+        </div>
+
         <!-- Public Generations Setting -->
         <div class="flex justify-between items-center">
           <div>
@@ -259,7 +283,8 @@ const showDeleteAllDialog = ref(false)
 const deleteAllLoading = ref(false)
 
 const preferences = reactive({
-  showPublicGenerations: authStore.user?.preferences?.showPublicGenerations ?? true
+  showPublicGenerations: authStore.user?.preferences?.showPublicGenerations ?? true,
+  grammarExplanationLanguage: authStore.user?.preferences?.grammarExplanationLanguage ?? 'combined'
 })
 
 const totalLikes = computed(() => {
@@ -279,6 +304,7 @@ onMounted(async () => {
   // Initialize preferences from user data
   if (authStore.user?.preferences) {
     preferences.showPublicGenerations = authStore.user.preferences.showPublicGenerations ?? true
+    preferences.grammarExplanationLanguage = authStore.user.preferences.grammarExplanationLanguage ?? 'combined'
   }
 })
 
@@ -287,12 +313,18 @@ const updatePreferences = async () => {
     await authStore.updatePreferences({
       showPublicGenerations: preferences.showPublicGenerations,
       theme: themeStore.theme,
-      language: themeStore.language
+      language: themeStore.language,
+      grammarExplanationLanguage: preferences.grammarExplanationLanguage
     })
   } catch (error) {
     console.error('Failed to update preferences:', error)
     toast.error('Failed to update preferences')
   }
+}
+
+const updateGrammarLanguage = (language: string) => {
+  preferences.grammarExplanationLanguage = language
+  updatePreferences()
 }
 
 const exportData = () => {
