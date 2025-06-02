@@ -78,6 +78,9 @@ export const useWordsStore = defineStore('words', () => {
   const selectedWordsCount = computed(() => selectedWords.value.size)
   const canGenerate = computed(() => selectedWordsCount.value >= 1 && selectedWordsCount.value <= maxWordLength.value)
 
+  // Total count of unfiltered words for UI display logic
+  const totalWordsCount = computed(() => words.value.length)
+
   const fetchWords = async () => {
     loading.value = true
     try {
@@ -302,6 +305,7 @@ export const useWordsStore = defineStore('words', () => {
     partsOfSpeech,
     currentFilter,
     searchQuery,
+    totalWordsCount,
     fetchWords,
     fetchPartsOfSpeech,
     addWord,

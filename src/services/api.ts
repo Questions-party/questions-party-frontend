@@ -113,18 +113,24 @@ export const generationsAPI = {
 
 export const aiConfigAPI = {
   getConfigs: () => api.get('/ai-configs'),
-  
+
   getConfig: (id: string) => api.get(`/ai-configs/${id}`),
-  
+
   createConfig: (config: any) => api.post('/ai-configs', config),
-  
+
   updateConfig: (id: string, config: any) => api.put(`/ai-configs/${id}`, config),
-  
+
   deleteConfig: (id: string) => api.delete(`/ai-configs/${id}`),
-  
+
   testConfig: (id: string, data?: any) => api.post(`/ai-configs/${id}/test`, data),
+
+  createDefaultConfig: () => api.post('/ai-configs/default'),
+
+  getApiKeyStatus: () => api.get('/auth/api-key-status'),
+
+  updateApiKey: (data: { apiKey: string; useCustomApiKey: boolean }) => api.put('/auth/api-key', data),
   
-  createDefaultConfig: () => api.post('/ai-configs/default')
+  testApiKey: (apiKey: string) => api.post('/auth/test-api-key', { apiKey })
 }
 
 export const i18nAPI = {
@@ -134,4 +140,4 @@ export const i18nAPI = {
 export const statisticsAPI = {
   getPublicStats: () => api.get('/generations/public/stats'),
   getGlobalStats: () => api.get('/statistics')
-} 
+}

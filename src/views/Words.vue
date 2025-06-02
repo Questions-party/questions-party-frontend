@@ -109,7 +109,7 @@
     </transition>
 
     <!-- Filters and Search -->
-    <div v-if="wordsStore.words.length > 0" class="card">
+    <div class="card">
       <div class="card-body">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Search -->
@@ -154,16 +154,16 @@
     </div>
 
     <!-- Words Selection Controls -->
-    <div v-if="wordsStore.words.length > 0"
+    <div v-if="wordsStore.totalWordsCount > 0"
          class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div class="flex items-center space-x-4">
         <span class="text-sm text-secondary">
-          {{ $t('words.selectedCount', {count: wordsStore.selectedWordsCount, total: wordsStore.words.length}) }}
+          {{ $t('words.selectedCount', {count: wordsStore.selectedWordsCount, total: wordsStore.totalWordsCount}) }}
         </span>
 
         <div class="flex items-center space-x-2">
           <button
-              :disabled="wordsStore.selectedWordsCount === Math.min(wordsStore.words.length, 20)"
+              :disabled="wordsStore.selectedWordsCount === Math.min(wordsStore.totalWordsCount, 20)"
               class="btn btn-ghost btn-sm"
               @click="wordsStore.selectAllWords()"
           >
@@ -186,17 +186,18 @@
           to="/generate"
       >
         <SparklesIcon class="w-4 h-4 mr-2"/>
-        {{ $t('words.generate') }} ({{ wordsStore.selectedWordsCount }})
+        {{ $t('generation.generate') }} ({{ wordsStore.selectedWordsCount }})
       </router-link>
     </div>
 
     <!-- Words Grid -->
-    <div v-if="wordsStore.loading && wordsStore.words.length === 0" class="text-center py-12">
+    <div v-if="wordsStore.loading && wordsStore.totalWordsCount === 0" class="text-center py-12">
       <div class="spinner-lg mx-auto mb-4"></div>
       <p class="text-secondary">{{ $t('common.loading') }}...</p>
     </div>
 
-    <div v-else-if="wordsStore.words.length === 0" class="text-center py-12">
+    <!-- No words at all -->
+    <div v-else-if="wordsStore.totalWordsCount === 0" class="text-center py-12">
       <BookOpenIcon class="w-16 h-16 text-gray-400 mx-auto mb-4"/>
       <h3 class="text-lg font-medium text-primary mb-2">{{ $t('words.noWords') }}</h3>
       <p class="text-secondary mb-4">{{ $t('words.buildVocabulary') }}</p>
@@ -206,6 +207,19 @@
       >
         <PlusIcon class="w-4 h-4 mr-2"/>
         {{ $t('words.add') }}
+      </button>
+    </div>
+
+    <!-- No words match filters -->
+    <div v-else-if="wordsStore.words.length === 0" class="text-center py-12">
+      <BookOpenIcon class="w-16 h-16 text-gray-400 mx-auto mb-4"/>
+      <h3 class="text-lg font-medium text-primary mb-2">{{ $t('words.noWordsMatchFilters') }}</h3>
+      <p class="text-secondary mb-4">{{ $t('words.tryDifferentFilters') }}</p>
+      <button
+          class="btn btn-primary"
+          @click="clearFilters"
+      >
+        {{ $t('words.clearFilters') }}
       </button>
     </div>
 
@@ -295,7 +309,7 @@ const spellingSuggestions = ref<string[]>([])
 // Filtering and search
 const searchQuery = ref('')
 const selectedFilter = ref('all')
-const searchTimeout = ref<NodeJS.Timeout | null>(null)
+const searchTimeout = ref<number | null>(null)
 
 // Delete modal state
 const showDeleteModal = ref(false)

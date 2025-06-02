@@ -1,5 +1,6 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import {createApp} from 'vue'
+import {createPinia} from 'pinia'
+import piniaPluginPersistState from 'pinia-plugin-persistedstate'
 import Toast from 'vue-toastification'
 import router from './router'
 import App from './App.vue'
@@ -9,24 +10,25 @@ import 'vue-toastification/dist/index.css'
 
 // Create Pinia store
 const pinia = createPinia()
+pinia.use(piniaPluginPersistState)
 
 // Create app
 const app = createApp(App)
 
 // Toast options
 const toastOptions = {
-  position: 'top-right',
-  timeout: 5000,
-  closeOnClick: true,
-  pauseOnFocusLoss: true,
-  pauseOnHover: true,
-  draggable: true,
-  draggablePercent: 0.6,
-  showCloseButtonOnHover: false,
-  hideProgressBar: false,
-  closeButton: 'button',
-  icon: true,
-  rtl: false
+    position: 'top-right',
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: false,
+    hideProgressBar: false,
+    closeButton: 'button',
+    icon: true,
+    rtl: false
 }
 
 app.use(pinia)

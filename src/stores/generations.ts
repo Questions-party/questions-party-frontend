@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import { generationsAPI, statisticsAPI } from '../services/api.ts'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 
@@ -73,7 +73,7 @@ export const useGenerationsStore = defineStore('generations', () => {
   const generateSentence = async (input: GenerationInput) => {
     generating.value = true
     try {
-      const response = await axios.post(`${API_BASE_URL}/generations/generate`, input)
+      const response = await generationsAPI.generate(input)
       
       if (response.data.success) {
         currentGeneration.value = response.data.generation
@@ -97,7 +97,7 @@ export const useGenerationsStore = defineStore('generations', () => {
   const fetchUserGenerations = async () => {
     loading.value = true
     try {
-      const response = await axios.get(`${API_BASE_URL}/generations/user`)
+      const response = await generationsAPI.getUserGenerations()
       
       if (response.data.success) {
         generations.value = response.data.generations
@@ -119,8 +119,8 @@ export const useGenerationsStore = defineStore('generations', () => {
   const fetchPublicGenerations = async (page: number = 1, sortBy: string = 'recent') => {
     loading.value = true
     try {
-      const response = await axios.get(`${API_BASE_URL}/generations/public`, {
-        params: { page, sortBy, limit: publicPagination.value.limit }
+      const response = await generationsAPI.getPublicGenerations({
+        page, sortBy, limit: publicPagination.value.limit
       })
       
       if (response.data.success) {
@@ -131,10 +131,10 @@ export const useGenerationsStore = defineStore('generations', () => {
         }
         
         publicPagination.value = {
-          page: response.data.pagination.page,
-          limit: response.data.pagination.limit,
+          page: response.data.pagination.current,
+          limit: response.data.pagination.limit || 10,
           hasNext: response.data.pagination.hasNext,
-          total: response.data.pagination.total
+          total: response.data.pagination.totalGenerations
         }
         
         return { success: true, generations: response.data.generations }
@@ -154,7 +154,7 @@ export const useGenerationsStore = defineStore('generations', () => {
 
   const toggleLike = async (generationId: string) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/generations/${generationId}/like`)
+      const response = await generationsAPI.toggleLike(generationId)
       
       if (response.data.success) {
         const liked = response.data.liked
@@ -163,7 +163,6 @@ export const useGenerationsStore = defineStore('generations', () => {
         const updateGeneration = (gen: Generation) => {
           if (gen._id === generationId) {
             gen.likeCount = response.data.likeCount
-            gen.likes = response.data.likes
           }
         }
         
@@ -172,7 +171,6 @@ export const useGenerationsStore = defineStore('generations', () => {
         
         if (currentGeneration.value?._id === generationId) {
           currentGeneration.value.likeCount = response.data.likeCount
-          currentGeneration.value.likes = response.data.likes
         }
         
         toast.success(liked ? t('generation.likeSuccess') : t('generation.unlikeSuccess'))
@@ -191,7 +189,7 @@ export const useGenerationsStore = defineStore('generations', () => {
 
   const updateGenerationPrivacy = async (generationId: string, isPublic: boolean) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/generations/${generationId}`, { isPublic })
+      const response = await generationsAPI.updatePrivacy(generationId, isPublic)
       
       if (response.data.success) {
         const updateGeneration = (gen: Generation) => {
@@ -201,12 +199,12 @@ export const useGenerationsStore = defineStore('generations', () => {
         }
         
         generations.value.forEach(updateGeneration)
+        
         if (currentGeneration.value?._id === generationId) {
           currentGeneration.value.isPublic = isPublic
         }
         
-        const status = isPublic ? t('generation.public') : t('generation.private')
-        toast.success(t('generation.privacyUpdated', { status }))
+        toast.success(t('generation.privacyUpdateSuccess'))
         return { success: true }
       } else {
         const message = response.data.message || t('common.error')
@@ -222,11 +220,11 @@ export const useGenerationsStore = defineStore('generations', () => {
 
   const deleteGeneration = async (generationId: string) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/generations/${generationId}`)
+      const response = await generationsAPI.deleteGeneration(generationId)
       
       if (response.data.success) {
-        generations.value = generations.value.filter(g => g._id !== generationId)
-        publicGenerations.value = publicGenerations.value.filter(g => g._id !== generationId)
+        generations.value = generations.value.filter(gen => gen._id !== generationId)
+        publicGenerations.value = publicGenerations.value.filter(gen => gen._id !== generationId)
         
         if (currentGeneration.value?._id === generationId) {
           currentGeneration.value = null
@@ -261,7 +259,7 @@ export const useGenerationsStore = defineStore('generations', () => {
   const fetchStatistics = async () => {
     statisticsLoading.value = true
     try {
-      const response = await axios.get(`${API_BASE_URL}/generations/public/stats`)
+      const response = await statisticsAPI.getPublicStats()
       
       if (response.data.success) {
         statistics.value = response.data.statistics

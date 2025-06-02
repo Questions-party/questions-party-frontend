@@ -49,7 +49,7 @@
               </div>
 
               <!-- Action buttons -->
-              <div class="mt-8 flex flex-col-reverse sm:flex-row sm:gap-3">
+              <div class="mt-8 flex flex-col-reverse justify-center sm:flex-row sm:gap-3">
                 <button
                   @click="$emit('cancel')"
                   type="button"
