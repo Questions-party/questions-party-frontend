@@ -127,4 +127,9 @@ export const aiConfigAPI = {
 
 export const i18nAPI = {
   getLanguageInfo: () => api.get('/i18n')
+}
+
+export const statisticsAPI = {
+  getPublicStats: () => api.get('/generations/public/stats'),
+  getGlobalStats: () => api.get('/statistics')
 } 

@@ -131,19 +131,29 @@
     <section class="text-center space-y-8">
       <h2 class="text-3xl font-bold">{{ $t('home.statistics.title') }}</h2>
       
-      <div class="grid sm:grid-cols-3 gap-8">
+      <div v-if="statisticsLoading" class="flex justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+      
+      <div v-else class="grid sm:grid-cols-3 gap-8">
         <div class="space-y-2">
-          <div class="text-4xl font-bold text-blue-600">12,000+</div>
+          <div class="text-4xl font-bold text-blue-600">
+            {{ formattedStats?.aiGeneratedSentences || '0' }}
+          </div>
           <p class="text-secondary">{{ $t('home.statistics.aiGeneratedSentences') }}</p>
         </div>
         
         <div class="space-y-2">
-          <div class="text-4xl font-bold text-green-600">89,000+</div>
+          <div class="text-4xl font-bold text-green-600">
+            {{ formattedStats?.wordsPracticed || '0' }}
+          </div>
           <p class="text-secondary">{{ $t('home.statistics.wordsPracticed') }}</p>
         </div>
         
         <div class="space-y-2">
-          <div class="text-4xl font-bold text-purple-600">3,500+</div>
+          <div class="text-4xl font-bold text-purple-600">
+            {{ formattedStats?.activeLearners || '0' }}
+          </div>
           <p class="text-secondary">{{ $t('home.statistics.activeLearners') }}</p>
         </div>
       </div>
@@ -202,6 +212,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import {
   SparklesIcon,
   UsersIcon,
@@ -211,8 +222,17 @@ import {
   CheckCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth.ts'
+import { useStatistics } from '../stores/useStatistics.ts'
 
 const authStore = useAuthStore()
+
+// Statistics composable
+const { formattedStats, loading: statisticsLoading, fetchStatistics } = useStatistics()
+
+// Fetch statistics when component mounts
+onMounted(() => {
+  fetchStatistics()
+})
 </script>
 
 <style scoped>
