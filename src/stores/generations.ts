@@ -27,6 +27,20 @@ interface Generation {
 interface GenerationInput {
   words: string[]
   isPublic?: boolean
+  maxRetries?: number
+}
+
+interface RetryInfo {
+  attempt: number
+  maxRetries: number
+  success: boolean
+}
+
+interface GenerationProgress {
+  isRetrying: boolean
+  currentAttempt: number
+  maxRetries: number
+  errorMessage?: string
 }
 
 interface PublicPagination {
@@ -57,6 +71,11 @@ export const useGenerationsStore = defineStore('generations', () => {
   const generating = ref(false)
   const loading = ref(false)
   const statisticsLoading = ref(false)
+  const generationProgress = ref<GenerationProgress>({
+    isRetrying: false,
+    currentAttempt: 0,
+    maxRetries: 3
+  })
   const publicPagination = ref<PublicPagination>({
     page: 1,
     limit: 10,
@@ -72,25 +91,71 @@ export const useGenerationsStore = defineStore('generations', () => {
 
   const generateSentence = async (input: GenerationInput) => {
     generating.value = true
+    generationProgress.value = {
+      isRetrying: false,
+      currentAttempt: 0,
+      maxRetries: input.maxRetries || 3
+    }
+    
     try {
       const response = await generationsAPI.generate(input)
       
       if (response.data.success) {
         currentGeneration.value = response.data.generation
         generations.value.unshift(response.data.generation)
-        toast.success(t('generation.generationSuccess'))
-        return { success: true, generation: response.data.generation }
+        
+        // Handle retry info in success message
+        if (response.data.retryInfo && response.data.retryInfo.attempt > 1) {
+          toast.success(t('generation.retrySuccess', { attempt: response.data.retryInfo.attempt }))
+        } else {
+          toast.success(t('generation.generationSuccess'))
+        }
+        
+        return { 
+          success: true, 
+          generation: response.data.generation,
+          retryInfo: response.data.retryInfo
+        }
       } else {
         const message = response.data.message || t('generation.generationError')
-        toast.error(message)
-        return { success: false, message }
+        
+        // Handle retry info in error case
+        if (response.data.retryInfo) {
+          const retryMessage = t('generation.retryFailed', { attempts: response.data.retryInfo.maxRetries })
+          toast.error(`${message} ${retryMessage}`)
+        } else {
+          toast.error(message)
+        }
+        
+        return { 
+          success: false, 
+          message,
+          retryInfo: response.data.retryInfo
+        }
       }
     } catch (error: any) {
       const message = error.response?.data?.message || t('generation.generationError')
-      toast.error(message)
-      return { success: false, message }
+      const retryInfo = error.response?.data?.retryInfo
+      
+      if (retryInfo) {
+        const retryMessage = t('generation.retryFailed', { attempts: retryInfo.maxRetries })
+        toast.error(`${message} ${retryMessage}`)
+      } else {
+        toast.error(message)
+      }
+      
+      return { 
+        success: false, 
+        message,
+        retryInfo
+      }
     } finally {
       generating.value = false
+      generationProgress.value = {
+        isRetrying: false,
+        currentAttempt: 0,
+        maxRetries: 3
+      }
     }
   }
 
@@ -288,6 +353,7 @@ export const useGenerationsStore = defineStore('generations', () => {
     generating,
     loading,
     statisticsLoading,
+    generationProgress,
     publicPagination,
     sortedGenerations,
     generateSentence,

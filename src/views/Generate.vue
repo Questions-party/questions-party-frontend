@@ -143,6 +143,50 @@
                 </div>
               </div>
 
+              <!-- Advanced Settings -->
+              <div class="border-t pt-4">
+                <button
+                  @click="showAdvancedSettings = !showAdvancedSettings"
+                  class="flex items-center text-sm text-secondary hover:text-primary transition-colors"
+                >
+                  <ChevronDownIcon 
+                    :class="{ 'rotate-180': showAdvancedSettings }" 
+                    class="w-4 h-4 mr-2 transition-transform" 
+                  />
+                  {{ showAdvancedSettings ? $t('generation.hideAdvanced') : $t('generation.showAdvanced') }}
+                </button>
+
+                <transition
+                  enter-active-class="transition duration-200 ease-out"
+                  enter-from-class="transform scale-95 opacity-0"
+                  enter-to-class="transform scale-100 opacity-1"
+                  leave-active-class="transition duration-200 ease-in"
+                  leave-from-class="transform scale-100 opacity-1"
+                  leave-to-class="transform scale-95 opacity-0"
+                >
+                  <div v-show="showAdvancedSettings" class="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-4">
+                    <div>
+                      <label class="block text-sm font-medium text-primary mb-2">
+                        {{ $t('generation.maxRetries') }}
+                      </label>
+                      <div class="flex items-center space-x-3">
+                        <input
+                          v-model="maxRetries"
+                          type="range"
+                          min="1"
+                          max="10"
+                          class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                        />
+                        <span class="w-8 text-center text-sm font-medium">{{ maxRetries }}</span>
+                      </div>
+                      <p class="text-xs text-secondary mt-1">
+                        {{ $t('generation.maxRetriesDesc') }}
+                      </p>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+
               <div class="flex items-center space-x-3">
                 <input
                   id="isPublic"
@@ -153,6 +197,24 @@
                 <label for="isPublic" class="text-sm font-medium text-primary">
                   {{ $t('generation.makePublic') }} - {{ $t('generation.shareWithCommunity') }}
                 </label>
+              </div>
+
+              <!-- Generation Progress -->
+              <div v-if="generationsStore.generationProgress.isRetrying" class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="flex items-center space-x-3">
+                  <div class="spinner"></div>
+                  <div>
+                    <p class="font-medium text-blue-800 dark:text-blue-200">
+                      {{ $t('generation.retrying', { 
+                        current: generationsStore.generationProgress.currentAttempt, 
+                        max: generationsStore.generationProgress.maxRetries 
+                      }) }}
+                    </p>
+                    <p class="text-sm text-blue-600 dark:text-blue-300">
+                      {{ $t('generation.formatError') }}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <button
@@ -169,13 +231,13 @@
         </div>
       </div>
 
-      <!-- Generated Result -->
+      <!-- Generated Result with Three Sections -->
       <transition
         enter-active-class="transition duration-300 ease-out"
         enter-from-class="transform scale-95 opacity-0"
         enter-to-class="transform scale-100 opacity-1"
       >
-        <div v-if="generationsStore.currentGeneration" class="space-y-4">
+        <div v-if="generationsStore.currentGeneration" class="space-y-6">
           <div class="flex justify-between items-center">
             <h3 class="text-xl font-semibold">{{ $t('generation.generatedResult') }}</h3>
             <div class="flex items-center space-x-2">
@@ -197,10 +259,83 @@
             </div>
           </div>
 
-          <GenerationCard
-            :generation="generationsStore.currentGeneration"
-            :show-actions="true"
-          />
+          <!-- Three Structured Sections -->
+          <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Section 1: Selected Words -->
+            <div class="card">
+              <div class="card-header">
+                <h4 class="text-lg font-semibold flex items-center">
+                  <BookOpenIcon class="w-5 h-5 mr-2" />
+                  {{ $t('generation.selectedWordsSection') }}
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="word in generationsStore.currentGeneration.words"
+                    :key="word"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300"
+                  >
+                    {{ word }}
+                  </span>
+                </div>
+                <div class="mt-3 text-sm text-secondary">
+                  {{ generationsStore.currentGeneration.words.length }} {{ $t('words.words') }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Generated Sentence -->
+            <div class="card">
+              <div class="card-header">
+                <h4 class="text-lg font-semibold flex items-center">
+                  <ChatBubbleLeftRightIcon class="w-5 h-5 mr-2" />
+                  {{ $t('generation.sentenceSection') }}
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="prose dark:prose-invert max-w-none">
+                  <p class="text-lg leading-relaxed">
+                    "{{ generationsStore.currentGeneration.sentence }}"
+                  </p>
+                </div>
+                <div class="mt-3 flex items-center text-sm text-secondary">
+                  <SparklesIcon class="w-4 h-4 mr-1" />
+                  {{ generationsStore.currentGeneration.aiModel || 'Qwen/QwQ-32B' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Grammar Analysis -->
+            <div class="card">
+              <div class="card-header">
+                <h4 class="text-lg font-semibold flex items-center">
+                  <AcademicCapIcon class="w-5 h-5 mr-2" />
+                  {{ $t('generation.grammarSection') }}
+                </h4>
+              </div>
+              <div class="card-body">
+                <div class="prose dark:prose-invert max-w-none text-sm">
+                  <div v-html="formatGrammarAnalysis(generationsStore.currentGeneration.explanation)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Thinking Process (if available) -->
+          <div v-if="generationsStore.currentGeneration.thinkingText" class="card">
+            <div class="card-header">
+              <h4 class="text-lg font-semibold flex items-center">
+                <CogIcon class="w-5 h-5 mr-2" />
+                AI Reasoning Process
+              </h4>
+            </div>
+            <div class="card-body">
+              <div class="prose dark:prose-invert max-w-none text-sm">
+                <pre class="whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-xs overflow-auto">{{ generationsStore.currentGeneration.thinkingText }}</pre>
+              </div>
+            </div>
+          </div>
 
           <!-- Quick Actions -->
           <div class="flex flex-col sm:flex-row gap-3">
@@ -270,7 +405,11 @@ import {
   UserIcon,
   UserPlusIcon,
   UsersIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ChevronDownIcon,
+  ChatBubbleLeftRightIcon,
+  AcademicCapIcon,
+  CogIcon
 } from '@heroicons/vue/24/outline'
 import { useGenerationsStore } from '../stores/generations.ts'
 import { useWordsStore } from '../stores/words.ts'
@@ -286,6 +425,8 @@ const toast = useToast()
 const { t } = useI18n()
 
 const isPublic = ref(true)
+const maxRetries = ref(3)
+const showAdvancedSettings = ref(false)
 
 onMounted(async () => {
   if (authStore.isAuthenticated) {
@@ -312,7 +453,8 @@ const generateSentence = async () => {
 
   const result = await generationsStore.generateSentence({
     words: selectedWordTexts,
-    isPublic: isPublic.value
+    isPublic: isPublic.value,
+    maxRetries: maxRetries.value
   })
 
   if (result.success) {
@@ -326,7 +468,8 @@ const regenerateWithSameWords = async () => {
 
   const result = await generationsStore.generateSentence({
     words: generationsStore.currentGeneration.words,
-    isPublic: isPublic.value
+    isPublic: isPublic.value,
+    maxRetries: maxRetries.value
   })
 }
 
@@ -350,6 +493,16 @@ const shareGeneration = () => {
       toast.error(t('generation.linkCopyFailed'))
     })
   }
+}
+
+const formatGrammarAnalysis = (text: string) => {
+  // Format grammar analysis with basic HTML structure
+  return text
+    .replace(/(\d+\.)/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/^/, '<p>')
+    .replace(/$/, '</p>')
 }
 </script>
 
