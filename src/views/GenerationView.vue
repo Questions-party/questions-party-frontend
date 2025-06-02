@@ -35,7 +35,7 @@
       </div>
       
       <!-- Generation Card -->
-      <GenerationCard 
+      <GenerationWordsCard
         :generation="generation" 
         :show-actions="true"
         class="mb-8"
@@ -102,7 +102,7 @@
       <div v-if="relatedGenerations.length > 0" class="mt-8">
         <h3 class="text-lg font-semibold mb-4">{{ $t('generation.relatedGenerations') }}</h3>
         <div class="grid gap-4">
-          <GenerationCard 
+          <GenerationWordsCard
             v-for="relatedGen in relatedGenerations"
             :key="relatedGen._id"
             :generation="relatedGen"
@@ -120,7 +120,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import { generationsAPI } from '../services/api.ts'
-import GenerationCard from '../components/GenerationCard.vue'
+import GenerationWordsCard from '../components/GenerationWordsCard.vue'
 
 const route = useRoute()
 const router = useRouter()

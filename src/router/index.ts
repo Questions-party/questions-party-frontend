@@ -7,6 +7,7 @@ const Login = () => import('../views/Login.vue')
 const Register = () => import('../views/Register.vue')
 const Words = () => import('../views/Words.vue')
 const Generate = () => import('../views/Generate.vue')
+const Check = () => import('../views/Check.vue')
 const Community = () => import('../views/Community.vue')
 const Profile = () => import('../views/Profile.vue')
 const AIConfig = () => import('../views/AIConfig.vue')
@@ -42,6 +43,11 @@ const routes = [
     component: Generate
   },
   {
+    path: '/check',
+    name: 'Check',
+    component: Check
+  },
+  {
     path: '/community',
     name: 'Community',
     component: Community
@@ -50,6 +56,11 @@ const routes = [
     path: '/generation/:id',
     name: 'GenerationView',
     component: GenerationView
+  },
+  {
+    path: '/check/:id',
+    name: 'SentenceCheckView',
+    component: () => import('../views/SentenceCheckView.vue')
   },
   {
     path: '/ai-config',

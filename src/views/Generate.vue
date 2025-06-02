@@ -408,7 +408,7 @@
         </div>
 
         <div class="grid grid-cols-1 gap-6">
-          <GenerationCard
+          <GenerationWordsCard
             v-for="generation in generationsStore.sortedGenerations.slice(0, 4)"
             :key="generation._id"
             :generation="generation"
@@ -457,7 +457,7 @@ import {
 import { useGenerationsStore } from '../stores/generations.ts'
 import { useWordsStore } from '../stores/words.ts'
 import { useAuthStore } from '../stores/auth.ts'
-import GenerationCard from '../components/GenerationCard.vue'
+import GenerationWordsCard from '../components/GenerationWordsCard.vue'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'

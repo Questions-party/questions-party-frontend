@@ -18,20 +18,51 @@
 
     <!-- Filters and Controls -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div class="flex items-center space-x-4">
-        <label class="text-sm font-medium text-primary whitespace-nowrap" for="sortBy">
-          {{ $t('community.sortBy') }}:
-        </label>
-        <select
-            id="sortBy"
-            v-model="currentSortBy"
-            class="input py-1 px-2 text-sm"
-            @change="handleSortChange"
-        >
-          <option value="recent">{{ $t('community.recent') }}</option>
-          <option value="liked">{{ $t('community.liked') }}</option>
-          <option value="trending">{{ $t('community.trending') }}</option>
-        </select>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <!-- Content Type Toggle -->
+        <div class="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <button
+            @click="activeContentType = 'generations'"
+            :class="[
+              'px-3 py-1 text-sm font-medium rounded-md transition-all',
+              activeContentType === 'generations'
+                ? 'bg-white dark:bg-gray-700 text-primary shadow'
+                : 'text-secondary hover:text-primary'
+            ]"
+          >
+            <SparklesIcon class="w-4 h-4 mr-1 inline" />
+            {{ $t('community.wordGenerations') }}
+          </button>
+          <button
+            @click="activeContentType = 'sentenceChecks'"
+            :class="[
+              'px-3 py-1 text-sm font-medium rounded-md transition-all',
+              activeContentType === 'sentenceChecks'
+                ? 'bg-white dark:bg-gray-700 text-primary shadow'
+                : 'text-secondary hover:text-primary'
+            ]"
+          >
+            <CheckCircleIcon class="w-4 h-4 mr-1 inline" />
+            {{ $t('community.sentenceChecks') }}
+          </button>
+        </div>
+
+        <!-- Sort Controls -->
+        <div class="flex items-center space-x-2">
+          <label class="text-sm font-medium text-primary whitespace-nowrap" for="sortBy">
+            {{ $t('community.sortBy') }}:
+          </label>
+          <select
+              id="sortBy"
+              v-model="currentSortBy"
+              class="input py-1 px-2 text-sm"
+              @change="handleSortChange"
+          >
+            <option value="recent">{{ $t('community.recent') }}</option>
+            <option value="liked">{{ $t('community.liked') }}</option>
+            <option value="trending">{{ $t('community.trending') }}</option>
+          </select>
+        </div>
       </div>
 
       <div class="flex items-center space-x-2">
@@ -88,51 +119,72 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
       <div class="card text-center">
         <div class="card-body">
-          <div v-if="generationsStore.statisticsLoading" class="text-3xl font-bold text-blue-600 mb-2">
+          <div v-if="activeContentType === 'generations' ? generationsStore.statisticsLoading : sentenceCheckStore.statisticsLoading" class="text-3xl font-bold text-blue-600 mb-2">
             <div class="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded"></div>
           </div>
-          <div v-else class="text-3xl font-bold text-blue-600 mb-2">{{ generationsStore.statistics.totalGenerations.toLocaleString() }}</div>
-          <p class="text-sm text-secondary">{{ $t('community.totalGenerations') }}</p>
+          <div v-else class="text-3xl font-bold text-blue-600 mb-2">
+            {{ activeContentType === 'generations' 
+              ? generationsStore.statistics.totalGenerations.toLocaleString() 
+              : sentenceCheckStore.statistics.totalChecks.toLocaleString() }}
+          </div>
+          <p class="text-sm text-secondary">
+            {{ activeContentType === 'generations' ? $t('community.totalGenerations') : $t('community.totalSentenceChecks') }}
+          </p>
         </div>
       </div>
       <div class="card text-center">
         <div class="card-body">
-          <div v-if="generationsStore.statisticsLoading" class="text-3xl font-bold text-green-600 mb-2">
+          <div v-if="activeContentType === 'generations' ? generationsStore.statisticsLoading : sentenceCheckStore.statisticsLoading" class="text-3xl font-bold text-green-600 mb-2">
             <div class="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded"></div>
           </div>
-          <div v-else class="text-3xl font-bold text-green-600 mb-2">{{ generationsStore.statistics.totalWords.toLocaleString() }}</div>
-          <p class="text-sm text-secondary">{{ $t('community.totalWords') }}</p>
+          <div v-else class="text-3xl font-bold text-green-600 mb-2">
+            {{ activeContentType === 'generations' 
+              ? generationsStore.statistics.totalWords.toLocaleString() 
+              : Math.round(sentenceCheckStore.statistics.avgSentenceLength) }}
+          </div>
+          <p class="text-sm text-secondary">
+            {{ activeContentType === 'generations' ? $t('community.totalWords') : $t('community.avgSentenceLength') }}
+          </p>
         </div>
       </div>
       <div class="card text-center">
         <div class="card-body">
-          <div v-if="generationsStore.statisticsLoading" class="text-3xl font-bold text-purple-600 mb-2">
+          <div v-if="activeContentType === 'generations' ? generationsStore.statisticsLoading : sentenceCheckStore.statisticsLoading" class="text-3xl font-bold text-purple-600 mb-2">
             <div class="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded"></div>
           </div>
-          <div v-else class="text-3xl font-bold text-purple-600 mb-2">{{ generationsStore.statistics.totalLikes.toLocaleString() }}</div>
+          <div v-else class="text-3xl font-bold text-purple-600 mb-2">
+            {{ activeContentType === 'generations' 
+              ? generationsStore.statistics.totalLikes.toLocaleString() 
+              : sentenceCheckStore.statistics.totalLikes.toLocaleString() }}
+          </div>
           <p class="text-sm text-secondary">{{ $t('community.totalLikes') }}</p>
         </div>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="generationsStore.loading && generationsStore.publicGenerations.length === 0" class="text-center py-12">
+    <div v-if="isLoading && getCurrentContent().length === 0" class="text-center py-12">
       <div class="spinner-lg mx-auto mb-4"></div>
       <p class="text-secondary">{{ $t('common.loading') }}...</p>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="generationsStore.publicGenerations.length === 0" class="text-center py-12">
+    <div v-else-if="getCurrentContent().length === 0" class="text-center py-12">
       <UsersIcon class="w-16 h-16 text-gray-400 mx-auto mb-4"/>
-      <h3 class="text-lg font-medium text-primary mb-2">{{ $t('community.noGenerations') }}</h3>
-      <p class="text-secondary mb-4">{{ $t('community.beFirstToShare') }}</p>
+      <h3 class="text-lg font-medium text-primary mb-2">
+        {{ activeContentType === 'generations' ? $t('community.noGenerations') : $t('community.noSentenceChecks') }}
+      </h3>
+      <p class="text-secondary mb-4">
+        {{ activeContentType === 'generations' ? $t('community.beFirstToShare') : $t('community.beFirstToCheck') }}
+      </p>
       <router-link
           v-if="authStore.isAuthenticated"
           class="btn btn-primary"
-          to="/generate"
+          :to="activeContentType === 'generations' ? '/generate' : '/check'"
       >
-        <SparklesIcon class="w-4 h-4 mr-2"/>
-        {{ $t('generation.createNew') }}
+        <SparklesIcon v-if="activeContentType === 'generations'" class="w-4 h-4 mr-2"/>
+        <CheckCircleIcon v-else class="w-4 h-4 mr-2"/>
+        {{ activeContentType === 'generations' ? $t('generation.createNew') : $t('sentenceCheck.checkNewSentence') }}
       </router-link>
       <router-link
           v-else
@@ -143,37 +195,73 @@
       </router-link>
     </div>
 
-    <!-- Generations Feed -->
+    <!-- Content Feed -->
     <div v-else class="space-y-6">
-      <GenerationCard
-          v-for="generation in generationsStore.publicGenerations"
-          :key="generation._id"
-          :generation="generation"
-          :show-actions="true"
-      />
+      <!-- Word Generations -->
+      <template v-if="activeContentType === 'generations'">
+        <GenerationWordsCard
+            v-for="generation in generationsStore.publicGenerations"
+            :key="generation._id"
+            :generation="generation"
+            :show-actions="true"
+        />
+        
+        <!-- Load More Button for Generations -->
+        <div v-if="generationsStore.publicPagination.hasNext" class="text-center">
+          <button
+              :disabled="generationsStore.loading"
+              class="btn btn-secondary"
+              @click="loadMoreGenerations"
+          >
+            <div v-if="generationsStore.loading" class="spinner mr-2"></div>
+            {{ $t('community.loadMore') }}
+          </button>
+        </div>
 
-      <!-- Load More Button -->
-      <div v-if="generationsStore.publicPagination.hasNext" class="text-center">
-        <button
-            :disabled="generationsStore.loading"
-            class="btn btn-secondary"
-            @click="loadMore"
-        >
-          <div v-if="generationsStore.loading" class="spinner mr-2"></div>
-          {{ $t('community.loadMore') }}
-        </button>
-      </div>
+        <!-- End of Feed for Generations -->
+        <div v-else-if="generationsStore.publicGenerations.length > 0" class="text-center py-8">
+          <p class="text-secondary">{{ $t('community.endOfFeed') }}</p>
+          <button
+              class="btn btn-ghost mt-2"
+              @click="refreshContent"
+          >
+            {{ $t('common.refresh') }}
+          </button>
+        </div>
+      </template>
 
-      <!-- End of Feed -->
-      <div v-else-if="generationsStore.publicGenerations.length > 0" class="text-center py-8">
-        <p class="text-secondary">{{ $t('community.endOfFeed') }}</p>
-        <button
-            class="btn btn-ghost mt-2"
-            @click="refreshGenerations"
-        >
-          {{ $t('common.refresh') }}
-        </button>
-      </div>
+      <!-- Sentence Checks -->
+      <template v-else>
+        <GenerationSentenceCard
+            v-for="sentenceCheck in sentenceCheckStore.publicSentenceChecks"
+            :key="sentenceCheck._id"
+            :sentence-check="sentenceCheck"
+            :show-actions="true"
+        />
+        
+        <!-- Load More Button for Sentence Checks -->
+        <div v-if="sentenceCheckStore.publicPagination.hasNext" class="text-center">
+          <button
+              :disabled="sentenceCheckStore.loading"
+              class="btn btn-secondary"
+              @click="loadMoreSentenceChecks"
+          >
+            <div v-if="sentenceCheckStore.loading" class="spinner mr-2"></div>
+            {{ $t('community.loadMore') }}
+          </button>
+        </div>
+
+        <!-- End of Feed for Sentence Checks -->
+        <div v-else-if="sentenceCheckStore.publicSentenceChecks.length > 0" class="text-center py-8">
+          <p class="text-secondary">{{ $t('community.endOfFeed') }}</p>
+          <button
+              class="btn btn-ghost mt-2"
+              @click="refreshContent"
+          >
+            {{ $t('common.refresh') }}
+          </button>
+        </div>
+      </template>
     </div>
 
     <!-- Enhanced Call to Action for Guest Users -->
@@ -218,16 +306,51 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue'
-import {AcademicCapIcon, ArrowPathIcon, EyeIcon, SparklesIcon, UserPlusIcon, UsersIcon} from '@heroicons/vue/24/outline'
+import {onMounted, ref, computed, watch} from 'vue'
+import {AcademicCapIcon, ArrowPathIcon, EyeIcon, SparklesIcon, UserPlusIcon, UsersIcon, CheckCircleIcon} from '@heroicons/vue/24/outline'
 import {useGenerationsStore} from '../stores/generations.ts'
+import {useSentenceCheckStore} from '../stores/sentenceCheck.ts'
 import {useAuthStore} from '../stores/auth.ts'
-import GenerationCard from '../components/GenerationCard.vue'
+import GenerationWordsCard from '../components/GenerationWordsCard.vue'
+import GenerationSentenceCard from '../components/GenerationSentenceCard.vue'
 
 const generationsStore = useGenerationsStore()
+const sentenceCheckStore = useSentenceCheckStore()
 const authStore = useAuthStore()
 
 const currentSortBy = ref('recent')
+const activeContentType = ref('generations')
+
+const isLoading = computed(() => {
+  if (activeContentType.value === 'generations') {
+    return generationsStore.loading
+  } else {
+    return sentenceCheckStore.loading
+  }
+})
+
+const getCurrentContent = () => {
+  if (activeContentType.value === 'generations') {
+    return generationsStore.publicGenerations
+  } else {
+    return sentenceCheckStore.publicSentenceChecks
+  }
+}
+
+// Watch for content type changes and load appropriate data
+watch(activeContentType, async (newType) => {
+  if (newType === 'generations') {
+    await Promise.all([
+      loadGenerations(),
+      generationsStore.fetchStatistics()
+    ])
+  } else {
+    await Promise.all([
+      loadSentenceChecks(),
+      sentenceCheckStore.fetchStatistics()
+    ])
+  }
+}, { immediate: false })
 
 onMounted(async () => {
   await Promise.all([
@@ -240,18 +363,51 @@ const loadGenerations = async () => {
   await generationsStore.fetchPublicGenerations(1, currentSortBy.value)
 }
 
+const loadSentenceChecks = async () => {
+  await sentenceCheckStore.fetchPublicSentenceChecks(1, currentSortBy.value)
+}
+
 const handleSortChange = async () => {
-  await generationsStore.refreshPublicGenerations(currentSortBy.value)
+  if (activeContentType.value === 'generations') {
+    await generationsStore.refreshPublicGenerations(currentSortBy.value)
+  } else {
+    await sentenceCheckStore.refreshPublicSentenceChecks(currentSortBy.value)
+  }
 }
 
 const refreshGenerations = async () => {
-  await Promise.all([
-    generationsStore.refreshPublicGenerations(currentSortBy.value),
-    generationsStore.fetchStatistics()
-  ])
+  if (activeContentType.value === 'generations') {
+    await Promise.all([
+      generationsStore.refreshPublicGenerations(currentSortBy.value),
+      generationsStore.fetchStatistics()
+    ])
+  } else {
+    await Promise.all([
+      sentenceCheckStore.refreshPublicSentenceChecks(currentSortBy.value),
+      sentenceCheckStore.fetchStatistics()
+    ])
+  }
 }
 
-const loadMore = async () => {
+const loadMoreGenerations = async () => {
   await generationsStore.loadMorePublicGenerations(currentSortBy.value)
+}
+
+const loadMoreSentenceChecks = async () => {
+  await sentenceCheckStore.loadMorePublicSentenceChecks(currentSortBy.value)
+}
+
+const refreshContent = async () => {
+  if (activeContentType.value === 'generations') {
+    await Promise.all([
+      generationsStore.refreshPublicGenerations(currentSortBy.value),
+      generationsStore.fetchStatistics()
+    ])
+  } else {
+    await Promise.all([
+      sentenceCheckStore.refreshPublicSentenceChecks(currentSortBy.value),
+      sentenceCheckStore.fetchStatistics()
+    ])
+  }
 }
 </script> 

@@ -12,7 +12,7 @@ const statistics = ref<GlobalStatistics | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-export function useStatistics() {
+export function statistics() {
   const fetchStatistics = async () => {
     if (loading.value) return
     

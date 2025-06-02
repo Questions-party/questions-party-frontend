@@ -143,3 +143,29 @@ export const statisticsAPI = {
   getPublicStats: () => api.get('/generations/public/stats'),
   getGlobalStats: () => api.get('/statistics')
 }
+
+export const sentenceCheckAPI = {
+  checkSentence: (data: { 
+    sentence: string; 
+    isPublic?: boolean; 
+    maxRetries?: number; 
+    grammarLanguage?: string 
+  }) => api.post('/check', data),
+  
+  getUserSentenceChecks: (params?: any) => api.get('/checks', { params }),
+  
+  getPublicSentenceChecks: (params?: any) => api.get('/checks/public', { params }),
+  
+  getSentenceCheck: (id: string) => api.get(`/checks/${id}`),
+  
+  toggleLike: (id: string) => api.post(`/checks/${id}/like`),
+  
+  updatePrivacy: (id: string, isPublic: boolean) =>
+    api.put(`/checks/${id}/privacy`, { isPublic }),
+  
+  deleteSentenceCheck: (id: string) => api.delete(`/checks/${id}`),
+  
+  deleteAllSentenceChecks: () => api.delete('/checks/all'),
+  
+  getStatistics: () => api.get('/checks/public/stats')
+}

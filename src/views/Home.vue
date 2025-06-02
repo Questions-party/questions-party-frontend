@@ -222,12 +222,12 @@ import {
   CheckCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth.ts'
-import { useStatistics } from '../stores/useStatistics.ts'
+import { statistics } from '../stores/statistics.ts'
 
 const authStore = useAuthStore()
 
 // Statistics composable
-const { formattedStats, loading: statisticsLoading, fetchStatistics } = useStatistics()
+const { formattedStats, loading: statisticsLoading, fetchStatistics } = statistics()
 
 // Fetch statistics when component mounts
 onMounted(() => {

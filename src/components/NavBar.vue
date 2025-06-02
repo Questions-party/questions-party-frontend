@@ -40,6 +40,14 @@
           </router-link>
           
           <router-link
+            to="/check"
+            class="nav-link"
+            :class="{ active: $route.name === 'Check' }"
+          >
+            {{ $t('nav.check') }}
+          </router-link>
+          
+          <router-link
             to="/generate"
             class="nav-link"
             :class="{ active: $route.name === 'Generate' }"
@@ -178,6 +186,15 @@
               @click="mobileMenuOpen = false"
             >
               {{ $t('nav.community') }}
+            </router-link>
+            
+            <router-link
+              to="/check"
+              class="block nav-link"
+              :class="{ active: $route.name === 'Check' }"
+              @click="mobileMenuOpen = false"
+            >
+              {{ $t('nav.check') }}
             </router-link>
             
             <router-link

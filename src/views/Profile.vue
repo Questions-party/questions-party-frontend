@@ -14,7 +14,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
       <div class="card text-center">
         <div class="card-body">
           <div class="text-3xl font-bold text-blue-600 mb-2">{{ wordsStore.stats?.totalWords || wordsStore.words.length }}</div>
@@ -25,6 +25,12 @@
         <div class="card-body">
           <div class="text-3xl font-bold text-green-600 mb-2">{{ generationsStore.generations.length }}</div>
           <p class="text-sm text-secondary">{{ $t('profile.totalGenerations') }}</p>
+        </div>
+      </div>
+      <div class="card text-center">
+        <div class="card-body">
+          <div class="text-3xl font-bold text-emerald-600 mb-2">{{ sentenceCheckStore.userSentenceChecks.length }}</div>
+          <p class="text-sm text-secondary">{{ $t('profile.totalSentenceChecks') }}</p>
         </div>
       </div>
       <div class="card text-center">
@@ -133,19 +139,49 @@
     <!-- Recent Generations -->
     <div class="space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-xl font-semibold">{{ $t('generation.yourRecentGenerations') }}</h3>
+        <div class="flex items-center space-x-4">
+          <h3 class="text-xl font-semibold">{{ $t('profile.yourContent') }}</h3>
+          
+          <!-- Content Type Toggle -->
+          <div class="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <button
+              @click="activeContentType = 'generations'"
+              :class="[
+                'px-3 py-1 text-sm font-medium rounded-md transition-all',
+                activeContentType === 'generations'
+                  ? 'bg-white dark:bg-gray-700 text-primary shadow'
+                  : 'text-secondary hover:text-primary'
+              ]"
+            >
+              <SparklesIcon class="w-4 h-4 mr-1 inline" />
+              {{ $t('profile.generations') }}
+            </button>
+            <button
+              @click="activeContentType = 'sentenceChecks'"
+              :class="[
+                'px-3 py-1 text-sm font-medium rounded-md transition-all',
+                activeContentType === 'sentenceChecks'
+                  ? 'bg-white dark:bg-gray-700 text-primary shadow'
+                  : 'text-secondary hover:text-primary'
+              ]"
+            >
+              <CheckCircleIcon class="w-4 h-4 mr-1 inline" />
+              {{ $t('profile.sentenceChecks') }}
+            </button>
+          </div>
+        </div>
         <router-link to="/generate" class="btn btn-primary btn-sm">
           <SparklesIcon class="w-4 h-4 mr-1" />
           {{ $t('profile.createNew') }}
         </router-link>
       </div>
 
-      <div v-if="generationsStore.loading" class="text-center py-8">
+      <div v-if="isLoading" class="text-center py-8">
         <div class="spinner-lg mx-auto mb-4"></div>
         <p class="text-secondary">{{ $t('common.loading') }}...</p>
       </div>
 
-      <div v-else-if="generationsStore.generations.length === 0" class="text-center py-12">
+      <div v-else-if="getCurrentContent().length === 0" class="text-center py-12">
         <SparklesIcon class="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <h3 class="text-lg font-medium text-primary mb-2">{{ $t('profile.noGenerationsYet') }}</h3>
         <p class="text-secondary mb-4">{{ $t('profile.startCreating') }}</p>
@@ -155,27 +191,27 @@
       </div>
 
       <div v-else class="grid grid-cols-1 gap-6">
-        <GenerationCard
-          v-for="generation in generationsStore.sortedGenerations.slice(0, 6)"
+        <GenerationWordsCard
+          v-for="generation in getCurrentContent().slice(0, 6)"
           :key="generation._id"
           :generation="generation"
           :show-actions="true"
         />
       </div>
 
-      <div v-if="generationsStore.generations.length > 6" class="text-center">
+      <div v-if="getCurrentContent().length > 6" class="text-center">
         <button
           @click="showAllGenerations = !showAllGenerations"
           class="btn btn-ghost"
         >
-          {{ showAllGenerations ? 'Show Less' : `View All ${generationsStore.generations.length} Generations` }}
+          {{ showAllGenerations ? 'Show Less' : `View All ${getCurrentContent().length} ${getContentTypeName()}` }}
         </button>
       </div>
 
       <!-- All Generations (when expanded) -->
-      <div v-if="showAllGenerations && generationsStore.generations.length > 6" class="grid grid-cols-1 gap-6">
-        <GenerationCard
-          v-for="generation in generationsStore.sortedGenerations.slice(6)"
+      <div v-if="showAllGenerations && getCurrentContent().length > 6" class="grid grid-cols-1 gap-6">
+        <GenerationWordsCard
+          v-for="generation in getCurrentContent().slice(6)"
           :key="generation._id"
           :generation="generation"
           :show-actions="true"
@@ -211,8 +247,8 @@
           <button
             @click="showDeleteAllDialog = true"
             class="btn btn-sm"
-            :class="generationsStore.generations.length > 0 ? 'btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'btn-ghost opacity-50 cursor-not-allowed'"
-            :disabled="generationsStore.generations.length === 0"
+            :class="getCurrentContent().length > 0 ? 'btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'btn-ghost opacity-50 cursor-not-allowed'"
+            :disabled="getCurrentContent().length === 0"
           >
             <TrashIcon class="w-4 h-4 mr-1" />
             {{ $t('common.delete') }}
@@ -258,17 +294,20 @@ import {
   SparklesIcon,
   ArrowDownTrayIcon,
   ArrowRightOnRectangleIcon,
-  TrashIcon
+  TrashIcon,
+  CheckCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '../stores/auth.ts'
 import { useWordsStore } from '../stores/words.ts'
 import { useGenerationsStore } from '../stores/generations.ts'
 import { useThemeStore } from '../stores/theme.ts'
 import { useToast } from 'vue-toastification'
-import GenerationCard from '../components/GenerationCard.vue'
+import GenerationWordsCard from '../components/GenerationWordsCard.vue'
+import GenerationSentenceCard from '../components/GenerationSentenceCard.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { useI18n } from 'vue-i18n'
 import { generationsAPI } from '../services/api.ts'
+import { useSentenceCheckStore } from '../stores/sentenceCheck.ts'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -277,10 +316,12 @@ const generationsStore = useGenerationsStore()
 const themeStore = useThemeStore()
 const toast = useToast()
 const { t } = useI18n()
+const sentenceCheckStore = useSentenceCheckStore()
 
 const showAllGenerations = ref(false)
 const showDeleteAllDialog = ref(false)
 const deleteAllLoading = ref(false)
+const activeContentType = ref('generations')
 
 const preferences = reactive({
   showPublicGenerations: authStore.user?.preferences?.showPublicGenerations ?? true,
@@ -288,15 +329,37 @@ const preferences = reactive({
 })
 
 const totalLikes = computed(() => {
-  return generationsStore.generations.reduce((total, gen) => total + gen.likeCount, 0)
+  return generationsStore.generations.reduce((total, gen) => total + gen.likeCount, 0) +
+         sentenceCheckStore.userSentenceChecks.reduce((total, check) => total + check.likeCount, 0)
 })
+
+const isLoading = computed(() => {
+  if (activeContentType.value === 'generations') {
+    return generationsStore.loading
+  } else {
+    return sentenceCheckStore.loading
+  }
+})
+
+const getCurrentContent = () => {
+  if (activeContentType.value === 'generations') {
+    return generationsStore.sortedGenerations
+  } else {
+    return sentenceCheckStore.sortedSentenceChecks
+  }
+}
+
+const getContentTypeName = () => {
+  return activeContentType.value === 'generations' ? 'Generations' : 'Sentence Checks'
+}
 
 onMounted(async () => {
   // Fetch user data
   Promise.all([
     wordsStore.fetchWords(),
     wordsStore.fetchStats(),
-    generationsStore.fetchUserGenerations()
+    generationsStore.fetchUserGenerations(),
+    sentenceCheckStore.fetchUserSentenceChecks()
   ]).catch(error => {
     console.error('Failed to fetch user data:', error)
   })
