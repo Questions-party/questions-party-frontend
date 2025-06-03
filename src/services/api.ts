@@ -94,8 +94,16 @@ export const wordsAPI = {
 }
 
 export const generationsAPI = {
-  generate: (data: { words: string[]; isPublic?: boolean }) =>
-    api.post('/generate', data),
+  generate: (data: { 
+    words: string[]; 
+    isPublic?: boolean; 
+    maxRetries?: number; 
+    grammarLanguage?: string;
+    signal?: AbortSignal 
+  }) => {
+    const { signal, ...requestData } = data
+    return api.post('/generate', requestData, { signal })
+  },
   
   getUserGenerations: (params?: any) => api.get('/generations', { params }),
   
@@ -149,8 +157,12 @@ export const sentenceCheckAPI = {
     sentence: string; 
     isPublic?: boolean; 
     maxRetries?: number; 
-    grammarLanguage?: string 
-  }) => api.post('/check', data),
+    grammarLanguage?: string;
+    signal?: AbortSignal 
+  }) => {
+    const { signal, ...requestData } = data
+    return api.post('/check', requestData, { signal })
+  },
   
   getUserSentenceChecks: (params?: any) => api.get('/checks', { params }),
   

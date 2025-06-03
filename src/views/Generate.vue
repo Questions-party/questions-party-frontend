@@ -6,12 +6,6 @@
       <p class="text-secondary max-w-2xl mx-auto">
         {{ $t('generation.selectWords') }}
       </p>
-      <div class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 dark:from-purple-900/20 dark:to-blue-900/20 dark:text-purple-300">
-        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-        </svg>
-        {{ $t('generation.poweredBy') }}
-      </div>
     </div>
 
     <!-- Authentication Required Notice -->
@@ -245,20 +239,62 @@
               </div>
 
               <!-- Generation Progress -->
-              <div v-if="generationsStore.generationProgress.isRetrying" class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div v-if="generationsStore.generating || generationsStore.generationProgress.isGenerating" class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div class="flex items-center space-x-3">
                   <div class="spinner"></div>
-                  <div>
-                    <p class="font-medium text-blue-800 dark:text-blue-200">
-                      {{ $t('generation.retrying', { 
-                        current: generationsStore.generationProgress.currentAttempt, 
-                        max: generationsStore.generationProgress.maxRetries 
-                      }) }}
-                    </p>
-                    <p class="text-sm text-blue-600 dark:text-blue-300">
-                      {{ $t('generation.formatError') }}
-                    </p>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                      <p class="font-medium text-blue-800 dark:text-blue-200">
+                        <span v-if="generationsStore.generationProgress.isRetrying">
+                          {{ $t('generation.retrying', { 
+                            current: generationsStore.generationProgress.currentAttempt, 
+                            max: generationsStore.generationProgress.maxRetries 
+                          }) }}
+                        </span>
+                        <span v-else>
+                          {{ $t('generation.generating') }}
+                        </span>
+                      </p>
+                      <span class="text-sm text-blue-600 dark:text-blue-300 font-mono">
+                        {{ formatElapsedTime(generationsStore.generationProgress.elapsedTime) }}
+                      </span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2 mb-2">
+                      <div 
+                        class="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
+                        :style="{ width: `${Math.min((generationsStore.generationProgress.currentAttempt / generationsStore.generationProgress.maxRetries) * 100, 100)}%` }"
+                      ></div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-blue-600 dark:text-blue-300">
+                        <span v-if="generationsStore.generationProgress.isRetrying">
+                          {{ $t('generation.formatError') }}
+                        </span>
+                        <span v-else>
+                          {{ $t('generation.currentAttempt', { 
+                            current: generationsStore.generationProgress.currentAttempt, 
+                            max: generationsStore.generationProgress.maxRetries 
+                          }) }}
+                        </span>
+                      </span>
+                      <span class="text-blue-500 dark:text-blue-400 text-xs">
+                        {{ $t('generation.aiModel') }}: Qwen/QwQ-32B
+                      </span>
+                    </div>
                   </div>
+                  
+                  <!-- Cancel Button -->
+                  <button
+                    v-if="generationsStore.generationProgress.canCancel"
+                    @click="generationsStore.cancelGeneration()"
+                    class="btn btn-ghost btn-sm text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  >
+                    <XMarkIcon class="w-4 h-4 mr-1" />
+                    {{ $t('generation.cancel') }}
+                  </button>
                 </div>
               </div>
 
@@ -377,6 +413,27 @@
               <div class="prose dark:prose-invert max-w-none text-sm">
                 <pre class="whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-xs overflow-auto">{{ generationsStore.currentGeneration.thinkingText }}</pre>
               </div>
+            </div>
+          </div>
+
+          <!-- Raw AI Response (if available and parsing failed/partial) -->
+          <div v-if="generationsStore.currentGeneration.rawResponseContent" class="card">
+            <div class="card-header">
+              <h4 class="text-lg font-semibold flex items-center">
+                <CogIcon class="w-5 h-5 mr-2" />
+                Raw AI Response
+                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+                  Parsing Issues Detected
+                </span>
+              </h4>
+            </div>
+            <div class="card-body">
+              <div class="prose dark:prose-invert max-w-none text-sm">
+                <pre class="whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-xs overflow-auto max-h-60">{{ generationsStore.currentGeneration.rawResponseContent }}</pre>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                This is the original AI response. The parsing extracted what it could from the structured format above.
+              </p>
             </div>
           </div>
 
@@ -562,6 +619,13 @@ const shareGeneration = () => {
 
 const parseMarkdown = (text: string) => {
   return marked(text || '')
+}
+
+const formatElapsedTime = (elapsedTime: number) => {
+  const hours = Math.floor(elapsedTime / 3600)
+  const minutes = Math.floor((elapsedTime % 3600) / 60)
+  const seconds = Math.floor(elapsedTime % 60)
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 </script>
 

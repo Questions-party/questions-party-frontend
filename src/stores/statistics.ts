@@ -8,7 +8,7 @@ export interface GlobalStatistics {
   totalUniqueWords: number
 }
 
-const statistics = ref<GlobalStatistics | null>(null)
+const statisticalData = ref<GlobalStatistics | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -23,16 +23,16 @@ export function statistics() {
       const response = await statisticsAPI.getGlobalStats()
       
       if (response.data.success) {
-        statistics.value = response.data.statistics
+        statisticalData.value = response.data.statistics
       } else {
-        throw new Error('Failed to fetch statistics')
+        throw new Error('Failed to fetch statisticalData')
       }
     } catch (err) {
-      console.error('Error fetching statistics:', err)
-      error.value = 'Failed to load statistics'
+      console.error('Error fetching statisticalData:', err)
+      error.value = 'Failed to load statisticalData'
       
       // Provide fallback data
-      statistics.value = {
+      statisticalData.value = {
         totalUsers: 0,
         totalGenerations: 0,
         totalWords: 0,
@@ -45,12 +45,12 @@ export function statistics() {
 
   // Computed properties for formatted display
   const formattedStats = computed(() => {
-    if (!statistics.value) return null
+    if (!statisticalData.value) return null
     
     return {
-      activeLearners: formatNumber(statistics.value.totalUsers),
-      aiGeneratedSentences: formatNumber(statistics.value.totalGenerations),
-      wordsPracticed: formatNumber(statistics.value.totalWords)
+      activeLearners: formatNumber(statisticalData.value.totalUsers),
+      aiGeneratedSentences: formatNumber(statisticalData.value.totalGenerations),
+      wordsPracticed: formatNumber(statisticalData.value.totalWords)
     }
   })
 
@@ -64,7 +64,7 @@ export function statistics() {
   }
 
   return {
-    statistics: computed(() => statistics.value),
+    statistics: computed(() => statisticalData.value),
     formattedStats,
     loading: computed(() => loading.value),
     error: computed(() => error.value),

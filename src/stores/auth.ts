@@ -12,6 +12,7 @@ interface User {
         theme?: string
         language?: string
         showPublicGenerations?: boolean
+        grammarExplanationLanguage?: string
         fontSettings?: {
             size?: string
             weight?: string

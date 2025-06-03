@@ -50,7 +50,7 @@
             <textarea
               v-model="inputSentence"
               :placeholder="$t('sentenceCheck.sentencePlaceholder')"
-              class="w-full h-32 px-4 py-3 border border-color rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full h-32 px-4 py-3 border border-color rounded-lg resize-none outline-none bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': inputSentence.length > 800 }"
               maxlength="800"
             ></textarea>
@@ -174,20 +174,62 @@
           </div>
 
           <!-- Check Progress -->
-          <div v-if="sentenceCheckStore.checkProgress.isRetrying" class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div v-if="sentenceCheckStore.checking || sentenceCheckStore.checkProgress.isChecking" class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
             <div class="flex items-center space-x-3">
               <div class="spinner"></div>
-              <div>
-                <p class="font-medium text-blue-800 dark:text-blue-200">
-                  {{ $t('sentenceCheck.retrying', { 
-                    current: sentenceCheckStore.checkProgress.currentAttempt, 
-                    max: sentenceCheckStore.checkProgress.maxRetries 
-                  }) }}
-                </p>
-                <p class="text-sm text-blue-600 dark:text-blue-300">
-                  {{ $t('sentenceCheck.formatError') }}
-                </p>
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="font-medium text-green-800 dark:text-green-200">
+                    <span v-if="sentenceCheckStore.checkProgress.isRetrying">
+                      {{ $t('sentenceCheck.retrying', { 
+                        current: sentenceCheckStore.checkProgress.currentAttempt, 
+                        max: sentenceCheckStore.checkProgress.maxRetries 
+                      }) }}
+                    </span>
+                    <span v-else>
+                      {{ $t('sentenceCheck.checking') }}
+                    </span>
+                  </p>
+                  <span class="text-sm text-green-600 dark:text-green-300 font-mono">
+                    {{ formatElapsedTime(sentenceCheckStore.checkProgress.elapsedTime) }}
+                  </span>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-green-200 dark:bg-green-800 rounded-full h-2 mb-2">
+                  <div 
+                    class="bg-green-600 dark:bg-green-400 h-2 rounded-full transition-all duration-300"
+                    :style="{ width: `${Math.min((sentenceCheckStore.checkProgress.currentAttempt / sentenceCheckStore.checkProgress.maxRetries) * 100, 100)}%` }"
+                  ></div>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-green-600 dark:text-green-300">
+                    <span v-if="sentenceCheckStore.checkProgress.isRetrying">
+                      {{ $t('sentenceCheck.formatError') }}
+                    </span>
+                    <span v-else>
+                      {{ $t('sentenceCheck.currentAttempt', { 
+                        current: sentenceCheckStore.checkProgress.currentAttempt, 
+                        max: sentenceCheckStore.checkProgress.maxRetries 
+                      }) }}
+                    </span>
+                  </span>
+                  <span class="text-green-500 dark:text-green-400 text-xs">
+                    {{ $t('sentenceCheck.aiModel') }}: Qwen/QwQ-32B
+                  </span>
+                </div>
               </div>
+              
+              <!-- Cancel Button -->
+              <button
+                v-if="sentenceCheckStore.checkProgress.canCancel"
+                @click="sentenceCheckStore.cancelCheck()"
+                class="btn btn-ghost btn-sm text-red-600 hover:text-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+              >
+                <XMarkIcon class="w-4 h-4 mr-1" />
+                {{ $t('sentenceCheck.cancel') }}
+              </button>
             </div>
           </div>
 
@@ -334,7 +376,8 @@ import {
   UsersIcon,
   ArrowPathIcon,
   ShareIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
 import { useSentenceCheckStore } from '../stores/sentenceCheck.ts'
 import { useAuthStore } from '../stores/auth.ts'
@@ -433,6 +476,13 @@ const shareSentenceCheck = () => {
       toast.error(t('sentenceCheck.linkCopyFailed'))
     })
   }
+}
+
+const formatElapsedTime = (elapsedTime: number) => {
+  const hours = Math.floor(elapsedTime / 3600)
+  const minutes = Math.floor((elapsedTime % 3600) / 60)
+  const seconds = Math.floor(elapsedTime % 60)
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 </script>
 

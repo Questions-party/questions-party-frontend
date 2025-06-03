@@ -198,7 +198,12 @@
     "pureEnglishDesc": "Grammar explanations provided entirely in English",
     "recommended": "Recommended",
     "languageOptionSaved": "Language preference saved successfully",
-    "chineseTranslation": "Chinese Translation"
+    "chineseTranslation": "Chinese Translation",
+    "elapsedTime": "Elapsed: {time}",
+    "processingTime": "Processing time",
+    "cancel": "Cancel",
+    "cancelled": "Generation cancelled",
+    "retryAttempt": "Retrying... (Attempt {attempt}/{max})"
   },
   "community": {
     "title": "Community",
@@ -237,12 +242,16 @@
     "title": "Profile Settings",
     "preferences": "Preferences",
     "theme": "Theme",
+    "themeDescription": "Choose your preferred theme",
     "light": "Light",
     "dark": "Dark",
     "language": "Language",
+    "languageDescription": "Choose your interface language",
+    "grammarLanguageDescription": "Choose how grammar explanations are provided",
     "english": "English",
     "chinese": "中文",
     "showPublicGenerations": "Show in Community",
+    "showPublicGenerationsDescription": "Allow your generations to appear in the community feed",
     "updateProfile": "Update Profile",
     "profileUpdated": "Profile updated successfully",
     "statistics": "Your Statistics",
@@ -261,6 +270,7 @@
     "viewAll": "View All {count} {type}",
     "accountActions": "Account Actions",
     "exportData": "Export Data",
+    "exportButton": "Export",
     "downloadAll": "Download all your words and generations",
     "deleteAllGenerations": "Delete All Generations",
     "deleteAllGenerationsDesc": "Permanently remove all your generations",
@@ -552,6 +562,10 @@
     "joinDesc": "Join our community to check your own sentences and get personalized AI feedback.",
     "aiAnalysis": "AI-Powered Analysis",
     "grammarCorrections": "Grammar Corrections",
-    "communityLearning": "Community Learning"
+    "communityLearning": "Community Learning",
+    "cancel": "Cancel",
+    "cancelled": "Sentence check cancelled",
+    "retryAttempt": "Retrying... (Attempt {attempt}/{max})",
+    "retryFailed": "Failed after {attempts} attempts"
   }
 } 

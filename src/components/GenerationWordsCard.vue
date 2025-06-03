@@ -3,7 +3,8 @@
     <div class="card-header">
       <div class="flex justify-between items-start">
         <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+          <div
+              class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
             <span class="text-white font-bold text-xs">
               {{ generation.userId.username.charAt(0).toUpperCase() }}
             </span>
@@ -13,61 +14,62 @@
             <p class="text-xs text-muted">{{ formatDate(generation.createdAt) }}</p>
           </div>
         </div>
-        
+
         <div v-if="showActions && authStore.isAuthenticated" class="flex items-center space-x-2">
           <!-- Font Configuration Toggle -->
           <button
-            @click="showFontConfig = !showFontConfig"
-            class="p-1 rounded-md hover:bg-tertiary transition-colors"
-            :class="{ 'bg-tertiary': showFontConfig }"
-            title="Font Settings"
+              :class="{ 'bg-tertiary': showFontConfig }"
+              class="p-1 rounded-md hover:bg-tertiary transition-colors"
+              title="Font Settings"
+              @click="showFontConfig = !showFontConfig"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
+              <path
+                  d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
             </svg>
           </button>
-          
+
           <button
-            @click="toggleLike"
-            :disabled="likingInProgress"
-            class="flex items-center space-x-1 text-sm hover:bg-tertiary rounded-md px-2 py-1 transition-colors"
-            :class="{ 'text-red-500': isLiked }"
+              :class="{ 'text-red-500': isLiked }"
+              :disabled="likingInProgress"
+              class="flex items-center space-x-1 text-sm hover:bg-tertiary rounded-md px-2 py-1 transition-colors"
+              @click="toggleLike"
           >
-            <HeartIcon 
-              class="w-4 h-4" 
-              :class="{ 'fill-current': isLiked }"
+            <HeartIcon
+                :class="{ 'fill-current': isLiked }"
+                class="w-4 h-4"
             />
             <span>{{ generation.likeCount }}</span>
           </button>
-          
+
           <!-- More options for own generations -->
           <Menu v-if="isOwnGeneration" as="div" class="relative">
             <MenuButton class="p-1 rounded-md hover:bg-tertiary transition-colors">
-              <EllipsisVerticalIcon class="w-4 h-4" />
+              <EllipsisVerticalIcon class="w-4 h-4"/>
             </MenuButton>
-            
+
             <transition
-              enter-active-class="transition duration-100 ease-out"
-              enter-from-class="transform scale-95 opacity-0"
-              enter-to-class="transform scale-100 opacity-1"
-              leave-active-class="transition duration-75 ease-in"
-              leave-from-class="transform scale-100 opacity-1"
-              leave-to-class="transform scale-95 opacity-0"
+                enter-active-class="transition duration-100 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-1"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="transform scale-100 opacity-1"
+                leave-to-class="transform scale-95 opacity-0"
             >
               <MenuItems class="absolute right-0 mt-2 w-48 bg-primary border border-color rounded-md shadow-lg z-10">
                 <div class="py-1">
                   <MenuItem>
                     <button
-                      @click="togglePrivacy"
-                      class="block w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                        class="block w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                        @click="togglePrivacy"
                     >
                       {{ generation.isPublic ? 'Make Private' : 'Make Public' }}
                     </button>
                   </MenuItem>
                   <MenuItem>
                     <button
-                      @click="deleteGeneration"
-                      class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-secondary transition-colors"
+                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-secondary transition-colors"
+                        @click="deleteGeneration"
                     >
                       {{ $t('common.delete') }}
                     </button>
@@ -77,11 +79,11 @@
             </transition>
           </Menu>
         </div>
-        
+
         <!-- Show like button for anonymous users (but disabled) -->
         <div v-else-if="showActions" class="flex items-center space-x-2">
           <div class="flex items-center space-x-1 text-sm text-muted px-2 py-1">
-            <HeartIcon class="w-4 h-4" />
+            <HeartIcon class="w-4 h-4"/>
             <span>{{ generation.likeCount }}</span>
           </div>
         </div>
@@ -93,9 +95,9 @@
       <div class="flex flex-wrap gap-4 items-center text-sm">
         <div class="flex items-center space-x-2">
           <label class="font-medium">Font Size:</label>
-          <select 
-            v-model="fontSettings.size" 
-            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          <select
+              v-model="fontSettings.size"
+              class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
             <option value="text-xs">Extra Small</option>
             <option value="text-sm">Small</option>
@@ -105,12 +107,12 @@
             <option value="text-2xl">2X Large</option>
           </select>
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <label class="font-medium">Font Weight:</label>
-          <select 
-            v-model="fontSettings.weight" 
-            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          <select
+              v-model="fontSettings.weight"
+              class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
             <option value="font-light">Light</option>
             <option value="font-normal">Normal</option>
@@ -119,12 +121,12 @@
             <option value="font-bold">Bold</option>
           </select>
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <label class="font-medium">Line Height:</label>
-          <select 
-            v-model="fontSettings.lineHeight" 
-            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          <select
+              v-model="fontSettings.lineHeight"
+              class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
             <option value="leading-tight">Tight</option>
             <option value="leading-normal">Normal</option>
@@ -132,24 +134,24 @@
             <option value="leading-loose">Loose</option>
           </select>
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <label class="font-medium">Font Family:</label>
-          <select 
-            v-model="fontSettings.family" 
-            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          <select
+              v-model="fontSettings.family"
+              class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
             <option value="font-sans">Sans Serif</option>
             <option value="font-serif">Serif</option>
             <option value="font-mono">Monospace</option>
           </select>
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <label class="font-medium">Text Color:</label>
-          <select 
-            v-model="fontSettings.color" 
-            class="px-2 py-1 rounded border border-color bg-primary text-sm"
+          <select
+              v-model="fontSettings.color"
+              class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
             <option value="text-gray-700 dark:text-gray-300">Default</option>
             <option value="text-gray-900 dark:text-gray-100">High Contrast</option>
@@ -159,10 +161,10 @@
             <option value="text-red-700 dark:text-red-300">Red</option>
           </select>
         </div>
-        
+
         <button
-          @click="resetFontSettings"
-          class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            @click="resetFontSettings"
         >
           Reset
         </button>
@@ -173,22 +175,23 @@
       <!-- Words Used -->
       <div class="flex flex-wrap gap-2">
         <span
-          v-for="word in generation.words"
-          :key="word"
-          class="word-tag"
+            v-for="word in generation.words"
+            :key="word"
+            class="word-tag"
         >
           {{ word }}
         </span>
       </div>
 
       <!-- Generated Sentence -->
-      <blockquote class="generation-sentence" :class="fontClasses">
+      <blockquote :class="fontClasses" class="generation-sentence">
         <span v-html="parseMarkdown(generation.sentence)"></span>
       </blockquote>
 
       <!-- AI Model Badge -->
       <div class="flex items-center space-x-2">
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300">
+        <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300">
           <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
@@ -203,12 +206,16 @@
       <div v-if="showExplanation" class="generation-explanation">
         <h4 class="font-medium text-sm mb-3 text-primary flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            <path clip-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  fill-rule="evenodd"/>
           </svg>
           {{ $t('generation.explanation') }}
         </h4>
-        <div class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/10 dark:via-emerald-900/10 dark:to-teal-900/10 p-4 rounded-lg border-l-4 border-emerald-400 shadow-sm">
-          <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(generation.explanation)"></div>
+        <div
+            class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/10 dark:via-emerald-900/10 dark:to-teal-900/10 p-4 rounded-lg border-l-4 border-emerald-400 shadow-sm">
+          <div :class="fontClasses" class="prose prose-sm dark:prose-invert max-w-none"
+               v-html="parseMarkdown(generation.explanation)"></div>
         </div>
       </div>
 
@@ -216,12 +223,15 @@
       <div v-if="showChineseTranslation && generation.chineseTranslation" class="generation-chinese">
         <h4 class="font-medium text-sm mb-3 text-primary flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+            <path
+                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
           </svg>
           中文翻译 (Chinese Translation)
         </h4>
-        <div class="bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 dark:from-orange-900/10 dark:via-yellow-900/10 dark:to-amber-900/10 p-4 rounded-lg border-l-4 border-orange-400 shadow-sm">
-          <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(generation.chineseTranslation)"></div>
+        <div
+            class="bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 dark:from-orange-900/10 dark:via-yellow-900/10 dark:to-amber-900/10 p-4 rounded-lg border-l-4 border-orange-400 shadow-sm">
+          <div :class="fontClasses" class="prose prose-sm dark:prose-invert max-w-none"
+               v-html="parseMarkdown(generation.chineseTranslation)"></div>
         </div>
       </div>
 
@@ -229,37 +239,69 @@
       <div v-if="showThinking && generation.thinkingText" class="generation-thinking">
         <h4 class="font-medium text-sm mb-2 text-primary flex items-center">
           <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
           </svg>
           AI Reasoning Process
         </h4>
-        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
-          <p class="whitespace-pre-wrap" :class="fontClasses">{{ generation.thinkingText }}</p>
+        <div
+            class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
+          <p :class="fontClasses" class="whitespace-pre-wrap">{{ generation.thinkingText }}</p>
         </div>
       </div>
-      
+
+      <!-- Raw AI Response (if available and parsing failed/partial) -->
+      <div v-if="showRawResponse && generation.rawResponseContent" class="generation-raw-response">
+        <h4 class="font-medium text-sm mb-2 text-primary flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path
+                d="M4 5a1 1 0 011-1h10a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM16 13a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z"/>
+          </svg>
+          Raw AI Response
+          <span
+              class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+            Parsing Issues Detected
+          </span>
+        </h4>
+        <div
+            class="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+          <pre :class="fontClasses"
+               class="whitespace-pre-wrap text-xs overflow-auto max-h-60">{{ generation.rawResponseContent }}</pre>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          This is the original AI response. The parsing extracted what it could from the structured format above.
+        </p>
+      </div>
+
       <!-- Toggle buttons -->
       <div class="flex space-x-3">
         <button
-          v-if="!showExplanation"
-          @click="showExplanation = true"
-          class="text-sm text-accent-color hover:underline"
+            v-if="!showExplanation"
+            class="text-sm text-accent-color hover:underline"
+            @click="showExplanation = true"
         >
           Show explanation →
         </button>
         <button
-          v-if="generation.chineseTranslation && !showChineseTranslation"
-          @click="showChineseTranslation = true"
-          class="text-sm text-orange-600 hover:underline"
+            v-if="generation.chineseTranslation && !showChineseTranslation"
+            class="text-sm text-orange-600 hover:underline"
+            @click="showChineseTranslation = true"
         >
           Show Chinese translation →
         </button>
         <button
-          v-if="generation.thinkingText && !showThinking"
-          @click="showThinking = true"
-          class="text-sm text-purple-600 hover:underline"
+            v-if="generation.thinkingText && !showThinking"
+            class="text-sm text-purple-600 hover:underline"
+            @click="showThinking = true"
         >
           Show AI reasoning →
+        </button>
+        <button
+            v-if="generation.rawResponseContent && !showRawResponse"
+            class="text-sm text-gray-600 hover:underline"
+            @click="showRawResponse = true"
+        >
+          Show raw AI response →
         </button>
       </div>
     </div>
@@ -270,14 +312,14 @@
           <span>{{ $t('generation.wordsUsed') }}: {{ generation.words.length }}</span>
           <span>{{ $t('generation.aiModel') }}: {{ generation.aiModel || 'Qwen/QwQ-32B' }}</span>
         </div>
-        
+
         <div class="flex items-center space-x-2">
           <button
-            v-if="authStore.isAuthenticated"
-            @click="shareGeneration"
-            class="btn btn-ghost btn-sm"
+              v-if="authStore.isAuthenticated"
+              class="btn btn-ghost btn-sm"
+              @click="shareGeneration"
           >
-            <ShareIcon class="w-4 h-4 mr-1" />
+            <ShareIcon class="w-4 h-4 mr-1"/>
             Share
           </button>
           <span v-else class="text-xs text-muted">
@@ -289,20 +331,15 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, reactive, watch, onMounted } from 'vue'
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { 
-  HeartIcon, 
-  EllipsisVerticalIcon, 
-  ShareIcon 
-} from '@heroicons/vue/24/outline'
-import { useAuthStore } from '../stores/auth.ts'
-import { useGenerationsStore } from '../stores/generations.ts'
-import { useToast } from 'vue-toastification'
-import { useI18n } from 'vue-i18n'
-import { marked } from 'marked'
-import { authAPI } from '../services/api.ts'
+<script lang="ts" setup>
+import {computed, onMounted, reactive, ref, watch} from 'vue'
+import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
+import {EllipsisVerticalIcon, HeartIcon, ShareIcon} from '@heroicons/vue/24/outline'
+import {useAuthStore} from '../stores/auth.ts'
+import {useGenerationsStore} from '../stores/generations.ts'
+import {useToast} from 'vue-toastification'
+import {useI18n} from 'vue-i18n'
+import {marked} from 'marked'
 
 interface Props {
   generation: any
@@ -316,11 +353,12 @@ const props = withDefaults(defineProps<Props>(), {
 const authStore = useAuthStore()
 const generationsStore = useGenerationsStore()
 const toast = useToast()
-const { t } = useI18n()
+const {t} = useI18n()
 
 const showExplanation = ref(false)
 const showThinking = ref(false)
 const showChineseTranslation = ref(false)
+const showRawResponse = ref(false)
 const likingInProgress = ref(false)
 const showFontConfig = ref(false)
 
@@ -373,7 +411,7 @@ onMounted(() => {
 // Watch for changes and save to localStorage
 watch(fontSettings, (newSettings) => {
   saveFontSettings()
-}, { deep: true })
+}, {deep: true})
 
 // Reset font settings to default
 const resetFontSettings = () => {
@@ -397,24 +435,24 @@ const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-  
+
   if (diffInSeconds < 60) {
     return t('date.justNow')
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60)
-    return minutes === 1 ? 
-      t('date.minuteAgo', { count: minutes }) : 
-      t('date.minutesAgo', { count: minutes })
+    return minutes === 1 ?
+        t('date.minuteAgo', {count: minutes}) :
+        t('date.minutesAgo', {count: minutes})
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600)
-    return hours === 1 ? 
-      t('date.hourAgo', { count: hours }) : 
-      t('date.hoursAgo', { count: hours })
+    return hours === 1 ?
+        t('date.hourAgo', {count: hours}) :
+        t('date.hoursAgo', {count: hours})
   } else {
     const days = Math.floor(diffInSeconds / 86400)
-    return days === 1 ? 
-      t('date.dayAgo', { count: days }) : 
-      t('date.daysAgo', { count: days })
+    return days === 1 ?
+        t('date.dayAgo', {count: days}) :
+        t('date.daysAgo', {count: days})
   }
 }
 
@@ -424,7 +462,7 @@ const parseMarkdown = (text: string) => {
 
 const toggleLike = async () => {
   if (likingInProgress.value || !authStore.isAuthenticated) return
-  
+
   likingInProgress.value = true
   try {
     await generationsStore.toggleLike(props.generation._id)
@@ -438,8 +476,8 @@ const toggleLike = async () => {
 const togglePrivacy = async () => {
   try {
     await generationsStore.updateGenerationPrivacy(
-      props.generation._id, 
-      !props.generation.isPublic
+        props.generation._id,
+        !props.generation.isPublic
     )
   } catch (error) {
     console.error('Failed to toggle privacy:', error)

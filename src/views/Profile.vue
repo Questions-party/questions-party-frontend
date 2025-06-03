@@ -51,7 +51,7 @@
         <div class="flex justify-between items-center">
           <div>
             <label class="text-sm font-medium text-primary">{{ $t('profile.theme') }}</label>
-            <p class="text-xs text-secondary">Choose your preferred theme</p>
+            <p class="text-xs text-secondary">{{ $t('profile.themeDescription') }}</p>
           </div>
           <div class="flex items-center space-x-2">
             <button
@@ -75,7 +75,7 @@
         <div class="flex justify-between items-center">
           <div>
             <label class="text-sm font-medium text-primary">{{ $t('profile.language') }}</label>
-            <p class="text-xs text-secondary">Choose your interface language</p>
+            <p class="text-xs text-secondary">{{ $t('profile.languageDescription') }}</p>
           </div>
           <div class="flex items-center space-x-2">
             <button
@@ -99,7 +99,7 @@
         <div class="flex justify-between items-center">
           <div>
             <label class="text-sm font-medium text-primary">{{ $t('generation.grammarExplanationLanguage') }}</label>
-            <p class="text-xs text-secondary">Choose how grammar explanations are provided</p>
+            <p class="text-xs text-secondary">{{ $t('profile.grammarLanguageDescription') }}</p>
           </div>
           <div class="flex items-center space-x-2">
             <button
@@ -123,7 +123,7 @@
         <div class="flex justify-between items-center">
           <div>
             <label for="showPublic" class="text-sm font-medium text-primary">{{ $t('profile.showPublicGenerations') }}</label>
-            <p class="text-xs text-secondary">Allow your generations to appear in the community feed</p>
+            <p class="text-xs text-secondary">{{ $t('profile.showPublicGenerationsDescription') }}</p>
           </div>
           <input
             id="showPublic"
@@ -204,7 +204,7 @@
           @click="showAllGenerations = !showAllGenerations"
           class="btn btn-ghost"
         >
-          {{ showAllGenerations ? 'Show Less' : `View All ${getCurrentContent().length} ${getContentTypeName()}` }}
+          {{ showAllGenerations ? $t('profile.showLess') : $t('profile.viewAll', { count: getCurrentContent().length, type: getContentTypeName() }) }}
         </button>
       </div>
 
@@ -235,7 +235,7 @@
             class="btn btn-secondary btn-sm"
           >
             <ArrowDownTrayIcon class="w-4 h-4 mr-1" />
-            Export
+            {{ $t('profile.exportButton') }}
           </button>
         </div>
 
@@ -350,7 +350,7 @@ const getCurrentContent = () => {
 }
 
 const getContentTypeName = () => {
-  return activeContentType.value === 'generations' ? 'Generations' : 'Sentence Checks'
+  return activeContentType.value === 'generations' ? t('community.wordGenerations') : t('community.sentenceChecks')
 }
 
 onMounted(async () => {

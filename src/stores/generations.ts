@@ -4,13 +4,12 @@ import { generationsAPI, statisticsAPI } from '../services/api.ts'
 import { useToast } from 'vue-toastification'
 import { useI18n } from 'vue-i18n'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-
 interface Generation {
   _id: string
   sentence: string
   explanation: string
   thinkingText?: string
+  rawResponseContent?: string
   words: string[]
   isPublic: boolean
   likeCount: number
@@ -29,6 +28,7 @@ interface GenerationInput {
   isPublic?: boolean
   maxRetries?: number
   grammarLanguage?: string
+  signal?: AbortSignal
 }
 
 interface RetryInfo {
@@ -42,6 +42,11 @@ interface GenerationProgress {
   currentAttempt: number
   maxRetries: number
   errorMessage?: string
+  startTime?: number
+  elapsedTime: number
+  isGenerating: boolean
+  isCancelled: boolean
+  canCancel: boolean
 }
 
 interface PublicPagination {
@@ -75,7 +80,12 @@ export const useGenerationsStore = defineStore('generations', () => {
   const generationProgress = ref<GenerationProgress>({
     isRetrying: false,
     currentAttempt: 0,
-    maxRetries: 3
+    maxRetries: 3,
+    startTime: undefined,
+    elapsedTime: 0,
+    isGenerating: false,
+    isCancelled: false,
+    canCancel: false
   })
   const publicPagination = ref<PublicPagination>({
     page: 1,
@@ -83,6 +93,11 @@ export const useGenerationsStore = defineStore('generations', () => {
     hasNext: false,
     total: 0
   })
+  
+  // Timer for elapsed time tracking
+  let elapsedTimer: number | null = null
+  // Abort controller for cancelling requests
+  let abortController: AbortController | null = null
 
   const sortedGenerations = computed(() => {
     return [...generations.value].sort((a, b) => 
@@ -90,73 +105,190 @@ export const useGenerationsStore = defineStore('generations', () => {
     )
   })
 
+  // Helper function to start elapsed time tracking
+  const startElapsedTimer = () => {
+    generationProgress.value.startTime = Date.now()
+    generationProgress.value.elapsedTime = 0
+    
+    elapsedTimer = setInterval(() => {
+      if (generationProgress.value.startTime && !generationProgress.value.isCancelled) {
+        generationProgress.value.elapsedTime = Math.floor((Date.now() - generationProgress.value.startTime) / 1000)
+      }
+    }, 1000)
+  }
+
+  // Helper function to stop elapsed time tracking
+  const stopElapsedTimer = () => {
+    if (elapsedTimer) {
+      clearInterval(elapsedTimer)
+      elapsedTimer = null
+    }
+  }
+
+  // Cancel generation
+  const cancelGeneration = () => {
+    if (abortController && !abortController.signal.aborted) {
+      abortController.abort()
+    }
+    generationProgress.value.isCancelled = true
+    generationProgress.value.canCancel = false
+    generating.value = false
+    stopElapsedTimer()
+    
+    toast.info(t('generation.cancelled'))
+    
+    // Reset progress after a short delay
+    setTimeout(() => {
+      generationProgress.value = {
+        isRetrying: false,
+        currentAttempt: 0,
+        maxRetries: 3,
+        startTime: undefined,
+        elapsedTime: 0,
+        isGenerating: false,
+        isCancelled: false,
+        canCancel: false
+      }
+    }, 1000)
+  }
+
   const generateSentence = async (input: GenerationInput) => {
     generating.value = true
     generationProgress.value = {
       isRetrying: false,
-      currentAttempt: 0,
-      maxRetries: input.maxRetries || 3
+      currentAttempt: 1,
+      maxRetries: input.maxRetries || 3,
+      startTime: Date.now(),
+      elapsedTime: 0,
+      isGenerating: true,
+      isCancelled: false,
+      canCancel: true
     }
     
+    // Start elapsed time tracking
+    startElapsedTimer()
+    
+    const maxRetries = input.maxRetries || 3
+    let lastError = null
+    
     try {
-      const response = await generationsAPI.generate(input)
-      
-      if (response.data.success) {
-        currentGeneration.value = response.data.generation
-        generations.value.unshift(response.data.generation)
-        
-        // Handle retry info in success message
-        if (response.data.retryInfo && response.data.retryInfo.attempt > 1) {
-          toast.success(t('generation.retrySuccess', { attempt: response.data.retryInfo.attempt }))
-        } else {
-          toast.success(t('generation.generationSuccess'))
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        // Check if cancelled
+        if (generationProgress.value.isCancelled) {
+          return { success: false, message: t('generation.cancelled'), cancelled: true }
         }
         
-        return { 
-          success: true, 
-          generation: response.data.generation,
-          retryInfo: response.data.retryInfo
-        }
-      } else {
-        const message = response.data.message || t('generation.generationError')
+        generationProgress.value.currentAttempt = attempt
+        generationProgress.value.isRetrying = attempt > 1
         
-        // Handle retry info in error case
-        if (response.data.retryInfo) {
-          const retryMessage = t('generation.retryFailed', { attempts: response.data.retryInfo.maxRetries })
-          toast.error(`${message} ${retryMessage}`)
-        } else {
-          toast.error(message)
-        }
+        // Create new abort controller for each attempt
+        abortController = new AbortController()
         
-        return { 
-          success: false, 
-          message,
-          retryInfo: response.data.retryInfo
+        try {
+          const response = await generationsAPI.generate({
+            ...input,
+            signal: abortController.signal
+          })
+          
+          // Check if cancelled after request
+          if (generationProgress.value.isCancelled) {
+            return { success: false, message: t('generation.cancelled'), cancelled: true }
+          }
+          
+          if (response.data.success) {
+            currentGeneration.value = response.data.generation
+            generations.value.unshift(response.data.generation)
+            
+            // Show success message
+            if (attempt > 1) {
+              toast.success(t('generation.retrySuccess', { attempt }))
+            } else {
+              toast.success(t('generation.generationSuccess'))
+            }
+            
+            return { 
+              success: true, 
+              generation: response.data.generation,
+              attempt
+            }
+          } else {
+            // Check if the error is retryable
+            const isRetryable = response.data.retryable !== false
+            lastError = response.data.message || t('generation.generationError')
+            
+            if (!isRetryable) {
+              // Non-retryable error, break the loop
+              toast.error(lastError)
+              return { success: false, message: lastError, retryable: false }
+            }
+            
+            // If this is the last attempt, show error
+            if (attempt === maxRetries) {
+              const retryMessage = t('generation.retryFailed', { attempts: maxRetries })
+              toast.error(`${lastError} ${retryMessage}`)
+              return { success: false, message: lastError, attempts: maxRetries }
+            }
+            
+            // Show retry message and continue
+            toast.warning(t('generation.retryAttempt', { attempt: attempt + 1, max: maxRetries }))
+            
+            // Wait a bit before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
+        } catch (error: any) {
+          // Check if cancelled
+          if (generationProgress.value.isCancelled || error.name === 'AbortError') {
+            return { success: false, message: t('generation.cancelled'), cancelled: true }
+          }
+          
+          const message = error.response?.data?.message || t('generation.generationError')
+          const isRetryable = error.response?.data?.retryable !== false
+          lastError = message
+          
+          if (!isRetryable) {
+            // Non-retryable error, break the loop
+            toast.error(message)
+            return { success: false, message, retryable: false }
+          }
+          
+          // If this is the last attempt, show error
+          if (attempt === maxRetries) {
+            const retryMessage = t('generation.retryFailed', { attempts: maxRetries })
+            toast.error(`${message} ${retryMessage}`)
+            return { success: false, message, attempts: maxRetries }
+          }
+          
+          // Show retry message and continue
+          toast.warning(t('generation.retryAttempt', { attempt: attempt + 1, max: maxRetries }))
+          
+          // Wait a bit before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000))
         }
       }
-    } catch (error: any) {
-      const message = error.response?.data?.message || t('generation.generationError')
-      const retryInfo = error.response?.data?.retryInfo
       
-      if (retryInfo) {
-        const retryMessage = t('generation.retryFailed', { attempts: retryInfo.maxRetries })
-        toast.error(`${message} ${retryMessage}`)
-      } else {
-        toast.error(message)
-      }
+      // If we get here, all retries failed
+      return { success: false, message: lastError || t('generation.generationError'), attempts: maxRetries }
       
-      return { 
-        success: false, 
-        message,
-        retryInfo
-      }
     } finally {
       generating.value = false
-      generationProgress.value = {
-        isRetrying: false,
-        currentAttempt: 0,
-        maxRetries: 3
-      }
+      stopElapsedTimer()
+      generationProgress.value.canCancel = false
+      
+      // Reset progress after a short delay to allow UI to show final state
+      setTimeout(() => {
+        if (!generationProgress.value.isCancelled) {
+          generationProgress.value = {
+            isRetrying: false,
+            currentAttempt: 0,
+            maxRetries: 3,
+            startTime: undefined,
+            elapsedTime: 0,
+            isGenerating: false,
+            isCancelled: false,
+            canCancel: false
+          }
+        }
+      }, 2000)
     }
   }
 
@@ -347,6 +479,7 @@ export const useGenerationsStore = defineStore('generations', () => {
   }
 
   return {
+    // State
     generations,
     publicGenerations,
     currentGeneration,
@@ -356,8 +489,13 @@ export const useGenerationsStore = defineStore('generations', () => {
     statisticsLoading,
     generationProgress,
     publicPagination,
+    
+    // Computed
     sortedGenerations,
+    
+    // Actions
     generateSentence,
+    cancelGeneration,
     fetchUserGenerations,
     fetchPublicGenerations,
     toggleLike,

@@ -29,6 +29,11 @@ interface CheckProgress {
   isRetrying: boolean
   currentAttempt: number
   maxRetries: number
+  startTime?: number
+  elapsedTime: number
+  isChecking: boolean
+  isCancelled: boolean
+  canCancel: boolean
 }
 
 interface Pagination {
@@ -82,8 +87,18 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
   const checkProgress = ref<CheckProgress>({
     isRetrying: false,
     currentAttempt: 0,
-    maxRetries: 0
+    maxRetries: 0,
+    startTime: undefined,
+    elapsedTime: 0,
+    isChecking: false,
+    isCancelled: false,
+    canCancel: false
   })
+
+  // Timer for elapsed time tracking
+  let elapsedTimer: number | null = null
+  // Abort controller for cancelling requests
+  let abortController: AbortController | null = null
 
   // Computed
   const sortedSentenceChecks = computed(() => {
@@ -91,6 +106,53 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   })
+
+  // Helper function to start elapsed time tracking
+  const startElapsedTimer = () => {
+    checkProgress.value.startTime = Date.now()
+    checkProgress.value.elapsedTime = 0
+    
+    elapsedTimer = setInterval(() => {
+      if (checkProgress.value.startTime && !checkProgress.value.isCancelled) {
+        checkProgress.value.elapsedTime = Math.floor((Date.now() - checkProgress.value.startTime) / 1000)
+      }
+    }, 1000)
+  }
+
+  // Helper function to stop elapsed time tracking
+  const stopElapsedTimer = () => {
+    if (elapsedTimer) {
+      clearInterval(elapsedTimer)
+      elapsedTimer = null
+    }
+  }
+
+  // Cancel check
+  const cancelCheck = () => {
+    if (abortController && !abortController.signal.aborted) {
+      abortController.abort()
+    }
+    checkProgress.value.isCancelled = true
+    checkProgress.value.canCancel = false
+    checking.value = false
+    stopElapsedTimer()
+    
+    toast.info(t('sentenceCheck.cancelled'))
+    
+    // Reset progress after a short delay
+    setTimeout(() => {
+      checkProgress.value = {
+        isRetrying: false,
+        currentAttempt: 0,
+        maxRetries: 0,
+        startTime: undefined,
+        elapsedTime: 0,
+        isChecking: false,
+        isCancelled: false,
+        canCancel: false
+      }
+    }, 1000)
+  }
 
   // Actions
   const checkSentence = async (params: {
@@ -102,54 +164,152 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
     if (checking.value) return { success: false, message: 'Already checking' }
     
     checking.value = true
-    checkProgress.value.isRetrying = false
-    checkProgress.value.currentAttempt = 0
-    checkProgress.value.maxRetries = params.maxRetries || 3
+    checkProgress.value = {
+      isRetrying: false,
+      currentAttempt: 1,
+      maxRetries: params.maxRetries || 3,
+      startTime: Date.now(),
+      elapsedTime: 0,
+      isChecking: true,
+      isCancelled: false,
+      canCancel: true
+    }
+
+    // Start elapsed time tracking
+    startElapsedTimer()
+
+    const maxRetries = params.maxRetries || 3
+    let lastError = null
 
     try {
-      const response = await sentenceCheckAPI.checkSentence({
-        sentence: params.sentence,
-        isPublic: params.isPublic ?? true,
-        maxRetries: params.maxRetries || 3,
-        grammarLanguage: params.grammarLanguage || 'combined'
-      })
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        // Check if cancelled
+        if (checkProgress.value.isCancelled) {
+          return { success: false, message: t('sentenceCheck.cancelled'), cancelled: true }
+        }
+        
+        checkProgress.value.currentAttempt = attempt
+        checkProgress.value.isRetrying = attempt > 1
+        
+        // Create new abort controller for each attempt
+        abortController = new AbortController()
 
-      if (response.data.success) {
-        const newCheck = response.data.sentenceCheck
-        
-        // Add to user checks if it exists
-        if (userSentenceChecks.value.length > 0) {
-          userSentenceChecks.value.unshift(newCheck)
+        try {
+          const response = await sentenceCheckAPI.checkSentence({
+            sentence: params.sentence,
+            isPublic: params.isPublic ?? true,
+            maxRetries: params.maxRetries || 3,
+            grammarLanguage: params.grammarLanguage || 'combined',
+            signal: abortController.signal
+          })
+
+          // Check if cancelled after request
+          if (checkProgress.value.isCancelled) {
+            return { success: false, message: t('sentenceCheck.cancelled'), cancelled: true }
+          }
+
+          if (response.data.success) {
+            const newCheck = response.data.sentenceCheck
+            
+            // Add to user checks if it exists
+            if (userSentenceChecks.value.length > 0) {
+              userSentenceChecks.value.unshift(newCheck)
+            }
+            
+            // Add to public checks if it's public
+            if (newCheck.isPublic && publicSentenceChecks.value.length > 0) {
+              publicSentenceChecks.value.unshift(newCheck)
+            }
+            
+            // Set as current check
+            currentSentenceCheck.value = newCheck
+            
+            // Show success with retry info if available
+            if (attempt > 1) {
+              toast.success(t('sentenceCheck.retrySuccess', { attempt }))
+            } else {
+              toast.success(t('sentenceCheck.checkSuccess'))
+            }
+            
+            return { success: true, sentenceCheck: newCheck, attempt }
+          } else {
+            // Check if the error is retryable
+            const isRetryable = response.data.retryable !== false
+            lastError = response.data.message || t('sentenceCheck.checkFailed')
+            
+            if (!isRetryable) {
+              // Non-retryable error, break the loop
+              toast.error(lastError)
+              return { success: false, message: lastError, retryable: false }
+            }
+            
+            // If this is the last attempt, show error
+            if (attempt === maxRetries) {
+              const retryMessage = t('sentenceCheck.retryFailed', { attempts: maxRetries })
+              toast.error(`${lastError} ${retryMessage}`)
+              return { success: false, message: lastError, attempts: maxRetries }
+            }
+            
+            // Show retry message and continue
+            toast.warning(t('sentenceCheck.retryAttempt', { attempt: attempt + 1, max: maxRetries }))
+            
+            // Wait a bit before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
+        } catch (error: any) {
+          // Check if cancelled
+          if (checkProgress.value.isCancelled || error.name === 'AbortError') {
+            return { success: false, message: t('sentenceCheck.cancelled'), cancelled: true }
+          }
+          
+          const message = error.response?.data?.message || t('sentenceCheck.checkFailed')
+          const isRetryable = error.response?.data?.retryable !== false
+          lastError = message
+          
+          if (!isRetryable) {
+            // Non-retryable error, break the loop
+            toast.error(message)
+            return { success: false, message, retryable: false }
+          }
+          
+          // If this is the last attempt, show error
+          if (attempt === maxRetries) {
+            const retryMessage = t('sentenceCheck.retryFailed', { attempts: maxRetries })
+            toast.error(`${message} ${retryMessage}`)
+            return { success: false, message, attempts: maxRetries }
+          }
+          
+          // Show retry message and continue
+          toast.warning(t('sentenceCheck.retryAttempt', { attempt: attempt + 1, max: maxRetries }))
+          
+          // Wait a bit before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000))
         }
-        
-        // Add to public checks if it's public
-        if (newCheck.isPublic && publicSentenceChecks.value.length > 0) {
-          publicSentenceChecks.value.unshift(newCheck)
-        }
-        
-        // Set as current check
-        currentSentenceCheck.value = newCheck
-        
-        // Show success with retry info if available
-        if (response.data.retryInfo?.attempt > 1) {
-          toast.success(t('sentenceCheck.retrySuccess', { attempt: response.data.retryInfo.attempt }))
-        } else {
-          toast.success(t('sentenceCheck.checkSuccess'))
-        }
-        
-        return { success: true, sentenceCheck: newCheck, retryInfo: response.data.retryInfo }
-      } else {
-        const message = response.data.message || t('sentenceCheck.checkFailed')
-        toast.error(message)
-        return { success: false, message }
       }
-    } catch (error: any) {
-      const message = error.response?.data?.message || t('sentenceCheck.checkFailed')
-      toast.error(message)
-      return { success: false, message }
+      
+      // If we get here, all retries failed
+      return { success: false, message: lastError || t('sentenceCheck.checkFailed'), attempts: maxRetries }
+      
     } finally {
       checking.value = false
-      checkProgress.value.isRetrying = false
+      stopElapsedTimer()
+      checkProgress.value.canCancel = false
+      
+      // Reset progress after a short delay to allow UI to show final state
+      setTimeout(() => {
+        if (!checkProgress.value.isCancelled) {
+          checkProgress.value = {
+            isRetrying: false,
+            currentAttempt: 0,
+            maxRetries: 0,
+            startTime: undefined,
+            elapsedTime: 0,
+            isChecking: false,
+            isCancelled: false,
+            canCancel: false
+          }
+        }
+      }, 2000)
     }
   }
 
@@ -422,27 +582,18 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
     userSentenceChecks.value = []
     publicSentenceChecks.value = []
     currentSentenceCheck.value = null
-    userPagination.value = {
-      current: 1,
-      total: 1,
-      hasNext: false,
-      totalChecks: 0
-    }
-    publicPagination.value = {
-      current: 1,
-      total: 1,
-      hasNext: false,
-      totalChecks: 0
-    }
-    statistics.value = {
-      totalChecks: 0,
-      totalLikes: 0,
-      avgSentenceLength: 0
-    }
+    userPagination.value = { current: 1, total: 1, hasNext: false, totalChecks: 0 }
+    publicPagination.value = { current: 1, total: 1, hasNext: false, totalChecks: 0 }
+    statistics.value = { totalChecks: 0, totalLikes: 0, avgSentenceLength: 0 }
     checkProgress.value = {
       isRetrying: false,
       currentAttempt: 0,
-      maxRetries: 0
+      maxRetries: 0,
+      startTime: undefined,
+      elapsedTime: 0,
+      isChecking: false,
+      isCancelled: false,
+      canCancel: false
     }
   }
 
@@ -458,12 +609,13 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
     publicPagination,
     statistics,
     checkProgress,
-
+    
     // Computed
     sortedSentenceChecks,
-
+    
     // Actions
     checkSentence,
+    cancelCheck,
     fetchUserSentenceChecks,
     fetchPublicSentenceChecks,
     refreshPublicSentenceChecks,

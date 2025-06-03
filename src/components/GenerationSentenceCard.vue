@@ -31,6 +31,7 @@ const showGrammarCorrection = ref(false)
 const showKeywordAnalysis = ref(false)
 const showChineseDefinition = ref(false)
 const showThinking = ref(false)
+const showRawResponse = ref(false)
 const likingInProgress = ref(false)
 const showFontConfig = ref(false)
 
@@ -438,6 +439,25 @@ const shareSentenceCheck = () => {
           <p class="whitespace-pre-wrap" :class="fontClasses">{{ sentenceCheck.thinkingText }}</p>
         </div>
       </div>
+
+      <!-- Raw AI Response (if available and parsing failed/partial) -->
+      <div v-if="showRawResponse && sentenceCheck.rawResponseContent" class="generation-raw-response">
+        <h4 class="font-medium text-sm mb-2 text-primary flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 5a1 1 0 011-1h10a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM16 13a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z"/>
+          </svg>
+          Raw AI Response
+          <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+            Parsing Issues Detected
+          </span>
+        </h4>
+        <div class="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+          <pre class="whitespace-pre-wrap text-xs overflow-auto max-h-60" :class="fontClasses">{{ sentenceCheck.rawResponseContent }}</pre>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          This is the original AI response. The parsing extracted what it could from the structured format above.
+        </p>
+      </div>
       
       <!-- Toggle buttons -->
       <div class="flex flex-wrap gap-3">
@@ -475,6 +495,13 @@ const shareSentenceCheck = () => {
           class="text-sm text-purple-600 hover:underline"
         >
           Show AI reasoning →
+        </button>
+        <button
+          v-if="sentenceCheck.rawResponseContent && !showRawResponse"
+          @click="showRawResponse = true"
+          class="text-sm text-gray-600 hover:underline"
+        >
+          Show raw AI response →
         </button>
       </div>
     </div>
