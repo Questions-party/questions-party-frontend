@@ -463,11 +463,11 @@
                 <AcademicCapIcon class="w-5 h-5 mr-2"/>
                 {{ $t('home.features.demoElements.tryGrammarCheck') }}
               </router-link>
-              <button class="flex items-center px-6 py-3 border-2 border-green-500 text-green-500 hover:bg-green-50 
-                            dark:hover:bg-green-900/20 rounded-xl transition-all duration-200">
-                <PlayIcon class="w-5 h-5 mr-2"/>
-                {{ $t('home.features.demoElements.watchDemo') }}
-              </button>
+<!--              <button class="flex items-center px-6 py-3 border-2 border-green-500 text-green-500 hover:bg-green-50 -->
+<!--                            dark:hover:bg-green-900/20 rounded-xl transition-all duration-200">-->
+<!--                <PlayIcon class="w-5 h-5 mr-2"/>-->
+<!--                {{ $t('home.features.demoElements.watchDemo') }}-->
+<!--              </button>-->
             </div>
           </div>
         </div>
