@@ -293,13 +293,29 @@
     "getStartedFree": "免费开始",
     "generateSentences": "生成句子",
     "browseCommunity": "浏览社区",
+    "featurePills": {
+      "aiSentenceGeneration": "AI句子生成",
+      "grammarChecking": "语法检查",
+      "communityLearning": "社区学习"
+    },
     "features": {
+      "title": "强大的AI增强学习",
+      "subtitle": "体验AI能力驱动的英语学习的未来",
       "aiEnhanced": "AI增强生成",
       "aiEnhancedDesc": "先进的Qwen/QwQ-32B模型生成自然句子，并提供详细的推理解释，助力更好学习。",
+      "aiEnhancedBadge": "AI句子生成",
       "publicAccess": "公共访问",
       "publicAccessDesc": "无需注册即可探索社区内容。自由浏览数千个AI生成的句子。",
       "grammarInsights": "语法洞察",
-      "grammarInsightsDesc": "获得详细的语法解释和AI推理，更好地理解句子构造。"
+      "grammarInsightsDesc": "获得详细的语法解释和AI推理，更好地理解句子构造。",
+      "grammarInsightsBadge": "语法洞察",
+      "demoElements": {
+        "generatedWithAI": "通过AI推理生成",
+        "grammarAnalysisComplete": "语法分析完成",
+        "correctedPastTense": "纠正了过去时用法",
+        "tryGrammarCheck": "尝试语法检查",
+        "watchDemo": "观看演示"
+      }
     },
     "howItWorks": {
       "title": "如何使用",
@@ -311,7 +327,8 @@
       "step3": "使用AI生成",
       "step3Desc": "通过AI推理和语法解释创建上下文句子",
       "step4": "分享与学习",
-      "step4Desc": "与社区分享并从他人的创作中学习"
+      "step4Desc": "与社区分享并从他人的创作中学习",
+      "tryNow": "立即尝试"
     },
     "statistics": {
       "title": "加入我们不断壮大的社区",
@@ -320,6 +337,7 @@
       "activeLearners": "活跃学习者"
     },
     "cta": {
+      "transformJourney": "改变您的学习之旅",
       "title": "准备好改变您的英语学习体验了吗？",
       "subtitle": "体验AI增强语言学习的力量，包括个性化句子生成、详细解释和支持性社区。",
       "freeToStart": "免费开始",
@@ -327,7 +345,27 @@
       "instantAccess": "即时访问",
       "startLearningNow": "立即开始学习",
       "createFirstSentence": "创建您的第一个句子",
-      "exploreCommunity": "探索社区"
+      "exploreCommunity": "探索社区",
+      "socialProof": {
+        "trustedBy": "受全球学习者信赖",
+        "rating": "评分",
+        "activeUsers": "活跃用户",
+        "countries": "国家"
+      }
+    },
+    "floatingCards": {
+      "sentenceGeneration": {
+        "title": "句子生成",
+        "description": "AI驱动的自然句子"
+      },
+      "grammarAnalysis": {
+        "title": "语法分析",
+        "description": "深度语言洞察"
+      },
+      "communityLearning": {
+        "title": "社区学习",
+        "description": "一起学习，快速成长"
+      }
     }
   },
   "aiConfig": {

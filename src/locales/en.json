@@ -295,13 +295,29 @@
     "getStartedFree": "Get Started Free",
     "generateSentences": "Generate Sentences",
     "browseCommunity": "Browse Community",
+    "featurePills": {
+      "aiSentenceGeneration": "AI Sentence Generation",
+      "grammarChecking": "Grammar Checking",
+      "communityLearning": "Community Learning"
+    },
     "features": {
+      "title": "Powerful AI-Enhanced Learning",
+      "subtitle": "Experience the future of English learning with advanced AI capabilities",
       "aiEnhanced": "AI-Enhanced Generation",
       "aiEnhancedDesc": "Advanced Qwen/QwQ-32B model generates natural sentences with detailed reasoning explanations for better learning.",
+      "aiEnhancedBadge": "AI SENTENCE GENERATION",
       "publicAccess": "Public Access",
       "publicAccessDesc": "Explore community content without signing up. Browse thousands of AI-generated sentences freely.",
       "grammarInsights": "Grammar Insights",
-      "grammarInsightsDesc": "Receive detailed grammar explanations and AI reasoning to understand sentence construction better."
+      "grammarInsightsDesc": "Receive detailed grammar explanations and AI reasoning to understand sentence construction better.",
+      "grammarInsightsBadge": "GRAMMAR INSIGHTS",
+      "demoElements": {
+        "generatedWithAI": "Generated with AI reasoning",
+        "grammarAnalysisComplete": "Grammar Analysis Complete",
+        "correctedPastTense": "Corrected past tense usage",
+        "tryGrammarCheck": "Try Grammar Check",
+        "watchDemo": "Watch Demo"
+      }
     },
     "howItWorks": {
       "title": "How It Works",
@@ -313,7 +329,8 @@
       "step3": "Generate with AI",
       "step3Desc": "Create contextual sentences with AI reasoning and grammar explanations",
       "step4": "Share & Learn",
-      "step4Desc": "Share with the community and learn from others' creations"
+      "step4Desc": "Share with the community and learn from others' creations",
+      "tryNow": "Try Now"
     },
     "statistics": {
       "title": "Join Our Growing Community",
@@ -322,6 +339,7 @@
       "activeLearners": "Active Learners"
     },
     "cta": {
+      "transformJourney": "Transform Your Learning Journey",
       "title": "Ready to Transform Your English Learning?",
       "subtitle": "Experience the power of AI-enhanced language learning with personalized sentence generation, detailed explanations, and a supportive community.",
       "freeToStart": "Free to start",
@@ -329,7 +347,27 @@
       "instantAccess": "Instant access",
       "startLearningNow": "Start Learning Now",
       "createFirstSentence": "Create Your First Sentence",
-      "exploreCommunity": "Explore Community"
+      "exploreCommunity": "Explore Community",
+      "socialProof": {
+        "trustedBy": "Trusted by learners worldwide",
+        "rating": "Rating",
+        "activeUsers": "Active Users",
+        "countries": "Countries"
+      }
+    },
+    "floatingCards": {
+      "sentenceGeneration": {
+        "title": "Sentence Generation",
+        "description": "AI-powered natural sentences"
+      },
+      "grammarAnalysis": {
+        "title": "Grammar Analysis", 
+        "description": "Deep language insights"
+      },
+      "communityLearning": {
+        "title": "Community Learning",
+        "description": "Learn together, grow faster"
+      }
     }
   },
   "aiConfig": {
