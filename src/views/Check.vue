@@ -40,7 +40,7 @@
     <!-- Sentence Check Interface (only for authenticated users) -->
     <div v-else>
       <!-- Sentence Input Form -->
-      <div class="card">
+      <div class="card mb-4">
         <div class="card-header">
           <h3 class="text-lg font-semibold">{{ $t('sentenceCheck.enterSentence') }}</h3>
         </div>

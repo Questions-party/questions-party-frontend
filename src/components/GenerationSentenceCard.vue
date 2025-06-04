@@ -199,7 +199,7 @@ const shareSentenceCheck = () => {
             @click="showFontConfig = !showFontConfig"
             class="p-1 rounded-md hover:bg-tertiary transition-colors"
             :class="{ 'bg-tertiary': showFontConfig }"
-            title="Font Settings"
+            :title="$t('fontSettings.title')"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
@@ -240,7 +240,7 @@ const shareSentenceCheck = () => {
                       @click="togglePrivacy"
                       class="block w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors"
                     >
-                      {{ sentenceCheck.isPublic ? 'Make Private' : 'Make Public' }}
+                      {{ sentenceCheck.isPublic ? $t('cards.makePrivate') : $t('cards.makePublic') }}
                     </button>
                   </MenuItem>
                   <MenuItem>
@@ -271,71 +271,71 @@ const shareSentenceCheck = () => {
     <div v-if="showFontConfig" class="border-b border-color bg-secondary/50 p-4">
       <div class="flex flex-wrap gap-4 items-center text-sm">
         <div class="flex items-center space-x-2">
-          <label class="font-medium">Font Size:</label>
+          <label class="font-medium">{{ $t('fontSettings.fontSize') }}:</label>
           <select 
             v-model="fontSettings.size" 
             class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
-            <option value="text-xs">Extra Small</option>
-            <option value="text-sm">Small</option>
-            <option value="text-base">Normal</option>
-            <option value="text-lg">Large</option>
-            <option value="text-xl">Extra Large</option>
-            <option value="text-2xl">2X Large</option>
+            <option value="text-xs">{{ $t('fontSettings.sizes.extraSmall') }}</option>
+            <option value="text-sm">{{ $t('fontSettings.sizes.small') }}</option>
+            <option value="text-base">{{ $t('fontSettings.sizes.normal') }}</option>
+            <option value="text-lg">{{ $t('fontSettings.sizes.large') }}</option>
+            <option value="text-xl">{{ $t('fontSettings.sizes.extraLarge') }}</option>
+            <option value="text-2xl">{{ $t('fontSettings.sizes.xxLarge') }}</option>
           </select>
         </div>
         
         <div class="flex items-center space-x-2">
-          <label class="font-medium">Font Weight:</label>
+          <label class="font-medium">{{ $t('fontSettings.fontWeight') }}:</label>
           <select 
             v-model="fontSettings.weight" 
             class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
-            <option value="font-light">Light</option>
-            <option value="font-normal">Normal</option>
-            <option value="font-medium">Medium</option>
-            <option value="font-semibold">Semibold</option>
-            <option value="font-bold">Bold</option>
+            <option value="font-light">{{ $t('fontSettings.weights.light') }}</option>
+            <option value="font-normal">{{ $t('fontSettings.weights.normal') }}</option>
+            <option value="font-medium">{{ $t('fontSettings.weights.medium') }}</option>
+            <option value="font-semibold">{{ $t('fontSettings.weights.semibold') }}</option>
+            <option value="font-bold">{{ $t('fontSettings.weights.bold') }}</option>
           </select>
         </div>
         
         <div class="flex items-center space-x-2">
-          <label class="font-medium">Line Height:</label>
+          <label class="font-medium">{{ $t('fontSettings.lineHeight') }}:</label>
           <select 
             v-model="fontSettings.lineHeight" 
             class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
-            <option value="leading-tight">Tight</option>
-            <option value="leading-normal">Normal</option>
-            <option value="leading-relaxed">Relaxed</option>
-            <option value="leading-loose">Loose</option>
+            <option value="leading-tight">{{ $t('fontSettings.lineHeights.tight') }}</option>
+            <option value="leading-normal">{{ $t('fontSettings.lineHeights.normal') }}</option>
+            <option value="leading-relaxed">{{ $t('fontSettings.lineHeights.relaxed') }}</option>
+            <option value="leading-loose">{{ $t('fontSettings.lineHeights.loose') }}</option>
           </select>
         </div>
         
         <div class="flex items-center space-x-2">
-          <label class="font-medium">Font Family:</label>
+          <label class="font-medium">{{ $t('fontSettings.fontFamily') }}:</label>
           <select 
             v-model="fontSettings.family" 
             class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
-            <option value="font-sans">Sans Serif</option>
-            <option value="font-serif">Serif</option>
-            <option value="font-mono">Monospace</option>
+            <option value="font-sans">{{ $t('fontSettings.families.sansSerif') }}</option>
+            <option value="font-serif">{{ $t('fontSettings.families.serif') }}</option>
+            <option value="font-mono">{{ $t('fontSettings.families.monospace') }}</option>
           </select>
         </div>
         
         <div class="flex items-center space-x-2">
-          <label class="font-medium">Text Color:</label>
+          <label class="font-medium">{{ $t('fontSettings.textColor') }}:</label>
           <select 
             v-model="fontSettings.color" 
             class="px-2 py-1 rounded border border-color bg-primary text-sm"
           >
-            <option value="text-gray-700 dark:text-gray-300">Default</option>
-            <option value="text-gray-900 dark:text-gray-100">High Contrast</option>
-            <option value="text-blue-700 dark:text-blue-300">Blue</option>
-            <option value="text-green-700 dark:text-green-300">Green</option>
-            <option value="text-purple-700 dark:text-purple-300">Purple</option>
-            <option value="text-red-700 dark:text-red-300">Red</option>
+            <option value="text-gray-700 dark:text-gray-300">{{ $t('fontSettings.colors.default') }}</option>
+            <option value="text-gray-900 dark:text-gray-100">{{ $t('fontSettings.colors.highContrast') }}</option>
+            <option value="text-blue-700 dark:text-blue-300">{{ $t('fontSettings.colors.blue') }}</option>
+            <option value="text-green-700 dark:text-green-300">{{ $t('fontSettings.colors.green') }}</option>
+            <option value="text-purple-700 dark:text-purple-300">{{ $t('fontSettings.colors.purple') }}</option>
+            <option value="text-red-700 dark:text-red-300">{{ $t('fontSettings.colors.red') }}</option>
           </select>
         </div>
         
@@ -343,7 +343,7 @@ const shareSentenceCheck = () => {
           @click="resetFontSettings"
           class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
         >
-          Reset
+          {{ $t('common.reset') }}
         </button>
       </div>
     </div>
@@ -355,7 +355,7 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          Original Sentence
+          {{ $t('cards.originalSentence') }}
         </h4>
         <blockquote class="text-lg" :class="fontClasses">
           <span v-html="parseMarkdown(sentenceCheck.originalSentence)"></span>
@@ -373,6 +373,24 @@ const shareSentenceCheck = () => {
         <span v-if="sentenceCheck.thinkingText" class="text-xs text-accent-color">
           ✨ With AI Reasoning
         </span>
+        <span v-if="sentenceCheck.modelSelection" class="text-xs text-blue-600 dark:text-blue-400">
+          🎯 Dynamic Selection
+        </span>
+      </div>
+
+      <!-- Model Selection Information -->
+      <div v-if="sentenceCheck.modelSelection" class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border-l-4 border-blue-400">
+        <h5 class="font-medium text-sm mb-2 text-blue-800 dark:text-blue-300 flex items-center">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          {{ $t('cards.dynamicModelSelection') }}
+        </h5>
+        <div class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+          <p><strong>{{ $t('cards.selectedModel') }}:</strong> {{ sentenceCheck.modelSelection.selectedModel }}</p>
+          <p><strong>{{ $t('cards.inputSize') }}:</strong> {{ sentenceCheck.modelSelection.inputSize }} characters</p>
+          <p><strong>{{ $t('cards.selectionLogic') }}:</strong> {{ sentenceCheck.modelSelection.selectionReason }}</p>
+        </div>
       </div>
 
       <!-- Grammar Analysis -->
@@ -381,7 +399,7 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
           </svg>
-          Grammar Analysis
+          {{ $t('cards.grammarAnalysis') }}
         </h4>
         <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/10 dark:via-indigo-900/10 dark:to-purple-900/10 p-4 rounded-lg border-l-4 border-blue-400 shadow-sm">
           <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(sentenceCheck.grammarAnalysis)"></div>
@@ -394,7 +412,7 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
           </svg>
-          Grammar Correction
+          {{ $t('cards.grammarCorrection') }}
         </h4>
         <div class="bg-gradient-to-r from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-900/10 dark:via-green-900/10 dark:to-teal-900/10 p-4 rounded-lg border-l-4 border-emerald-400 shadow-sm">
           <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(sentenceCheck.grammarCorrection)"></div>
@@ -407,7 +425,7 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
           </svg>
-          Keyword Analysis
+          {{ $t('cards.keywordAnalysis') }}
         </h4>
         <div class="bg-gradient-to-r from-violet-50 via-purple-50 to-fuchsia-50 dark:from-violet-900/10 dark:via-purple-900/10 dark:to-fuchsia-900/10 p-4 rounded-lg border-l-4 border-violet-400 shadow-sm">
           <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(sentenceCheck.keywordAnalysis)"></div>
@@ -420,7 +438,7 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
           </svg>
-          中文定义 (Chinese Definition)
+          {{ $t('cards.chineseDefinitionFull') }}
         </h4>
         <div class="bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 dark:from-orange-900/10 dark:via-yellow-900/10 dark:to-amber-900/10 p-4 rounded-lg border-l-4 border-orange-400 shadow-sm">
           <div class="prose prose-sm dark:prose-invert max-w-none" :class="fontClasses" v-html="parseMarkdown(sentenceCheck.chineseDefinition)"></div>
@@ -433,7 +451,7 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
           </svg>
-          AI Reasoning Process
+          {{ $t('cards.aiReasoningProcess') }}
         </h4>
         <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
           <p class="whitespace-pre-wrap" :class="fontClasses">{{ sentenceCheck.thinkingText }}</p>
@@ -446,16 +464,16 @@ const shareSentenceCheck = () => {
           <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 5a1 1 0 011-1h10a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM16 13a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z"/>
           </svg>
-          Raw AI Response
+          {{ $t('cards.rawAiResponse') }}
           <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
-            Parsing Issues Detected
+            {{ $t('cards.parsingIssuesDetected') }}
           </span>
         </h4>
         <div class="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
           <pre class="whitespace-pre-wrap text-xs overflow-auto max-h-60" :class="fontClasses">{{ sentenceCheck.rawResponseContent }}</pre>
         </div>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          This is the original AI response. The parsing extracted what it could from the structured format above.
+          {{ $t('cards.rawResponseNote') }}
         </p>
       </div>
       
@@ -466,42 +484,42 @@ const shareSentenceCheck = () => {
           @click="showGrammarAnalysis = true"
           class="text-sm text-blue-600 hover:underline"
         >
-          Show grammar analysis →
+          {{ $t('cards.showGrammarAnalysis') }} →
         </button>
         <button
           v-if="!showGrammarCorrection"
           @click="showGrammarCorrection = true"
           class="text-sm text-emerald-600 hover:underline"
         >
-          Show grammar correction →
+          {{ $t('cards.showGrammarCorrection') }} →
         </button>
         <button
           v-if="!showKeywordAnalysis"
           @click="showKeywordAnalysis = true"
           class="text-sm text-violet-600 hover:underline"
         >
-          Show keyword analysis →
+          {{ $t('cards.showKeywordAnalysis') }} →
         </button>
         <button
           v-if="sentenceCheck.chineseDefinition && !showChineseDefinition"
           @click="showChineseDefinition = true"
           class="text-sm text-orange-600 hover:underline"
         >
-          Show Chinese definition →
+          {{ $t('cards.showChineseDefinition') }} →
         </button>
         <button
           v-if="sentenceCheck.thinkingText && !showThinking"
           @click="showThinking = true"
           class="text-sm text-purple-600 hover:underline"
         >
-          Show AI reasoning →
+          {{ $t('cards.showAiReasoning') }} →
         </button>
         <button
           v-if="sentenceCheck.rawResponseContent && !showRawResponse"
           @click="showRawResponse = true"
           class="text-sm text-gray-600 hover:underline"
         >
-          Show raw AI response →
+          {{ $t('cards.showRawResponse') }} →
         </button>
       </div>
     </div>

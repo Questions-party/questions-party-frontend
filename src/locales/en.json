@@ -137,7 +137,7 @@
     "generate": "Generate Sentence",
     "regenerate": "Regenerate",
     "shareGeneration": "Share Generation",
-    "poweredBy": "Powered by SiliconFlow Qwen/QwQ-32B with AI Reasoning",
+    "poweredBy": "Powered by SiliconFlow Qwen with Dynamic Model Selection",
     "authRequired": "Authentication Required",
     "authRequiredDesc": "To create your own AI-generated sentences and access advanced features, you need to sign in to your account.",
     "signIn": "Sign In",
@@ -203,7 +203,16 @@
     "processingTime": "Processing time",
     "cancel": "Cancel",
     "cancelled": "Generation cancelled",
-    "retryAttempt": "Retrying... (Attempt {attempt}/{max})"
+    "retryAttempt": "Retrying... (Attempt {attempt}/{max})",
+    "dynamicModelSelection": "Dynamic Model Selection",
+    "modelSelectionInfo": "AI model automatically selected based on complexity",
+    "selectedModel": "Selected Model",
+    "inputSize": "Input Size",
+    "selectionLogic": "Selection Logic",
+    "lightModel": "Light Model (1-16 words)",
+    "mediumModel": "Medium Model (17-33 words)", 
+    "heavyModel": "Heavy Model (34-50 words)",
+    "complexityBasedSelection": "Complexity-based model selection optimizes performance and cost"
   },
   "community": {
     "title": "Community",
@@ -279,6 +288,13 @@
     "deleteAllGenerationsWarning": "This action is irreversible!",
     "deleteAllGenerationsSuccess": "All generations deleted successfully",
     "deleteAllGenerationsError": "Failed to delete all generations",
+    "deleteAllContent": "Delete All Content",
+    "deleteAllContentDesc": "Permanently remove all your generations and sentence checks",
+    "deleteAllContentConfirm": "Delete All Content?", 
+    "deleteAllContentMessage": "This will permanently delete all your generations and sentence checks. This action cannot be undone.",
+    "deleteAllContentWarning": "This action is irreversible!",
+    "deleteAllContentSuccess": "All content deleted successfully! Deleted {totalDeleted} items ({generations} generations, {sentenceChecks} sentence checks)",
+    "deleteAllContentError": "Failed to delete all content",
     "signOut": "Sign Out",
     "signOutDesc": "Sign out from your account",
     "exportDataSuccess": "Data exported successfully!",
@@ -470,7 +486,8 @@
     "of": "of",
     "noResults": "No results found",
     "tryAgain": "Try Again",
-    "signInToInteract": "Sign in to interact"
+    "signInToInteract": "Sign in to interact",
+    "reset": "Reset"
   },
   "date": {
     "justNow": "Just now",
@@ -580,7 +597,7 @@
     "formatError": "AI response format error, retrying...",
     "lengthCharacters": "{length} characters",
     "aiModel": "AI Model",
-    "poweredBy": "Powered by SiliconFlow Qwen/QwQ-32B with AI Reasoning",
+    "poweredBy": "Powered by SiliconFlow Qwen with Dynamic Model Selection",
     "browsingAsGuest": "Browsing as Guest",
     "guestDescription": "You can view community sentence checks without an account.",
     "createFreeAccount": "create a free account",
@@ -605,6 +622,85 @@
     "cancel": "Cancel",
     "cancelled": "Sentence check cancelled",
     "retryAttempt": "Retrying... (Attempt {attempt}/{max})",
-    "retryFailed": "Failed after {attempts} attempts"
+    "retryFailed": "Failed after {attempts} attempts",
+    "dynamicModelSelection": "Dynamic Model Selection",
+    "modelSelectionInfo": "AI model automatically selected based on sentence complexity",
+    "selectedModel": "Selected Model",
+    "inputSize": "Input Size",
+    "selectionLogic": "Selection Logic",
+    "lightModel": "Light Model (1-266 characters)",
+    "mediumModel": "Medium Model (267-533 characters)",
+    "heavyModel": "Heavy Model (534-800 characters)",
+    "complexityBasedSelection": "Complexity-based model selection optimizes performance and cost"
+  },
+  "fontSettings": {
+    "title": "Font Settings",
+    "fontSize": "Font Size",
+    "fontWeight": "Font Weight",
+    "lineHeight": "Line Height",
+    "fontFamily": "Font Family",
+    "textColor": "Text Color",
+    "sizes": {
+      "extraSmall": "Extra Small",
+      "small": "Small",
+      "normal": "Normal",
+      "large": "Large",
+      "extraLarge": "Extra Large",
+      "xxLarge": "2X Large"
+    },
+    "weights": {
+      "light": "Light",
+      "normal": "Normal",
+      "medium": "Medium",
+      "semibold": "Semibold",
+      "bold": "Bold"
+    },
+    "lineHeights": {
+      "tight": "Tight",
+      "normal": "Normal",
+      "relaxed": "Relaxed",
+      "loose": "Loose"
+    },
+    "families": {
+      "sansSerif": "Sans Serif",
+      "serif": "Serif",
+      "monospace": "Monospace"
+    },
+    "colors": {
+      "default": "Default",
+      "highContrast": "High Contrast",
+      "blue": "Blue",
+      "green": "Green",
+      "purple": "Purple",
+      "red": "Red"
+    }
+  },
+  "cards": {
+    "originalSentence": "Original Sentence",
+    "dynamicModelSelection": "Dynamic Model Selection",
+    "selectedModel": "Selected Model",
+    "inputSize": "Input Size",
+    "selectionLogic": "Selection Logic",
+    "grammarAnalysis": "Grammar Analysis",
+    "grammarCorrection": "Grammar Correction",
+    "keywordAnalysis": "Keyword Analysis",
+    "chineseDefinition": "Chinese Definition",
+    "chineseDefinitionFull": "中文定义 (Chinese Definition)",
+    "chineseTranslation": "Chinese Translation",
+    "chineseTranslationFull": "中文翻译 (Chinese Translation)",
+    "aiReasoningProcess": "AI Reasoning Process",
+    "rawAiResponse": "Raw AI Response",
+    "parsingIssuesDetected": "Parsing Issues Detected",
+    "rawResponseNote": "This is the original AI response. The parsing extracted what it could from the structured format above.",
+    "showGrammarAnalysis": "Show grammar analysis",
+    "showGrammarCorrection": "Show grammar correction",
+    "showKeywordAnalysis": "Show keyword analysis",
+    "showChineseDefinition": "Show Chinese definition",
+    "showChineseTranslation": "Show Chinese translation",
+    "showAiReasoning": "Show AI reasoning",
+    "showRawResponse": "Show raw AI response",
+    "showExplanation": "Show explanation",
+    "makePrivate": "Make Private",
+    "makePublic": "Make Public"
   }
 } 

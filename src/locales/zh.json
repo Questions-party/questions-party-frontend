@@ -277,6 +277,13 @@
     "deleteAllGenerationsWarning": "此操作不可逆！",
     "deleteAllGenerationsSuccess": "所有生成删除成功",
     "deleteAllGenerationsError": "删除所有生成失败",
+    "deleteAllContent": "删除所有内容",
+    "deleteAllContentDesc": "永久删除您的所有生成内容和句子检查",
+    "deleteAllContentConfirm": "删除所有内容？",
+    "deleteAllContentMessage": "这将永久删除您的所有生成内容和句子检查。此操作无法撤销。",
+    "deleteAllContentWarning": "此操作不可逆！",
+    "deleteAllContentSuccess": "所有内容删除成功！已删除 {totalDeleted} 项内容（{generations} 个生成内容，{sentenceChecks} 个句子检查）",
+    "deleteAllContentError": "删除所有内容失败",
     "signOut": "退出登录",
     "signOutDesc": "从您的账户退出登录",
     "exportDataSuccess": "数据导出成功！",
@@ -468,7 +475,8 @@
     "of": "共",
     "noResults": "未找到结果",
     "tryAgain": "重试",
-    "signInToInteract": "登录以互动"
+    "signInToInteract": "登录以互动",
+    "reset": "重置"
   },
   "date": {
     "justNow": "刚刚",
@@ -604,5 +612,75 @@
     "cancelled": "句子检查已取消",
     "retryAttempt": "重试中... (第 {attempt}/{max} 次尝试)",
     "retryFailed": "{attempts} 次尝试后失败"
+  },
+  "fontSettings": {
+    "title": "字体设置",
+    "fontSize": "字体大小",
+    "fontWeight": "字体粗细",
+    "lineHeight": "行高",
+    "fontFamily": "字体族",
+    "textColor": "文字颜色",
+    "sizes": {
+      "extraSmall": "超小",
+      "small": "小",
+      "normal": "普通",
+      "large": "大",
+      "extraLarge": "超大",
+      "xxLarge": "特大"
+    },
+    "weights": {
+      "light": "细",
+      "normal": "普通",
+      "medium": "中等",
+      "semibold": "半粗",
+      "bold": "粗体"
+    },
+    "lineHeights": {
+      "tight": "紧密",
+      "normal": "普通",
+      "relaxed": "宽松",
+      "loose": "松散"
+    },
+    "families": {
+      "sansSerif": "无衬线",
+      "serif": "衬线",
+      "monospace": "等宽"
+    },
+    "colors": {
+      "default": "默认",
+      "highContrast": "高对比度",
+      "blue": "蓝色",
+      "green": "绿色",
+      "purple": "紫色",
+      "red": "红色"
+    }
+  },
+  "cards": {
+    "originalSentence": "原始句子",
+    "dynamicModelSelection": "动态模型选择",
+    "selectedModel": "选择的模型",
+    "inputSize": "输入大小",
+    "selectionLogic": "选择逻辑",
+    "grammarAnalysis": "语法分析",
+    "grammarCorrection": "语法修正",
+    "keywordAnalysis": "关键词分析",
+    "chineseDefinition": "中文定义",
+    "chineseDefinitionFull": "中文定义 (Chinese Definition)",
+    "chineseTranslation": "中文翻译",
+    "chineseTranslationFull": "中文翻译 (Chinese Translation)",
+    "aiReasoningProcess": "AI推理过程",
+    "rawAiResponse": "原始AI响应",
+    "parsingIssuesDetected": "检测到解析问题",
+    "rawResponseNote": "这是原始的AI响应。解析从上面的结构化格式中提取了它能提取的内容。",
+    "showGrammarAnalysis": "显示语法分析",
+    "showGrammarCorrection": "显示语法修正",
+    "showKeywordAnalysis": "显示关键词分析",
+    "showChineseDefinition": "显示中文定义",
+    "showChineseTranslation": "显示中文翻译",
+    "showAiReasoning": "显示AI推理",
+    "showRawResponse": "显示原始AI响应",
+    "showExplanation": "显示解释",
+    "makePrivate": "设为私有",
+    "makePublic": "设为公开"
   }
 } 
