@@ -281,7 +281,7 @@
                         </span>
                       </span>
                       <span class="text-blue-500 dark:text-blue-400 text-xs">
-                        {{ $t('generation.aiModel') }}: Qwen/QwQ-32B
+                        {{ $t('generation.aiModel') }}: {{ $t('generation.poweredBy') }}
                       </span>
                     </div>
                   </div>
@@ -378,9 +378,9 @@
                 <div class="prose dark:prose-invert max-w-none">
                   <div class="text-lg leading-relaxed" v-html="parseMarkdown(generationsStore.currentGeneration.sentence)"></div>
                 </div>
-                <div class="mt-3 flex items-center text-sm text-secondary">
-                  <SparklesIcon class="w-4 h-4 mr-1" />
-                  {{ generationsStore.currentGeneration.aiModel || 'Qwen/QwQ-32B' }}
+                <div class="mt-3 flex items-center space-x-4 text-sm text-muted">
+                  <span>{{ $t('generation.wordsUsed') }}: {{ generationsStore.currentGeneration.words.length }}</span>
+                  <span>{{ $t('generation.aiModel') }}: {{ $t('generation.poweredBy') }}</span>
                 </div>
               </div>
             </div>

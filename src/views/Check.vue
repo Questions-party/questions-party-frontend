@@ -215,9 +215,10 @@
                       }) }}
                     </span>
                   </span>
-                  <span class="text-green-500 dark:text-green-400 text-xs">
-                    {{ $t('sentenceCheck.aiModel') }}: Qwen/QwQ-32B
-                  </span>
+                  <div class="flex items-center space-x-4 text-sm text-muted">
+                    <span>Length: {{ sentenceCheckStore.currentCheck.originalSentence.length }} chars</span>
+                    <span>{{ $t('sentenceCheck.aiModel') }}: {{ $t('sentenceCheck.poweredBy') }}</span>
+                  </div>
                 </div>
               </div>
               

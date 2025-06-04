@@ -195,7 +195,7 @@
           <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          {{ generation.aiModel || 'Qwen/QwQ-32B' }}
+          {{ generation.aiModel || '' }}
         </span>
         <span v-if="generation.thinkingText" class="text-xs text-accent-color">
           ✨ With AI Reasoning
@@ -328,7 +328,7 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-4 text-sm text-muted">
           <span>{{ $t('generation.wordsUsed') }}: {{ generation.words.length }}</span>
-          <span>{{ $t('generation.aiModel') }}: {{ generation.aiModel || 'Qwen/QwQ-32B' }}</span>
+          <span>{{ $t('generation.aiModel') }}: {{ generation.aiModel || '' }}</span>
         </div>
 
         <div class="flex items-center space-x-2">

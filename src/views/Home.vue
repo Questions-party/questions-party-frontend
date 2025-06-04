@@ -291,7 +291,7 @@
                 <div class="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
                   <div class="flex items-center space-x-4">
                     <span>{{ $t('generation.wordsUsed') }}: 3</span>
-                    <span>{{ $t('generation.aiModel') }}: Qwen/QwQ-32B</span>
+                    <span>{{ $t('generation.aiModel') }}: {{ $t('generation.poweredBy') }}</span>
                   </div>
                   <div class="flex items-center space-x-2">
                     <button class="flex items-center text-blue-600 dark:text-blue-400 hover:underline text-sm">
@@ -423,7 +423,7 @@
                 <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-800/50">
                   <div class="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-4">
-                      <span>AI Model: Qwen/QwQ-32B</span>
+                      <span>AI Model: {{ $t('generation.poweredBy') }}</span>
                       <span>Length: 35 chars</span>
                     </div>
                     <div class="flex items-center space-x-2">
