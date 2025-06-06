@@ -13,6 +13,7 @@
     "@heroicons/vue": "^2.0.18",
     "@vueuse/core": "^10.3.0",
     "axios": "^1.5.0",
+    "jsrsasign": "^11.1.0",
     "marked": "^15.0.12",
     "pinia": "^2.1.6",
     "pinia-plugin-persistedstate": "^4.3.0",
@@ -23,6 +24,7 @@
     "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
+    "@types/jsrsasign": "^10.5.15",
     "@types/node": "^22.13.13",
     "@vitejs/plugin-vue": "^5.2.3",
     "autoprefixer": "^10.4.14",

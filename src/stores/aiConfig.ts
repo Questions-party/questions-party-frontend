@@ -3,6 +3,7 @@ import {ref} from 'vue'
 import {useToast} from 'vue-toastification'
 import {useI18n} from 'vue-i18n'
 import {aiConfigAPI} from '../services/api.ts' // Import the API module
+import {rsaCrypto} from '../utils/rsaCrypto.ts'
 
 interface PlatformInfo {
     provider: string
@@ -38,6 +39,7 @@ export const useApiKeyStore = defineStore('apiKey', () => {
     const customApiKey = ref('')
     const platformInfo = ref<PlatformInfo | null>(null)
     const testResult = ref<TestResult | null>(null)
+    const publicKey = ref<string | null>(null)
 
     const fetchApiKeyStatus = async () => {
         loading.value = true
@@ -49,6 +51,12 @@ export const useApiKeyStore = defineStore('apiKey', () => {
                 useCustomApiKey.value = data.useCustomApiKey
                 hasCustomApiKey.value = data.hasCustomApiKey
                 platformInfo.value = data.platformInfo
+                
+                // Also fetch public key if we don't have it
+                if (!publicKey.value) {
+                    await fetchPublicKey()
+                }
+                
                 return {success: true, data}
             } else {
                 const message = response.data.message || t('common.error')
@@ -64,17 +72,56 @@ export const useApiKeyStore = defineStore('apiKey', () => {
         }
     }
 
+    const fetchPublicKey = async () => {
+        try {
+            const response = await aiConfigAPI.getPublicKey()
+            
+            if (response.data.success) {
+                publicKey.value = response.data.publicKey
+                rsaCrypto.setPublicKey(response.data.publicKey)
+                return {success: true, publicKey: response.data.publicKey}
+            } else {
+                const message = response.data.message || t('common.error')
+                return {success: false, message}
+            }
+        } catch (error: any) {
+            const message = error.response?.data?.message || t('common.error')
+            return {success: false, message}
+        }
+    }
+
     const updateApiKey = async (apiKey: string, shouldUseCustomKey: boolean) => {
         loading.value = true
         try {
+            // fetch the latest public key before encryption
+            if (shouldUseCustomKey && apiKey) {
+                const keyResult = await fetchPublicKey()
+                if (!keyResult.success) {
+                    toast.error('Failed to get public key for encryption')
+                    return {success: false, message: 'Failed to get public key'}
+                }
+            }
+
+            // Encrypt API key if provided and using custom key
+            let encryptedApiKey = ''
+            if (shouldUseCustomKey && apiKey && publicKey.value) {
+                try {
+                    const encrypted = await rsaCrypto.encrypt(apiKey)
+                    encryptedApiKey = 'rsa:' + encrypted
+                } catch (encryptError) {
+                    toast.error('Failed to encrypt API key')
+                    return {success: false, message: 'Encryption failed'}
+                }
+            }
+
             const response = await aiConfigAPI.updateApiKey({
-                apiKey: shouldUseCustomKey ? apiKey : '',
+                apiKey: shouldUseCustomKey ? encryptedApiKey : '',
                 useCustomApiKey: shouldUseCustomKey
             })
 
             if (response.data.success) {
                 useCustomApiKey.value = response.data.useCustomApiKey
-                hasCustomApiKey.value = shouldUseCustomKey
+                hasCustomApiKey.value = shouldUseCustomKey && !!apiKey
                 customApiKey.value = apiKey
                 toast.success(t('apiKey.updateSuccess'))
                 return {success: true}
@@ -141,9 +188,11 @@ export const useApiKeyStore = defineStore('apiKey', () => {
         hasCustomApiKey,
         platformInfo,
         testResult,
+        publicKey,
 
         // Actions
         fetchApiKeyStatus,
+        fetchPublicKey,
         updateApiKey,
         testApiKey,
         usePlatformApiKey,
