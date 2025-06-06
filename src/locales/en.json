@@ -458,7 +458,11 @@
     "apiResponse": "API Response",
     "aiThinkingProcess": "AI Thinking Process",
     "testResultSuccess": "Test completed successfully",
-    "testResultFailed": "Test failed"
+    "testResultFailed": "Test failed",
+    "publicKeyFetchFailed": "Failed to get public key for encryption",
+    "publicKeyFetchError": "Failed to get public key",
+    "encryptionFailed": "Failed to encrypt API key",
+    "encryptionError": "Encryption failed"
   },
   "footer": {
     "copyright": "English Learning Platform. Built with Vue.js and Express.js."

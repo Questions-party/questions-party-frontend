@@ -97,8 +97,8 @@ export const useApiKeyStore = defineStore('apiKey', () => {
             if (shouldUseCustomKey && apiKey) {
                 const keyResult = await fetchPublicKey()
                 if (!keyResult.success) {
-                    toast.error('Failed to get public key for encryption')
-                    return {success: false, message: 'Failed to get public key'}
+                    toast.error(t('apiKey.publicKeyFetchFailed'))
+                    return {success: false, message: t('apiKey.publicKeyFetchError')}
                 }
             }
 
@@ -109,8 +109,8 @@ export const useApiKeyStore = defineStore('apiKey', () => {
                     const encrypted = await rsaCrypto.encrypt(apiKey)
                     encryptedApiKey = 'rsa:' + encrypted
                 } catch (encryptError) {
-                    toast.error('Failed to encrypt API key')
-                    return {success: false, message: 'Encryption failed'}
+                    toast.error(t('apiKey.encryptionFailed'))
+                    return {success: false, message: t('apiKey.encryptionError')}
                 }
             }
 
