@@ -144,7 +144,9 @@
     "formatError": "AI response format error, retrying...",
     "retryAttempt": "Attempt {current} of {max}",
     "retrySuccess": "Generation successful after retry",
-    "retryFailed": "Generation failed after {attempts} attempts"
+    "retryFailed": "Generation failed after {attempts} attempts",
+    "retrying": "Retrying... Attempt {current} of {max}",
+    "currentAttempt": "Attempt {current} of {max}"
   },
   "community": {
     "title": "Community",
@@ -218,7 +220,8 @@
     "preferencesError": "Failed to update preferences",
     "yourContent": "Your Content",
     "generations": "Generations",
-    "sentenceChecks": "Sentence Checks"
+    "sentenceChecks": "Sentence Checks",
+    "viewAll": "View All ({count} {type})"
   },
   "home": {
     "title": "AI-Powered English Learning",
@@ -277,10 +280,7 @@
       "startLearningNow": "Start Learning Now",
       "createFirstSentence": "Create Your First Sentence",
       "exploreCommunity": "Explore Community",
-      "socialProof": {
-        "trustedBy": "Trusted by learners worldwide",
-        "joinThousands": "Join thousands of English learners"
-      },
+      "socialProof": {},
       "instantAccess": "Instant Access • No Credit Card Required"
     },
     "floatingCards": {
@@ -342,6 +342,7 @@
     "sentencePlaceholder": "Type your English sentence here (max 800 characters)...",
     "checkSentence": "Check Sentence",
     "checking": "Analyzing...",
+    "preparing": "Preparing...",
     "checkSuccess": "Sentence analyzed successfully!",
     "checkFailed": "Failed to analyze sentence. Please try again.",
     "checkResult": "Analysis Result",
@@ -406,7 +407,7 @@
     "updateFailed": "Failed to update sentence check",
     "readyForAnother": "Ready for another sentence check!",
     "notFound": "Sentence check not found",
-    "retryAttempt": "Retry attempt {current} of {max}",
+    "retryAttempt": "Retry attempt {attempts} of {max}",
     "joinDesc": "Join our community to create your own sentence checks",
     "currentAttempt": "Attempt {current} of {max}",
     "retrying": "Retrying... Attempt {current} of {max}"

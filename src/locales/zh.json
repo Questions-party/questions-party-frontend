@@ -144,7 +144,9 @@
     "formatError": "AI响应格式错误，正在重试...",
     "retryAttempt": "尝试 {current}/{max}",
     "retrySuccess": "重试后生成成功",
-    "retryFailed": "经过 {attempts} 次尝试后生成失败"
+    "retryFailed": "经过 {attempts} 次尝试后生成失败",
+    "retrying": "正在重试... 尝试 {current}/{max}",
+    "currentAttempt": "尝试 {current}/{max}"
   },
   "community": {
     "title": "社区",
@@ -218,7 +220,8 @@
     "preferencesError": "更新偏好设置失败",
     "yourContent": "您的内容",
     "generations": "生成内容",
-    "sentenceChecks": "句子检查"
+    "sentenceChecks": "句子检查",
+    "viewAll": "查看全部（{count} 个{type}）"
   },
   "home": {
     "title": "AI驱动的英语学习",
@@ -277,10 +280,7 @@
       "startLearningNow": "立即开始学习",
       "createFirstSentence": "创建您的第一个句子",
       "exploreCommunity": "探索社区",
-      "socialProof": {
-        "trustedBy": "受到全球学习者信赖",
-        "joinThousands": "加入数千名英语学习者"
-      },
+      "socialProof": {},
       "instantAccess": "即时访问 • 无需信用卡"
     },
     "floatingCards": {
@@ -342,6 +342,7 @@
     "sentencePlaceholder": "在此输入您的英语句子（最多800个字符）...",
     "checkSentence": "检查句子",
     "checking": "分析中...",
+    "preparing": "准备中...",
     "checkSuccess": "句子分析成功！",
     "checkFailed": "分析句子失败，请重试。",
     "checkResult": "分析结果",
@@ -406,7 +407,7 @@
     "updateFailed": "更新句子检查失败",
     "readyForAnother": "准备进行下一次句子检查！",
     "notFound": "未找到句子检查",
-    "retryAttempt": "重试尝试 {current}/{max}",
+    "retryAttempt": "重试尝试 {attempts}/{max}",
     "joinDesc": "加入我们的社区，创建您自己的句子检查",
     "currentAttempt": "尝试 {current}/{max}",
     "retrying": "正在重试... 尝试 {current}/{max}"

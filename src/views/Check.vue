@@ -174,13 +174,16 @@
           </div>
 
           <!-- Check Progress -->
-          <div v-if="sentenceCheckStore.checking || sentenceCheckStore.checkProgress.isChecking" class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+          <div v-if="isLocalChecking || sentenceCheckStore.checking || sentenceCheckStore.checkProgress.isChecking" class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
             <div class="flex items-center space-x-3">
               <div class="spinner"></div>
               <div class="flex-1">
                 <div class="flex items-center justify-between mb-2">
                   <p class="font-medium text-green-800 dark:text-green-200">
-                    <span v-if="sentenceCheckStore.checkProgress.isRetrying">
+                    <span v-if="isLocalChecking && !sentenceCheckStore.checking">
+                      {{ $t('sentenceCheck.preparing') }}
+                    </span>
+                    <span v-else-if="sentenceCheckStore.checkProgress.isRetrying">
                       {{ $t('sentenceCheck.retrying', { 
                         current: sentenceCheckStore.checkProgress.currentAttempt, 
                         max: sentenceCheckStore.checkProgress.maxRetries 
@@ -205,7 +208,10 @@
                 
                 <div class="flex items-center justify-between text-sm">
                   <span class="text-green-600 dark:text-green-300">
-                    <span v-if="sentenceCheckStore.checkProgress.isRetrying">
+                    <span v-if="isLocalChecking && !sentenceCheckStore.checking">
+                      {{ $t('sentenceCheck.preparing') }}
+                    </span>
+                    <span v-else-if="sentenceCheckStore.checkProgress.isRetrying">
                       {{ $t('sentenceCheck.formatError') }}
                     </span>
                     <span v-else>
@@ -216,7 +222,9 @@
                     </span>
                   </span>
                   <div class="flex items-center space-x-4 text-sm text-muted">
-                    <span>Length: {{ sentenceCheckStore.currentSentenceCheck.originalSentence.length }} chars</span>
+                    <span v-if="!isLocalChecking || sentenceCheckStore.currentSentenceCheck">
+                      Length: {{ sentenceCheckStore.currentSentenceCheck?.originalSentence?.length || inputSentence.length }} chars
+                    </span>
                     <span>{{ $t('sentenceCheck.aiModel') }}: {{ $t('sentenceCheck.poweredBy') }}</span>
                   </div>
                 </div>
@@ -237,12 +245,12 @@
           <!-- Check Button -->
           <button
             @click="checkSentence"
-            :disabled="sentenceCheckStore.checking || !canCheck"
+            :disabled="isLocalChecking || sentenceCheckStore.checking || !canCheck"
             class="w-full btn btn-primary btn-lg"
           >
-            <div v-if="sentenceCheckStore.checking" class="spinner mr-2"></div>
+            <div v-if="isLocalChecking || sentenceCheckStore.checking" class="spinner mr-2"></div>
             <CheckCircleIcon v-else class="w-5 h-5 mr-2" />
-            {{ sentenceCheckStore.checking ? $t('sentenceCheck.checking') : $t('sentenceCheck.checkSentence') }}
+            {{ (isLocalChecking || sentenceCheckStore.checking) ? $t('sentenceCheck.checking') : $t('sentenceCheck.checkSentence') }}
           </button>
         </div>
       </div>
@@ -396,6 +404,7 @@ const isPublic = ref(true)
 const maxRetries = ref(3)
 const showAdvancedSettings = ref(false)
 const grammarLanguageOption = ref('combined')
+const isLocalChecking = ref(false)
 
 // Watch for changes in grammar language option and save to user preferences
 watch(grammarLanguageOption, async (newValue) => {
@@ -413,7 +422,8 @@ watch(grammarLanguageOption, async (newValue) => {
 const canCheck = computed(() => {
   return inputSentence.value.trim().length > 0 && 
          inputSentence.value.length <= 800 && 
-         !sentenceCheckStore.checking
+         !sentenceCheckStore.checking &&
+         !isLocalChecking.value
 })
 
 onMounted(async () => {
@@ -433,16 +443,24 @@ onMounted(async () => {
 const checkSentence = async () => {
   if (!canCheck.value) return
 
-  const result = await sentenceCheckStore.checkSentence({
-    sentence: inputSentence.value.trim(),
-    isPublic: isPublic.value,
-    maxRetries: maxRetries.value,
-    grammarLanguage: grammarLanguageOption.value
-  })
+  // Set local loading state immediately for instant UI feedback
+  isLocalChecking.value = true
 
-  if (result.success) {
-    // Clear input after successful check
-    inputSentence.value = ''
+  try {
+    const result = await sentenceCheckStore.checkSentence({
+      sentence: inputSentence.value.trim(),
+      isPublic: isPublic.value,
+      maxRetries: maxRetries.value,
+      grammarLanguage: grammarLanguageOption.value
+    })
+
+    if (result.success) {
+      // Clear input after successful check
+      inputSentence.value = ''
+    }
+  } finally {
+    // Clear local loading state
+    isLocalChecking.value = false
   }
 }
 

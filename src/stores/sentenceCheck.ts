@@ -163,6 +163,7 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
   }) => {
     if (checking.value) return { success: false, message: 'Already checking' }
     
+    // Set loading state immediately
     checking.value = true
     checkProgress.value = {
       isRetrying: false,
@@ -177,6 +178,9 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
 
     // Start elapsed time tracking
     startElapsedTimer()
+
+    // Force Vue to update the DOM immediately
+    await new Promise(resolve => setTimeout(resolve, 10))
 
     const maxRetries = params.maxRetries || 3
     let lastError = null
@@ -251,7 +255,7 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
             }
             
             // Show retry message and continue
-            toast.warning(t('sentenceCheck.retryAttempt', { attempt: attempt + 1, max: maxRetries }))
+            toast.warning(t('sentenceCheck.retryAttempt', { attempts: attempt + 1, max: maxRetries }))
             
             // Wait a bit before retrying
             await new Promise(resolve => setTimeout(resolve, 1000))
