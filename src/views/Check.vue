@@ -156,6 +156,19 @@
                     {{ $t('sentenceCheck.maxRetriesDesc') }}
                   </p>
                 </div>
+
+                <!-- Enable Thinking -->
+                <div class="flex items-center space-x-3">
+                  <input
+                    id="enableThinkingCheck"
+                    v-model="enableThinking"
+                    type="checkbox"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label for="enableThinkingCheck" class="text-sm font-medium text-primary">
+                    {{ $t('sentenceCheck.enableThinking') }} - {{ $t('sentenceCheck.enableThinkingDesc') }}
+                  </label>
+                </div>
               </div>
             </transition>
           </div>
@@ -405,6 +418,7 @@ const maxRetries = ref(3)
 const showAdvancedSettings = ref(false)
 const grammarLanguageOption = ref('combined')
 const isLocalChecking = ref(false)
+const enableThinking = ref(false)
 
 // Watch for changes in grammar language option and save to user preferences
 watch(grammarLanguageOption, async (newValue) => {
@@ -451,7 +465,8 @@ const checkSentence = async () => {
       sentence: inputSentence.value.trim(),
       isPublic: isPublic.value,
       maxRetries: maxRetries.value,
-      grammarLanguage: grammarLanguageOption.value
+      grammarLanguage: grammarLanguageOption.value,
+      enableThinking: enableThinking.value
     })
 
     if (result.success) {
@@ -471,7 +486,8 @@ const recheckSameSentence = async () => {
     sentence: sentenceCheckStore.currentSentenceCheck.originalSentence,
     isPublic: isPublic.value,
     maxRetries: maxRetries.value,
-    grammarLanguage: grammarLanguageOption.value
+    grammarLanguage: grammarLanguageOption.value,
+    enableThinking: enableThinking.value
   })
 }
 

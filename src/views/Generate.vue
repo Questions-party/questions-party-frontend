@@ -222,6 +222,19 @@
                         {{ $t('generation.maxRetriesDesc') }}
                       </p>
                     </div>
+
+                    <!-- Enable Thinking -->
+                    <div class="flex items-center space-x-3">
+                      <input
+                        id="enableThinking"
+                        v-model="enableThinking"
+                        type="checkbox"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label for="enableThinking" class="text-sm font-medium text-primary">
+                        {{ $t('generation.enableThinking') }} - {{ $t('generation.enableThinkingDesc') }}
+                      </label>
+                    </div>
                   </div>
                 </transition>
               </div>
@@ -529,6 +542,7 @@ const isPublic = ref(true)
 const maxRetries = ref(3)
 const showAdvancedSettings = ref(false)
 const grammarLanguageOption = ref('combined')
+const enableThinking = ref(false)
 
 // Watch for changes in grammar language option and save to user preferences
 watch(grammarLanguageOption, async (newValue) => {
@@ -575,7 +589,8 @@ const generateSentence = async () => {
     words: selectedWordTexts,
     isPublic: isPublic.value,
     maxRetries: maxRetries.value,
-    grammarLanguage: grammarLanguageOption.value
+    grammarLanguage: grammarLanguageOption.value,
+    enableThinking: enableThinking.value
   })
 
   if (result.success) {
@@ -591,7 +606,8 @@ const regenerateWithSameWords = async () => {
     words: generationsStore.currentGeneration.words,
     isPublic: isPublic.value,
     maxRetries: maxRetries.value,
-    grammarLanguage: grammarLanguageOption.value
+    grammarLanguage: grammarLanguageOption.value,
+    enableThinking: enableThinking.value
   })
 }
 

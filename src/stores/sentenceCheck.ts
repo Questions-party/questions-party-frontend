@@ -25,6 +25,15 @@ interface SentenceCheck {
   updatedAt: string
 }
 
+interface SentenceCheckInput {
+  sentence: string
+  isPublic?: boolean
+  maxRetries?: number
+  grammarLanguage?: string
+  enableThinking?: boolean
+  signal?: AbortSignal
+}
+
 interface CheckProgress {
   isRetrying: boolean
   currentAttempt: number
@@ -155,12 +164,7 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
   }
 
   // Actions
-  const checkSentence = async (params: {
-    sentence: string
-    isPublic?: boolean
-    maxRetries?: number
-    grammarLanguage?: string
-  }) => {
+  const checkSentence = async (params: SentenceCheckInput) => {
     if (checking.value) return { success: false, message: 'Already checking' }
     
     // Set loading state immediately
@@ -200,10 +204,7 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
 
         try {
           const response = await sentenceCheckAPI.checkSentence({
-            sentence: params.sentence,
-            isPublic: params.isPublic ?? true,
-            maxRetries: params.maxRetries || 3,
-            grammarLanguage: params.grammarLanguage || 'combined',
+            ...params,
             signal: abortController.signal
           })
 

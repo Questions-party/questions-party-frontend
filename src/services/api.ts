@@ -95,6 +95,7 @@ export const generationsAPI = {
         isPublic?: boolean;
         maxRetries?: number;
         grammarLanguage?: string;
+        enableThinking?: boolean;
         signal?: AbortSignal
     }) => {
         const {signal, ...requestData} = data
@@ -138,6 +139,7 @@ export const sentenceCheckAPI = {
         isPublic?: boolean;
         maxRetries?: number;
         grammarLanguage?: string;
+        enableThinking?: boolean;
         signal?: AbortSignal
     }) => {
         const {signal, ...requestData} = data

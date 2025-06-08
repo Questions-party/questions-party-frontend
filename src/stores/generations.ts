@@ -28,6 +28,7 @@ interface GenerationInput {
   isPublic?: boolean
   maxRetries?: number
   grammarLanguage?: string
+  enableThinking?: boolean
   signal?: AbortSignal
 }
 

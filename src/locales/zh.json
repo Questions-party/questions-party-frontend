@@ -146,7 +146,9 @@
     "retrySuccess": "重试后生成成功",
     "retryFailed": "经过 {attempts} 次尝试后生成失败",
     "retrying": "正在重试... 尝试 {current}/{max}",
-    "currentAttempt": "尝试 {current}/{max}"
+    "currentAttempt": "尝试 {current}/{max}",
+    "enableThinking": "启用AI思考过程",
+    "enableThinkingDesc": "在生成过程中显示详细的AI推理和思维过程"
   },
   "community": {
     "title": "社区",
@@ -410,7 +412,9 @@
     "retryAttempt": "重试尝试 {attempts}/{max}",
     "joinDesc": "加入我们的社区，创建您自己的句子检查",
     "currentAttempt": "尝试 {current}/{max}",
-    "retrying": "正在重试... 尝试 {current}/{max}"
+    "retrying": "正在重试... 尝试 {current}/{max}",
+    "enableThinking": "启用AI思考",
+    "enableThinkingDesc": "增强AI分析的全面性，提升回复质量，但需要消耗更多时间"
   },
   "fontSettings": {
     "title": "字体设置",

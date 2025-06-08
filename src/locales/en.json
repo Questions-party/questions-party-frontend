@@ -146,7 +146,9 @@
     "retrySuccess": "Generation successful after retry",
     "retryFailed": "Generation failed after {attempts} attempts",
     "retrying": "Retrying... Attempt {current} of {max}",
-    "currentAttempt": "Attempt {current} of {max}"
+    "currentAttempt": "Attempt {current} of {max}",
+    "enableThinking": "Enable AI Thinking Process",
+    "enableThinkingDesc": "Show detailed AI reasoning and thought process during generation"
   },
   "community": {
     "title": "Community",
@@ -410,7 +412,9 @@
     "retryAttempt": "Retry attempt {attempts} of {max}",
     "joinDesc": "Join our community to create your own sentence checks",
     "currentAttempt": "Attempt {current} of {max}",
-    "retrying": "Retrying... Attempt {current} of {max}"
+    "retrying": "Retrying... Attempt {current} of {max}",
+    "enableThinking": "Enable AI Thinking",
+    "enableThinkingDesc": "Enhance the comprehensiveness of AI analysis and improve response quality, but it requires more time"
   },
   "fontSettings": {
     "title": "Font Settings",
