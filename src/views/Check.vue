@@ -321,11 +321,11 @@
       </transition>
 
       <!-- Recent Checks -->
-      <div v-if="sentenceCheckStore.userSentenceChecks.length > 0" class="space-y-4">
+      <div v-if="sentenceCheckStore.sentenceChecks.length > 0" class="space-y-4">
         <div class="flex justify-between items-center">
           <h3 class="text-xl font-semibold">{{ $t('sentenceCheck.yourChecks') }}</h3>
           <span class="text-sm text-secondary">
-            {{ sentenceCheckStore.userSentenceChecks.length }} {{ $t('sentenceCheck.totalChecks') }}
+            {{ sentenceCheckStore.sentenceChecks.length }} {{ $t('sentenceCheck.totalChecks') }}
           </span>
         </div>
 
@@ -433,6 +433,13 @@ watch(grammarLanguageOption, async (newValue) => {
   }
 }, { immediate: false })
 
+// Watch for user authentication changes and update isPublic based on user preference
+watch(() => authStore.user, (user) => {
+  if (user?.preferences?.showPublicGenerations !== undefined) {
+    isPublic.value = user.preferences.showPublicGenerations
+  }
+}, { immediate: true })
+
 const canCheck = computed(() => {
   return inputSentence.value.trim().length > 0 && 
          inputSentence.value.length <= 800 && 
@@ -448,10 +455,16 @@ onMounted(async () => {
     if (authStore.user?.preferences?.grammarExplanationLanguage) {
       grammarLanguageOption.value = authStore.user.preferences.grammarExplanationLanguage
     }
+    
+    // Set isPublic based on user preference
+    if (authStore.user?.preferences?.showPublicGenerations !== undefined) {
+      isPublic.value = authStore.user.preferences.showPublicGenerations
+    }
   } else {
     // Load statistics for guests
     await sentenceCheckStore.fetchStatistics()
   }
+  console.log('page loaded')
 })
 
 const checkSentence = async () => {

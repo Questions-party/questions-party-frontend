@@ -76,7 +76,17 @@
     "selectedCount": "{count} selected",
     "deleteConfirm": "Are you sure you want to delete this word?",
     "usageCount": "Used {count} times",
-    "words": "words"
+    "words": "words",
+    "noun": "Noun",
+    "verb": "Verb",
+    "adjective": "Adjective",
+    "adverb": "Adverb",
+    "preposition": "Preposition",
+    "conjunction": "Conjunction",
+    "interjection": "Interjection",
+    "pronoun": "Pronoun",
+    "determiner": "Determiner",
+    "adjective_satellite": "Adjective Satellite"
   },
   "generation": {
     "title": "Generate Sentences",
@@ -123,8 +133,6 @@
     "linkCopyFailed": "Failed to copy link",
     "deleteConfirm": "Are you sure you want to delete this generation?",
     "deleteSuccess": "Generation deleted successfully",
-    "likeSuccess": "Generation liked!",
-    "unlikeSuccess": "Like removed",
     "aiModel": "AI Model",
     "maxRetries": "Maximum Retries",
     "maxRetriesDesc": "Number of attempts if AI response format is invalid",
@@ -283,7 +291,7 @@
       "createFirstSentence": "Create Your First Sentence",
       "exploreCommunity": "Explore Community",
       "socialProof": {},
-      "instantAccess": "Instant Access • No Credit Card Required"
+      "instantAccess": "Instant Access"
     },
     "floatingCards": {
       "sentenceGeneration": {
@@ -361,8 +369,6 @@
     "deleteConfirm": "Are you sure you want to delete this sentence check?",
     "deleteSuccess": "Sentence check deleted successfully",
     "deleteFailed": "Failed to delete sentence check",
-    "likeSuccess": "Sentence check liked!",
-    "unlikeSuccess": "Like removed",
     "maxCharacters": "Maximum 800 characters",
     "characterCount": "{count}/800 characters",
     "sentenceTooLong": "Sentence is too long. Maximum 800 characters allowed.",
@@ -482,7 +488,15 @@
     "selectionLogic": "Selection Logic",
     "selectedModel": "Selected Model",
     "dynamicModelSelection": "Dynamic Model Selection",
-    "inputSize": "Input Size"
+    "inputSize": "Input Size",
+    "public": "Public",
+    "private": "Private",
+    "deleteGenerationTitle": "Delete Generation",
+    "deleteGenerationMessage": "Are you sure you want to delete this generation?",
+    "deleteGenerationWarning": "This action cannot be undone. The generation will be permanently removed.",
+    "deleteSentenceCheckTitle": "Delete Sentence Check",
+    "deleteSentenceCheckMessage": "Are you sure you want to delete this sentence check?",
+    "deleteSentenceCheckWarning": "This action cannot be undone. The sentence check will be permanently removed."
   },
   "apiKey": {
     "title": "AI Configuration",

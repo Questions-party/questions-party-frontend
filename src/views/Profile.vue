@@ -33,7 +33,7 @@
       </div>
       <div class="card text-center">
         <div class="card-body">
-          <div class="text-3xl font-bold text-emerald-600 mb-2">{{ sentenceCheckStore.userSentenceChecks.length }}</div>
+          <div class="text-3xl font-bold text-emerald-600 mb-2">{{ sentenceCheckStore.sentenceChecks.length }}</div>
           <p class="text-sm text-secondary">{{ $t('profile.totalSentenceChecks') }}</p>
         </div>
       </div>
@@ -187,7 +187,7 @@
         <p class="text-secondary">{{ $t('common.loading') }}...</p>
       </div>
 
-      <div v-else-if="getCurrentContent().length === 0" class="text-center py-12">
+      <div v-else-if="currentContent.length === 0" class="text-center py-12">
         <SparklesIcon class="w-16 h-16 text-gray-400 mx-auto mb-4"/>
         <h3 class="text-lg font-medium text-primary mb-2">{{ $t('profile.noGenerationsYet') }}</h3>
         <p class="text-secondary mb-4">{{ $t('profile.startCreating') }}</p>
@@ -198,29 +198,29 @@
 
       <div v-else class="grid grid-cols-1 gap-6">
         <GenerationWordsCard
+            v-for="generation in currentContent.slice(0, 6)"
             v-if="activeContentType === 'generations'"
-            v-for="generation in getCurrentContent().slice(0, 6)"
             :key="generation._id"
             :generation="generation"
             :show-actions="true"
         />
         <GenerationSentenceCard
+            v-for="sentenceCheck in currentContent.slice(0, 6)"
             v-else
-            v-for="sentenceCheck in getCurrentContent().slice(0, 6)"
             :key="sentenceCheck._id"
             :sentenceCheck="sentenceCheck"
             :show-actions="true"
         />
       </div>
 
-      <div v-if="getCurrentContent().length > 6" class="text-center">
+      <div v-if="currentContent.length > 6" class="text-center">
         <button
             class="btn btn-ghost"
             @click="showAllGenerations = !showAllGenerations"
         >
           {{
             showAllGenerations ? $t('profile.showLess') : $t('profile.viewAll', {
-              count: getCurrentContent().length,
+              count: currentContent.length,
               type: getContentTypeName()
             })
           }}
@@ -228,17 +228,17 @@
       </div>
 
       <!-- All Generations (when expanded) -->
-      <div v-if="showAllGenerations && getCurrentContent().length > 6" class="grid grid-cols-1 gap-6">
+      <div v-if="showAllGenerations && currentContent.length > 6" class="grid grid-cols-1 gap-6">
         <GenerationWordsCard
+            v-for="generation in currentContent.slice(6)"
             v-if="activeContentType === 'generations'"
-            v-for="generation in getCurrentContent().slice(6)"
             :key="generation._id"
             :generation="generation"
             :show-actions="true"
         />
         <GenerationSentenceCard
+            v-for="sentenceCheck in currentContent.slice(6)"
             v-else
-            v-for="sentenceCheck in getCurrentContent().slice(6)"
             :key="sentenceCheck._id"
             :sentenceCheck="sentenceCheck"
             :show-actions="true"
@@ -272,8 +272,8 @@
             <p class="text-xs text-secondary">{{ $t('profile.deleteAllContentDesc') }}</p>
           </div>
           <button
-              :class="(generationsStore.generations.length > 0 || sentenceCheckStore.userSentenceChecks.length > 0) ? 'btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'btn-ghost opacity-50 cursor-not-allowed'"
-              :disabled="generationsStore.generations.length === 0 && sentenceCheckStore.userSentenceChecks.length === 0"
+              :class="(generationsStore.generations.length > 0 || sentenceCheckStore.sentenceChecks.length > 0) ? 'btn-ghost text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'btn-ghost opacity-50 cursor-not-allowed'"
+              :disabled="generationsStore.generations.length === 0 && sentenceCheckStore.sentenceChecks.length === 0"
               class="btn btn-sm"
               @click="showDeleteAllDialog = true"
           >
@@ -315,14 +315,14 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, reactive, computed, onMounted} from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {
-  SparklesIcon,
   ArrowDownTrayIcon,
   ArrowRightOnRectangleIcon,
-  TrashIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  SparklesIcon,
+  TrashIcon
 } from '@heroicons/vue/24/outline'
 import {useAuthStore} from '../stores/auth.ts'
 import {useWordsStore} from '../stores/words.ts'
@@ -357,7 +357,7 @@ const preferences = reactive({
 
 const totalLikes = computed(() => {
   return generationsStore.generations.reduce((total, gen) => total + gen.likeCount, 0) +
-      sentenceCheckStore.userSentenceChecks.reduce((total, check) => total + check.likeCount, 0)
+      sentenceCheckStore.sentenceChecks.reduce((total, check) => total + check.likeCount, 0)
 })
 
 const isLoading = computed(() => {
@@ -368,13 +368,13 @@ const isLoading = computed(() => {
   }
 })
 
-const getCurrentContent = () => {
+const currentContent = computed(() => {
   if (activeContentType.value === 'generations') {
     return generationsStore.sortedGenerations
   } else {
     return sentenceCheckStore.sortedSentenceChecks
   }
-}
+})
 
 const getContentTypeName = () => {
   return activeContentType.value === 'generations' ? t('community.wordGenerations') : t('community.sentenceChecks')
@@ -443,10 +443,10 @@ const confirmDeleteAllGenerations = async () => {
 
     // Clear both types of content from their respective stores
     generationsStore.generations = []
-    sentenceCheckStore.userSentenceChecks = []
+    sentenceCheckStore.sentenceChecks = []
 
     showDeleteAllDialog.value = false
-    
+
     // Show success message with deletion details if available
     if (response.data.totalDeleted > 0) {
       toast.success(t('profile.deleteAllContentSuccess', {

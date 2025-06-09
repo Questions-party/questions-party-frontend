@@ -6,6 +6,10 @@ import { useI18n } from 'vue-i18n'
 
 interface Generation {
   _id: string
+  userId: {
+    _id: string
+    username: string
+  }
   sentence: string
   explanation: string
   thinkingText?: string
@@ -14,10 +18,6 @@ interface Generation {
   isPublic: boolean
   likeCount: number
   likes?: Array<{ userId: string }>
-  userId: {
-    _id: string
-    username: string
-  }
   aiModel?: string
   createdAt: string
   updatedAt: string
@@ -30,12 +30,6 @@ interface GenerationInput {
   grammarLanguage?: string
   enableThinking?: boolean
   signal?: AbortSignal
-}
-
-interface RetryInfo {
-  attempt: number
-  maxRetries: number
-  success: boolean
 }
 
 interface GenerationProgress {
@@ -372,7 +366,6 @@ export const useGenerationsStore = defineStore('generations', () => {
           currentGeneration.value.likeCount = response.data.likeCount
         }
         
-        toast.success(liked ? t('generation.likeSuccess') : t('generation.unlikeSuccess'))
         return { success: true, liked }
       } else {
         const message = response.data.message || t('common.error')
@@ -398,10 +391,6 @@ export const useGenerationsStore = defineStore('generations', () => {
         }
         
         generations.value.forEach(updateGeneration)
-        
-        if (currentGeneration.value?._id === generationId) {
-          currentGeneration.value.isPublic = isPublic
-        }
         
         toast.success(t('generation.privacyUpdateSuccess'))
         return { success: true }

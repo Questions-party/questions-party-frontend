@@ -76,7 +76,17 @@
     "spellingErrorWithSuggestions": "检测到拼写错误。您是否想要：{suggestions}？",
     "selectedCount": "已选择 {count} 个",
     "deleteConfirm": "您确定要删除这个单词吗？",
-    "usageCount": "已使用 {count} 次"
+    "usageCount": "已使用 {count} 次",
+    "noun": "名词",
+    "verb": "动词",
+    "adjective": "形容词",
+    "adverb": "副词",
+    "preposition": "介词",
+    "conjunction": "连词",
+    "interjection": "感叹词",
+    "pronoun": "代词",
+    "determiner": "限定词",
+    "adjective_satellite": "附属形容词"
   },
   "generation": {
     "title": "生成句子",
@@ -123,8 +133,6 @@
     "linkCopyFailed": "复制链接失败",
     "deleteConfirm": "您确定要删除这个生成吗？",
     "deleteSuccess": "生成删除成功",
-    "likeSuccess": "已点赞生成！",
-    "unlikeSuccess": "已取消点赞",
     "aiModel": "AI模型",
     "maxRetries": "最大重试次数",
     "maxRetriesDesc": "AI响应格式无效时的尝试次数",
@@ -283,7 +291,7 @@
       "createFirstSentence": "创建您的第一个句子",
       "exploreCommunity": "探索社区",
       "socialProof": {},
-      "instantAccess": "即时访问 • 无需信用卡"
+      "instantAccess": "即时访问"
     },
     "floatingCards": {
       "sentenceGeneration": {
@@ -361,8 +369,6 @@
     "deleteConfirm": "您确定要删除这个句子检查吗？",
     "deleteSuccess": "句子检查删除成功",
     "deleteFailed": "删除句子检查失败",
-    "likeSuccess": "句子检查已点赞！",
-    "unlikeSuccess": "已取消点赞",
     "maxCharacters": "最多800个字符",
     "characterCount": "{count}/800 个字符",
     "sentenceTooLong": "句子太长。最多允许800个字符。",
@@ -482,7 +488,15 @@
     "selectionLogic": "选择逻辑",
     "selectedModel": "选择的模型",
     "dynamicModelSelection": "动态模型选择",
-    "inputSize": "输入大小"
+    "inputSize": "输入大小",
+    "public": "公开",
+    "private": "私有",
+    "deleteGenerationTitle": "删除生成内容",
+    "deleteGenerationMessage": "您确定要删除这个生成内容吗？",
+    "deleteGenerationWarning": "此操作无法撤销。该生成内容将被永久删除。",
+    "deleteSentenceCheckTitle": "删除句子检查",
+    "deleteSentenceCheckMessage": "您确定要删除这个句子检查吗？",
+    "deleteSentenceCheckWarning": "此操作无法撤销。该句子检查将被永久删除。"
   },
   "apiKey": {
     "title": "AI配置",

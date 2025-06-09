@@ -557,6 +557,13 @@ watch(grammarLanguageOption, async (newValue) => {
   }
 }, { immediate: false })
 
+// Watch for user authentication changes and update isPublic based on user preference
+watch(() => authStore.user, (user) => {
+  if (user?.preferences?.showPublicGenerations !== undefined) {
+    isPublic.value = user.preferences.showPublicGenerations
+  }
+}, { immediate: true })
+
 onMounted(async () => {
   if (authStore.isAuthenticated) {
     await wordsStore.fetchWords()
@@ -565,6 +572,11 @@ onMounted(async () => {
     // Load user's grammar language preference
     if (authStore.user?.preferences?.grammarExplanationLanguage) {
       grammarLanguageOption.value = authStore.user.preferences.grammarExplanationLanguage
+    }
+    
+    // Set isPublic based on user preference
+    if (authStore.user?.preferences?.showPublicGenerations !== undefined) {
+      isPublic.value = authStore.user.preferences.showPublicGenerations
     }
   }
 })
@@ -609,6 +621,11 @@ const regenerateWithSameWords = async () => {
     grammarLanguage: grammarLanguageOption.value,
     enableThinking: enableThinking.value
   })
+
+  if (result.success) {
+    // Clear selections after successful generation
+    wordsStore.deselectAllWords()
+  }
 }
 
 const generateWithNewWords = () => {

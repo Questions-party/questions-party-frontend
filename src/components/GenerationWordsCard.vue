@@ -1,78 +1,66 @@
 <template>
-  <div class="card generation-card fade-in">
+  <div class="card generation-card fade-in" :class="cardClasses">
     <div class="card-header">
       <div class="flex justify-between items-start">
         <div class="flex items-center space-x-3">
           <div
-              class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
             <span class="text-white font-bold text-xs">
               {{ generation.userId.username.charAt(0).toUpperCase() }}
             </span>
           </div>
           <div>
             <p class="font-medium text-sm">{{ generation.userId.username }}</p>
-            <p class="text-xs text-muted">{{ formatDate(generation.createdAt) }}</p>
+            <div class="flex items-center space-x-2">
+              <p class="text-xs text-muted">{{ formatDate(generation.createdAt) }}</p>
+              <span v-if="isOwnGeneration" :class="visibilityBadgeClasses">
+                {{ generation.isPublic ? $t('cards.public') : $t('cards.private') }}
+              </span>
+            </div>
           </div>
         </div>
 
         <div v-if="showActions && authStore.isAuthenticated" class="flex items-center space-x-2">
           <!-- Font Configuration Toggle -->
-          <button
-              :class="{ 'bg-tertiary': showFontConfig }"
-              class="p-1 rounded-md hover:bg-tertiary transition-colors"
-              :title="$t('fontSettings.title')"
-              @click="showFontConfig = !showFontConfig"
-          >
+          <button :class="{ 'bg-tertiary': showFontConfig }" class="p-1 rounded-md hover:bg-tertiary transition-colors"
+            :title="$t('fontSettings.title')" @click="showFontConfig = !showFontConfig">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
-                  d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
+                d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" />
             </svg>
           </button>
 
-          <button
-              :class="{ 'text-red-500': isLiked }"
-              :disabled="likingInProgress"
-              class="flex items-center space-x-1 text-sm hover:bg-tertiary rounded-md px-2 py-1 transition-colors"
-              @click="toggleLike"
-          >
-            <HeartIcon
-                :class="{ 'fill-current': isLiked }"
-                class="w-4 h-4"
-            />
+          <button :class="{ 'text-red-500': isLiked }" :disabled="likingInProgress || !generation.isPublic"
+            class="flex items-center space-x-1 text-sm hover:bg-tertiary rounded-md px-2 py-1 transition-colors"
+            @click="toggleLike">
+            <HeartIcon :class="{ 'fill-current': isLiked }" class="w-4 h-4" />
             <span>{{ generation.likeCount }}</span>
           </button>
 
           <!-- More options for own generations -->
           <Menu v-if="isOwnGeneration" as="div" class="relative">
             <MenuButton class="p-1 rounded-md hover:bg-tertiary transition-colors">
-              <EllipsisVerticalIcon class="w-4 h-4"/>
+              <EllipsisVerticalIcon class="w-4 h-4" />
             </MenuButton>
 
-            <transition
-                enter-active-class="transition duration-100 ease-out"
-                enter-from-class="transform scale-95 opacity-0"
-                enter-to-class="transform scale-100 opacity-1"
-                leave-active-class="transition duration-75 ease-in"
-                leave-from-class="transform scale-100 opacity-1"
-                leave-to-class="transform scale-95 opacity-0"
-            >
+            <transition enter-active-class="transition duration-100 ease-out"
+              enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-1"
+              leave-active-class="transition duration-75 ease-in" leave-from-class="transform scale-100 opacity-1"
+              leave-to-class="transform scale-95 opacity-0">
               <MenuItems class="absolute right-0 mt-2 w-48 bg-primary border border-color rounded-md shadow-lg z-10">
                 <div class="py-1">
                   <MenuItem>
-                    <button
-                        class="block w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors"
-                        @click="togglePrivacy"
-                    >
-                      {{ generation.isPublic ? $t('cards.makePrivate') : $t('cards.makePublic') }}
-                    </button>
+                  <button class="block w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors"
+                    @click="togglePrivacy">
+                    {{ generation.isPublic ? $t('cards.makePrivate') : $t('cards.makePublic') }}
+                  </button>
                   </MenuItem>
                   <MenuItem>
-                    <button
-                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-secondary transition-colors"
-                        @click="deleteGeneration"
-                    >
-                      {{ $t('common.delete') }}
-                    </button>
+                  <button
+                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-secondary transition-colors"
+                    @click="showDeleteDialog = true">
+                    {{ $t('common.delete') }}
+                  </button>
                   </MenuItem>
                 </div>
               </MenuItems>
@@ -83,7 +71,7 @@
         <!-- Show like button for anonymous users (but disabled) -->
         <div v-else-if="showActions" class="flex items-center space-x-2">
           <div class="flex items-center space-x-1 text-sm text-muted px-2 py-1">
-            <HeartIcon class="w-4 h-4"/>
+            <HeartIcon class="w-4 h-4" />
             <span>{{ generation.likeCount }}</span>
           </div>
         </div>
@@ -95,10 +83,7 @@
       <div class="flex flex-wrap gap-4 items-center text-sm">
         <div class="flex items-center space-x-2">
           <label class="font-medium">{{ $t('fontSettings.fontSize') }}:</label>
-          <select
-              v-model="fontSettings.size"
-              class="px-2 py-1 rounded border border-color bg-primary text-sm"
-          >
+          <select v-model="fontSettings.size" class="px-2 py-1 rounded border border-color bg-primary text-sm">
             <option value="text-xs">{{ $t('fontSettings.sizes.extraSmall') }}</option>
             <option value="text-sm">{{ $t('fontSettings.sizes.small') }}</option>
             <option value="text-base">{{ $t('fontSettings.sizes.normal') }}</option>
@@ -110,10 +95,7 @@
 
         <div class="flex items-center space-x-2">
           <label class="font-medium">{{ $t('fontSettings.fontWeight') }}:</label>
-          <select
-              v-model="fontSettings.weight"
-              class="px-2 py-1 rounded border border-color bg-primary text-sm"
-          >
+          <select v-model="fontSettings.weight" class="px-2 py-1 rounded border border-color bg-primary text-sm">
             <option value="font-light">{{ $t('fontSettings.weights.light') }}</option>
             <option value="font-normal">{{ $t('fontSettings.weights.normal') }}</option>
             <option value="font-medium">{{ $t('fontSettings.weights.medium') }}</option>
@@ -124,10 +106,7 @@
 
         <div class="flex items-center space-x-2">
           <label class="font-medium">{{ $t('fontSettings.lineHeight') }}:</label>
-          <select
-              v-model="fontSettings.lineHeight"
-              class="px-2 py-1 rounded border border-color bg-primary text-sm"
-          >
+          <select v-model="fontSettings.lineHeight" class="px-2 py-1 rounded border border-color bg-primary text-sm">
             <option value="leading-tight">{{ $t('fontSettings.lineHeights.tight') }}</option>
             <option value="leading-normal">{{ $t('fontSettings.lineHeights.normal') }}</option>
             <option value="leading-relaxed">{{ $t('fontSettings.lineHeights.relaxed') }}</option>
@@ -137,10 +116,7 @@
 
         <div class="flex items-center space-x-2">
           <label class="font-medium">{{ $t('fontSettings.fontFamily') }}:</label>
-          <select
-              v-model="fontSettings.family"
-              class="px-2 py-1 rounded border border-color bg-primary text-sm"
-          >
+          <select v-model="fontSettings.family" class="px-2 py-1 rounded border border-color bg-primary text-sm">
             <option value="font-sans">{{ $t('fontSettings.families.sansSerif') }}</option>
             <option value="font-serif">{{ $t('fontSettings.families.serif') }}</option>
             <option value="font-mono">{{ $t('fontSettings.families.monospace') }}</option>
@@ -149,10 +125,7 @@
 
         <div class="flex items-center space-x-2">
           <label class="font-medium">{{ $t('fontSettings.textColor') }}:</label>
-          <select
-              v-model="fontSettings.color"
-              class="px-2 py-1 rounded border border-color bg-primary text-sm"
-          >
+          <select v-model="fontSettings.color" class="px-2 py-1 rounded border border-color bg-primary text-sm">
             <option value="text-gray-700 dark:text-gray-300">{{ $t('fontSettings.colors.default') }}</option>
             <option value="text-gray-900 dark:text-gray-100">{{ $t('fontSettings.colors.highContrast') }}</option>
             <option value="text-blue-700 dark:text-blue-300">{{ $t('fontSettings.colors.blue') }}</option>
@@ -163,9 +136,8 @@
         </div>
 
         <button
-            class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-            @click="resetFontSettings"
-        >
+          class="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          @click="resetFontSettings">
           {{ $t('common.reset') }}
         </button>
       </div>
@@ -174,11 +146,7 @@
     <div class="card-body space-y-4">
       <!-- Words Used -->
       <div class="flex flex-wrap gap-2">
-        <span
-            v-for="word in generation.words"
-            :key="word"
-            class="word-tag"
-        >
+        <span v-for="word in generation.words" :key="word" class="word-tag">
           {{ word }}
         </span>
       </div>
@@ -191,9 +159,9 @@
       <!-- AI Model Badge -->
       <div class="flex items-center space-x-2">
         <span
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300">
+          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300">
           <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {{ generation.aiModel || '' }}
         </span>
@@ -206,10 +174,11 @@
       </div>
 
       <!-- Model Selection Information -->
-      <div v-if="generation.modelSelection" class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border-l-4 border-blue-400">
+      <div v-if="generation.modelSelection"
+        class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border-l-4 border-blue-400">
         <h5 class="font-medium text-sm mb-2 text-blue-800 dark:text-blue-300 flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           {{ $t('cards.dynamicModelSelection') }}
         </h5>
@@ -225,15 +194,15 @@
         <h4 class="font-medium text-sm mb-3 text-primary flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path clip-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  fill-rule="evenodd"/>
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              fill-rule="evenodd" />
           </svg>
           {{ $t('generation.explanation') }}
         </h4>
         <div
-            class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/10 dark:via-emerald-900/10 dark:to-teal-900/10 p-4 rounded-lg border-l-4 border-emerald-400 shadow-sm">
+          class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/10 dark:via-emerald-900/10 dark:to-teal-900/10 p-4 rounded-lg border-l-4 border-emerald-400 shadow-sm">
           <div :class="fontClasses" class="prose prose-sm dark:prose-invert max-w-none"
-               v-html="parseMarkdown(generation.explanation)"></div>
+            v-html="parseMarkdown(generation.explanation)"></div>
         </div>
       </div>
 
@@ -242,14 +211,14 @@
         <h4 class="font-medium text-sm mb-3 text-primary flex items-center">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path
-                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
           </svg>
           {{ $t('cards.chineseTranslationFull') }}
         </h4>
         <div
-            class="bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 dark:from-orange-900/10 dark:via-yellow-900/10 dark:to-amber-900/10 p-4 rounded-lg border-l-4 border-orange-400 shadow-sm">
+          class="bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 dark:from-orange-900/10 dark:via-yellow-900/10 dark:to-amber-900/10 p-4 rounded-lg border-l-4 border-orange-400 shadow-sm">
           <div :class="fontClasses" class="prose prose-sm dark:prose-invert max-w-none"
-               v-html="parseMarkdown(generation.chineseTranslation)"></div>
+            v-html="parseMarkdown(generation.chineseTranslation)"></div>
         </div>
       </div>
 
@@ -258,12 +227,12 @@
         <h4 class="font-medium text-sm mb-2 text-primary flex items-center">
           <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path
-                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
           {{ $t('cards.aiReasoningProcess') }}
         </h4>
         <div
-            class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
+          class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 p-3 rounded-lg border-l-4 border-purple-400">
           <p :class="fontClasses" class="whitespace-pre-wrap">{{ generation.thinkingText }}</p>
         </div>
       </div>
@@ -273,18 +242,18 @@
         <h4 class="font-medium text-sm mb-2 text-primary flex items-center">
           <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path
-                d="M4 5a1 1 0 011-1h10a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM16 13a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z"/>
+              d="M4 5a1 1 0 011-1h10a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zM16 13a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z" />
           </svg>
           {{ $t('cards.rawAiResponse') }}
           <span
-              class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+            class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
             {{ $t('cards.parsingIssuesDetected') }}
           </span>
         </h4>
         <div
-            class="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+          class="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
           <pre :class="fontClasses"
-               class="whitespace-pre-wrap text-xs overflow-auto max-h-60">{{ generation.rawResponseContent }}</pre>
+            class="whitespace-pre-wrap text-xs overflow-auto max-h-60">{{ generation.rawResponseContent }}</pre>
         </div>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
           {{ $t('cards.rawResponseNote') }}
@@ -293,32 +262,20 @@
 
       <!-- Toggle buttons -->
       <div class="flex space-x-3">
-        <button
-            v-if="!showExplanation"
-            class="text-sm text-accent-color hover:underline"
-            @click="showExplanation = true"
-        >
+        <button v-if="!showExplanation" class="text-sm text-accent-color hover:underline"
+          @click="showExplanation = true">
           {{ $t('cards.showExplanation') }} →
         </button>
-        <button
-            v-if="generation.chineseTranslation && !showChineseTranslation"
-            class="text-sm text-orange-600 hover:underline"
-            @click="showChineseTranslation = true"
-        >
+        <button v-if="generation.chineseTranslation && !showChineseTranslation"
+          class="text-sm text-orange-600 hover:underline" @click="showChineseTranslation = true">
           {{ $t('cards.showChineseTranslation') }} →
         </button>
-        <button
-            v-if="generation.thinkingText && !showThinking"
-            class="text-sm text-purple-600 hover:underline"
-            @click="showThinking = true"
-        >
+        <button v-if="generation.thinkingText && !showThinking" class="text-sm text-purple-600 hover:underline"
+          @click="showThinking = true">
           {{ $t('cards.showAiReasoning') }} →
         </button>
-        <button
-            v-if="generation.rawResponseContent && !showRawResponse"
-            class="text-sm text-gray-600 hover:underline"
-            @click="showRawResponse = true"
-        >
+        <button v-if="generation.rawResponseContent && !showRawResponse" class="text-sm text-gray-600 hover:underline"
+          @click="showRawResponse = true">
           {{ $t('cards.showRawResponse') }} →
         </button>
       </div>
@@ -332,12 +289,8 @@
         </div>
 
         <div class="flex items-center space-x-2">
-          <button
-              v-if="authStore.isAuthenticated"
-              class="btn btn-ghost btn-sm"
-              @click="shareGeneration"
-          >
-            <ShareIcon class="w-4 h-4 mr-1"/>
+          <button v-if="authStore.isAuthenticated" class="btn btn-ghost btn-sm" @click="shareGeneration">
+            <ShareIcon class="w-4 h-4 mr-1" />
             Share
           </button>
           <span v-else class="text-xs text-muted">
@@ -346,18 +299,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <ConfirmDialog :show="showDeleteDialog" :title="$t('cards.deleteGenerationTitle')"
+      :message="$t('cards.deleteGenerationMessage')" :warning-message="$t('cards.deleteGenerationWarning')"
+      :confirm-text="$t('common.delete')" :cancel-text="$t('common.cancel')" :loading="deleteLoading" type="danger"
+      @confirm="confirmDelete" @cancel="showDeleteDialog = false" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref, watch} from 'vue'
-import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
-import {EllipsisVerticalIcon, HeartIcon, ShareIcon} from '@heroicons/vue/24/outline'
-import {useAuthStore} from '../stores/auth.ts'
-import {useGenerationsStore} from '../stores/generations.ts'
-import {useToast} from 'vue-toastification'
-import {useI18n} from 'vue-i18n'
-import {marked} from 'marked'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { EllipsisVerticalIcon, HeartIcon, ShareIcon } from '@heroicons/vue/24/outline'
+import { useAuthStore } from '../stores/auth.ts'
+import { useGenerationsStore } from '../stores/generations.ts'
+import { useToast } from 'vue-toastification'
+import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
+import ConfirmDialog from './ConfirmDialog.vue'
 
 interface Props {
   generation: any
@@ -371,7 +331,7 @@ const props = withDefaults(defineProps<Props>(), {
 const authStore = useAuthStore()
 const generationsStore = useGenerationsStore()
 const toast = useToast()
-const {t} = useI18n()
+const { t } = useI18n()
 
 const showExplanation = ref(false)
 const showThinking = ref(false)
@@ -379,6 +339,8 @@ const showChineseTranslation = ref(false)
 const showRawResponse = ref(false)
 const likingInProgress = ref(false)
 const showFontConfig = ref(false)
+const showDeleteDialog = ref(false)
+const deleteLoading = ref(false)
 
 // Font settings configuration
 const fontSettings = reactive({
@@ -429,7 +391,7 @@ onMounted(() => {
 // Watch for changes and save to localStorage
 watch(fontSettings, (newSettings) => {
   saveFontSettings()
-}, {deep: true})
+}, { deep: true })
 
 // Reset font settings to default
 const resetFontSettings = () => {
@@ -442,6 +404,21 @@ const resetFontSettings = () => {
 
 const isOwnGeneration = computed(() => {
   return authStore.user?.id === props.generation.userId._id
+})
+
+// Card styling based on public/private status
+const cardClasses = computed(() => {
+  if (!isOwnGeneration.value) return ''
+
+  return props.generation.isPublic
+    ? 'border-green-200 dark:border-green-800 bg-green-50/30 dark:bg-green-900/10'
+    : 'border-amber-200 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-900/10'
+})
+
+const visibilityBadgeClasses = computed(() => {
+  return props.generation.isPublic
+    ? 'inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
+    : 'inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300'
 })
 
 const isLiked = computed(() => {
@@ -459,18 +436,18 @@ const formatDate = (dateString: string) => {
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60)
     return minutes === 1 ?
-        t('date.minuteAgo', {count: minutes}) :
-        t('date.minutesAgo', {count: minutes})
+      t('date.minuteAgo', { count: minutes }) :
+      t('date.minutesAgo', { count: minutes })
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600)
     return hours === 1 ?
-        t('date.hourAgo', {count: hours}) :
-        t('date.hoursAgo', {count: hours})
+      t('date.hourAgo', { count: hours }) :
+      t('date.hoursAgo', { count: hours })
   } else {
     const days = Math.floor(diffInSeconds / 86400)
     return days === 1 ?
-        t('date.dayAgo', {count: days}) :
-        t('date.daysAgo', {count: days})
+      t('date.dayAgo', { count: days }) :
+      t('date.daysAgo', { count: days })
   }
 }
 
@@ -493,22 +470,24 @@ const toggleLike = async () => {
 
 const togglePrivacy = async () => {
   try {
-    await generationsStore.updateGenerationPrivacy(
-        props.generation._id,
-        !props.generation.isPublic
-    )
+    await generationsStore.updateGenerationPrivacy(props.generation._id, !props.generation.isPublic)
   } catch (error) {
     console.error('Failed to toggle privacy:', error)
   }
 }
 
-const deleteGeneration = async () => {
-  if (confirm(t('generation.deleteConfirm'))) {
-    try {
-      await generationsStore.deleteGeneration(props.generation._id)
-    } catch (error) {
-      console.error('Failed to delete generation:', error)
+const confirmDelete = async () => {
+  deleteLoading.value = true
+  try {
+    const result = await generationsStore.deleteGeneration(props.generation._id)
+    if (result.success) {
+      showDeleteDialog.value = false
+      // Store already removes the item from arrays, no need to fetch again
     }
+  } catch (error) {
+    console.error('Failed to delete generation:', error)
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -526,4 +505,4 @@ const shareGeneration = () => {
 .btn-sm {
   @apply px-2 py-1 text-xs;
 }
-</style> 
+</style>
