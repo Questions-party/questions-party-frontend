@@ -51,12 +51,12 @@ export const useApiKeyStore = defineStore('apiKey', () => {
                 useCustomApiKey.value = data.useCustomApiKey
                 hasCustomApiKey.value = data.hasCustomApiKey
                 platformInfo.value = data.platformInfo
-                
+
                 // Also fetch public key if we don't have it
                 if (!publicKey.value) {
                     await fetchPublicKey()
                 }
-                
+
                 return {success: true, data}
             } else {
                 const message = response.data.message || t('common.error')
@@ -75,7 +75,7 @@ export const useApiKeyStore = defineStore('apiKey', () => {
     const fetchPublicKey = async () => {
         try {
             const response = await aiConfigAPI.getPublicKey()
-            
+
             if (response.data.success) {
                 publicKey.value = response.data.publicKey
                 rsaCrypto.setPublicKey(response.data.publicKey)

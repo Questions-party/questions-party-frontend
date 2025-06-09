@@ -331,7 +331,7 @@
         enter-from-class="transform scale-95 opacity-0"
         enter-to-class="transform scale-100 opacity-1"
       >
-        <div v-if="generationsStore.currentGeneration" class="space-y-6">
+        <div v-if="generationsStore.currentGeneration" class="space-y-6 mb-4">
           <div class="flex justify-between items-center">
             <h3 class="text-xl font-semibold">{{ $t('generation.generatedResult') }}</h3>
             <div class="flex items-center space-x-2">

@@ -210,7 +210,7 @@
                               }"
                               class="text-sm mt-1"
                           >
-                            {{ apiKeyStore.testResult.message }}
+                            {{ $t(apiKeyStore.testResult.message) }}
                           </p>
                           
                           <!-- API Response Content -->
