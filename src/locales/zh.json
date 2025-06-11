@@ -144,8 +144,8 @@
     "retryFailed": "经过 {attempts} 次尝试后生成失败",
     "retrying": "正在重试... 尝试 {current}/{max}",
     "currentAttempt": "尝试 {current}/{max}",
-    "enableThinking": "启用AI思考过程",
-    "enableThinkingDesc": "在生成过程中显示详细的AI推理和思维过程",
+    "enableThinking": "启用AI思考",
+    "enableThinkingDesc": "增强AI分析的全面性，提升回复质量，但需要消耗更多时间",
     "fetchFailed": "获取单词生成失败"
   },
   "community": {

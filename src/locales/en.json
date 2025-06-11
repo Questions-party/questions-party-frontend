@@ -144,8 +144,8 @@
     "retryFailed": "Generation failed after {attempts} attempts",
     "retrying": "Retrying... Attempt {current} of {max}",
     "currentAttempt": "Attempt {current} of {max}",
-    "enableThinking": "Enable AI Thinking Process",
-    "enableThinkingDesc": "Show detailed AI reasoning and thought process during generation",
+    "enableThinking": "Enable AI Thinking",
+    "enableThinkingDesc": "Enhance the comprehensiveness of AI analysis and improve response quality, but it requires more time",
     "fetchFailed": "Failed to fetch generation"
   },
   "community": {
