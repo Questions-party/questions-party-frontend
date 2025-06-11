@@ -26,7 +26,7 @@
         <div class="max-w-5xl mx-auto space-y-8">
           <!-- Badge -->
           <div
-              class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 animate-fade-in">
+              class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 animate-fade-in select-none">
             <SparklesIcon class="w-5 h-5 mr-2 text-yellow-300"/>
             <span class="text-sm font-medium">{{ $t('home.poweredBy') }}</span>
           </div>
@@ -43,7 +43,7 @@
 
           <!-- Interactive Feature Pills -->
           <div class="flex flex-wrap justify-center gap-4 mt-12 opacity-0 animate-slide-up animation-delay-300">
-            <div class="group cursor-pointer">
+            <div class="group select-none">
               <div class="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 
                          hover:bg-white/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg">
                 <div class="flex items-center space-x-2">
@@ -52,7 +52,7 @@
                 </div>
               </div>
             </div>
-            <div class="group cursor-pointer">
+            <div class="group select-none">
               <div class="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 
                          hover:bg-white/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg">
                 <div class="flex items-center space-x-2">
@@ -61,7 +61,7 @@
                 </div>
               </div>
             </div>
-            <div class="group cursor-pointer">
+            <div class="group select-none">
               <div class="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 
                          hover:bg-white/20 transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg">
                 <div class="flex items-center space-x-2">
