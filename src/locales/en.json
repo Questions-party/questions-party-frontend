@@ -145,7 +145,8 @@
     "retrying": "Retrying... Attempt {current} of {max}",
     "currentAttempt": "Attempt {current} of {max}",
     "enableThinking": "Enable AI Thinking Process",
-    "enableThinkingDesc": "Show detailed AI reasoning and thought process during generation"
+    "enableThinkingDesc": "Show detailed AI reasoning and thought process during generation",
+    "fetchFailed": "Failed to fetch generation"
   },
   "community": {
     "title": "Community",

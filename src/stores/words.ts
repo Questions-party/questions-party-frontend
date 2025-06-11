@@ -16,6 +16,7 @@ interface Word {
   definitions: WordDefinition[]
   primaryDefinition?: string
   primaryPartOfSpeech?: string
+  primaryPartOfSpeechTranslated?: string
   usageCount: number
   wordNetProcessed: boolean
   createdAt: string
@@ -33,6 +34,12 @@ interface WordStats {
   partOfSpeechStats: { _id: string, count: number }[]
 }
 
+interface PartOfSpeechOption {
+  value: string
+  label: string
+  translation: string
+}
+
 export const useWordsStore = defineStore('words', () => {
   const maxWordLength = ref<number>(50)
   const words = ref<Word[]>([])
@@ -40,6 +47,7 @@ export const useWordsStore = defineStore('words', () => {
   const loading = ref(false)
   const stats = ref<WordStats | null>(null)
   const partsOfSpeech = ref<string[]>([])
+  const partsOfSpeechWithTranslations = ref<PartOfSpeechOption[]>([])
   const currentFilter = ref<string>('all')
   const searchQuery = ref<string>('')
   const toast = useToast()
@@ -116,6 +124,7 @@ export const useWordsStore = defineStore('words', () => {
       const response = await wordsAPI.getPartsOfSpeech()
       if (response.data.success) {
         partsOfSpeech.value = response.data.partsOfSpeech
+        partsOfSpeechWithTranslations.value = response.data.partsOfSpeechWithTranslations || []
       }
     } catch (error) {
       console.error('Failed to fetch parts of speech:', error)
@@ -303,6 +312,7 @@ export const useWordsStore = defineStore('words', () => {
     loading,
     stats,
     partsOfSpeech,
+    partsOfSpeechWithTranslations,
     currentFilter,
     searchQuery,
     totalWordsCount,

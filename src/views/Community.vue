@@ -205,7 +205,7 @@
               class="btn btn-secondary"
               @click="loadMoreGenerations"
           >
-            <div v-if="generationsStore.loading" class="spinner mr-2"></div>
+            <span v-if="generationsStore.loading" class="spinner mr-2"></span>
             {{ $t('community.loadMore') }}
           </button>
         </div>
@@ -238,7 +238,7 @@
               class="btn btn-secondary"
               @click="loadMoreSentenceChecks"
           >
-            <div v-if="sentenceCheckStore.loading" class="spinner mr-2"></div>
+            <span v-if="sentenceCheckStore.loading" class="spinner mr-2"></span>
             {{ $t('community.loadMore') }}
           </button>
         </div>

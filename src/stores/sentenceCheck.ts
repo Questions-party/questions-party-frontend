@@ -79,8 +79,8 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
     })
 
     const publicPagination = ref<Pagination>({
-        current: 1,
-        total: 1,
+        current: 0,
+        total: 0,
         hasNext: false,
         totalChecks: 0
     })
@@ -354,15 +354,10 @@ export const useSentenceCheckStore = defineStore('sentenceCheck', () => {
     }
 
     const fetchPublicSentenceChecks = async (page = 1, sortBy = 'recent') => {
-        if (page === 1) {
-            publicSentenceChecks.value = []
-            publicPagination.value = {current: 1, total: 1, hasNext: false, totalChecks: 0}
-        }
-
         loading.value = true
         try {
             const response = await sentenceCheckAPI.getPublicSentenceChecks({
-                page, limit: 10, sortBy
+                page, sortBy, limit: 10
             })
 
             if (response.data.success) {

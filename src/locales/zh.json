@@ -145,7 +145,8 @@
     "retrying": "正在重试... 尝试 {current}/{max}",
     "currentAttempt": "尝试 {current}/{max}",
     "enableThinking": "启用AI思考过程",
-    "enableThinkingDesc": "在生成过程中显示详细的AI推理和思维过程"
+    "enableThinkingDesc": "在生成过程中显示详细的AI推理和思维过程",
+    "fetchFailed": "获取单词生成失败"
   },
   "community": {
     "title": "社区",

@@ -133,8 +133,8 @@
             </label>
             <select v-model="selectedFilter" class="input" @change="applyFilter">
               <option value="all">{{ $t('words.allPartsOfSpeech') }}</option>
-              <option v-for="pos in wordsStore.partsOfSpeech" :key="pos" :value="pos">
-                {{ $t(`words.${pos}`) }}
+              <option v-for="pos in wordsStore.partsOfSpeechWithTranslations" :key="pos.value" :value="pos.value">
+                {{ pos.translation }}
               </option>
             </select>
           </div>
@@ -262,7 +262,7 @@
                 </p>
                 <span v-if="word.partOfSpeech"
                       class="inline-block mt-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 text-xs rounded">
-                  {{ $t(`words.${word.partOfSpeech}`) }}
+                  {{ word.partOfSpeechTranslated || word.partOfSpeech }}
                 </span>
               </div>
               <PlusIcon class="w-5 h-5 text-gray-400"/>
@@ -321,17 +321,6 @@ const newWord = reactive({
 })
 
 const randomWordCount = ref(5)
-
-// Computed property for filter options
-const filterOptions = computed(() => {
-  return [
-    { value: 'all', label: t('words.allPartsOfSpeech') },
-    ...wordsStore.partsOfSpeech.map(pos => ({
-      value: pos,
-      label: t(`words.${pos}`)
-    }))
-  ]
-})
 
 onMounted(() => {
   wordsStore.fetchWords()

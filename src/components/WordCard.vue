@@ -55,7 +55,7 @@
         <!-- Part of speech -->
         <div v-if="word.primaryPartOfSpeech" class="flex items-center">
           <span class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-800 text-xs rounded-md font-medium">
-            {{ $t(`words.${word.primaryPartOfSpeech}`) }}
+            {{ word.primaryPartOfSpeechTranslated || word.primaryPartOfSpeech }}
           </span>
         </div>
         
@@ -96,6 +96,7 @@ interface Props {
     definitions: WordDefinition[]
     primaryDefinition?: string
     primaryPartOfSpeech?: string
+    primaryPartOfSpeechTranslated?: string
     usageCount: number
     wordNetProcessed: boolean
     createdAt: string
