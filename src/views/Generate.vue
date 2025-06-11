@@ -502,6 +502,37 @@
         {{ $t('generation.browsePublicGenerations') }}
       </router-link>
     </div>
+
+    <!-- Community Statistics for guests -->
+    <div v-if="!authStore.isAuthenticated" class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <div v-if="generationsStore.statisticsLoading" class="text-3xl font-bold text-green-600 mb-2">
+            <div class="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded"></div>
+          </div>
+          <div v-else class="text-3xl font-bold text-green-600 mb-2">{{ generationsStore.statistics.totalGenerations.toLocaleString() }}</div>
+          <p class="text-sm text-secondary">{{ $t('sentenceCheck.totalChecks') }}</p>
+        </div>
+      </div>
+      <div class="card text-center">
+        <div class="card-body">
+          <div v-if="generationsStore.statisticsLoading" class="text-3xl font-bold text-blue-600 mb-2">
+            <div class="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded"></div>
+          </div>
+          <div v-else class="text-3xl font-bold text-blue-600 mb-2">{{ generationsStore.statistics.totalLikes.toLocaleString() }}</div>
+          <p class="text-sm text-secondary">{{ $t('sentenceCheck.totalLikes') }}</p>
+        </div>
+      </div>
+      <div class="card text-center">
+        <div class="card-body">
+          <div v-if="generationsStore.statisticsLoading" class="text-3xl font-bold text-purple-600 mb-2">
+            <div class="animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded"></div>
+          </div>
+          <div v-else class="text-3xl font-bold text-purple-600 mb-2">{{ Math.round(generationsStore.statistics.totalWords) }}</div>
+          <p class="text-sm text-secondary">{{ $t('sentenceCheck.avgSentenceLength') }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

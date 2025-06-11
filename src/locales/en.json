@@ -252,17 +252,17 @@
         "watchDemo": "Watch Demo"
       }
     },
-    "howItWorks": {
-      "title": "How It Works",
-      "subtitle": "Simple steps to enhance your English learning with AI-powered sentence generation",
+    "coreFeatures": {
+      "title": "Core Features",
+      "subtitle": "Discover the powerful features that make your English learning more effective",
       "step1": "Browse or Sign Up",
       "step1Desc": "Explore public content freely or create an account for full features",
       "step2": "Add Your Words",
       "step2Desc": "Build your vocabulary collection with words you want to practice",
       "step3": "Generate with AI",
       "step3Desc": "Create contextual sentences with AI reasoning and grammar explanations",
-      "step4": "Share & Learn",
-      "step4Desc": "Share with the community and learn from others' creations",
+      "step4": "Check with AI",
+      "step4Desc": "Analyze and improve your sentences with AI-powered grammar checking",
       "tryNow": "Try Now"
     },
     "statistics": {

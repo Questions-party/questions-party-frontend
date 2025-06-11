@@ -252,17 +252,17 @@
         "watchDemo": "观看演示"
       }
     },
-    "howItWorks": {
-      "title": "如何使用",
-      "subtitle": "通过AI驱动的句子生成，简化步骤提升您的英语学习",
+    "coreFeatures": {
+      "title": "核心功能",
+      "subtitle": "探索让您的英语学习更加高效的强大功能",
       "step1": "浏览或注册",
       "step1Desc": "自由探索公共内容或创建账户获得完整功能",
       "step2": "添加您的单词",
       "step2Desc": "构建您想要练习的词汇库",
       "step3": "使用AI生成",
       "step3Desc": "通过AI推理和语法解释创建上下文句子",
-      "step4": "分享与学习",
-      "step4Desc": "与社区分享并从他人的创作中学习",
+      "step4": "AI智能检查",
+      "step4Desc": "使用AI驱动的语法检查来分析和改进您的句子",
       "tryNow": "立即尝试"
     },
     "statistics": {

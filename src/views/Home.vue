@@ -474,16 +474,16 @@
       </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- Core Features Section -->
     <section
         class="py-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20">
       <div class="container mx-auto px-6">
         <div class="text-center mb-16">
           <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            {{ $t('home.howItWorks.title') }}
+            {{ $t('home.coreFeatures.title') }}
           </h2>
           <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {{ $t('home.howItWorks.subtitle') }}
+            {{ $t('home.coreFeatures.subtitle') }}
           </p>
         </div>
 
@@ -505,7 +505,7 @@
           </div>
 
           <div class="grid lg:grid-cols-4 gap-8">
-            <div v-for="(step, index) in howItWorksSteps" :key="index"
+            <div v-for="(step, index) in coreFeatureSteps" :key="index"
                  class="relative group text-center">
               <!-- Step Circle -->
               <div :class="step.bgClass"
@@ -526,13 +526,15 @@
                 </p>
 
                 <!-- Interactive Element -->
-                <div class="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 
+                <div v-if="shouldShowTryButton(step)" 
+                     class="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 
                            transition-all duration-300">
                   <button :class="step.borderClass"
+                          @click="handleTryFeature(step)"
                           class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg border-2
                                 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                     <component :is="step.icon" class="w-4 h-4 mr-2"/>
-                    {{ $t('home.howItWorks.tryNow') }}
+                    {{ $t('home.coreFeatures.tryNow') }}
                   </button>
                 </div>
               </div>
@@ -631,6 +633,7 @@
 
 <script lang="ts" setup>
 import {computed, onMounted, ref} from 'vue'
+import {useRouter} from 'vue-router'
 import {
   AcademicCapIcon,
   BookOpenIcon,
@@ -650,6 +653,7 @@ import {statistics} from '../stores/statistics.ts'
 import {useI18n} from 'vue-i18n'
 
 const {t} = useI18n()
+const router = useRouter()
 
 // Components
 const AnimatedCounter = {
@@ -741,34 +745,42 @@ const floatingCards = computed(() => [
   }
 ])
 
-const howItWorksSteps = computed(() => [
+const coreFeatureSteps = computed(() => [
   {
-    title: t('home.howItWorks.step1'),
-    description: t('home.howItWorks.step1Desc'),
+    title: t('home.coreFeatures.step1'),
+    description: t('home.coreFeatures.step1Desc'),
     icon: EyeIcon,
     bgClass: 'bg-blue-500',
-    borderClass: 'border-blue-500 text-blue-500'
+    borderClass: 'border-blue-500 text-blue-500',
+    route: '/register',
+    requiresGuest: true
   },
   {
-    title: t('home.howItWorks.step2'),
-    description: t('home.howItWorks.step2Desc'),
+    title: t('home.coreFeatures.step2'),
+    description: t('home.coreFeatures.step2Desc'),
     icon: BookOpenIcon,
     bgClass: 'bg-green-500',
-    borderClass: 'border-green-500 text-green-500'
+    borderClass: 'border-green-500 text-green-500',
+    route: '/words',
+    requiresGuest: false
   },
   {
-    title: t('home.howItWorks.step3'),
-    description: t('home.howItWorks.step3Desc'),
+    title: t('home.coreFeatures.step3'),
+    description: t('home.coreFeatures.step3Desc'),
     icon: SparklesIcon,
     bgClass: 'bg-purple-500',
-    borderClass: 'border-purple-500 text-purple-500'
+    borderClass: 'border-purple-500 text-purple-500',
+    route: '/generate',
+    requiresGuest: false
   },
   {
-    title: t('home.howItWorks.step4'),
-    description: t('home.howItWorks.step4Desc'),
-    icon: ChatBubbleLeftRightIcon,
+    title: t('home.coreFeatures.step4'),
+    description: t('home.coreFeatures.step4Desc'),
+    icon: AcademicCapIcon,
     bgClass: 'bg-orange-500',
-    borderClass: 'border-orange-500 text-orange-500'
+    borderClass: 'border-orange-500 text-orange-500',
+    route: '/check',
+    requiresGuest: false
   }
 ])
 
@@ -806,6 +818,20 @@ const getFloatingCardPosition = (index: number) => {
     {bottom: '10%', left: '20%', transform: 'rotate(-3deg)'}
   ]
   return positions[index] || {}
+}
+
+// Methods for try feature functionality
+const shouldShowTryButton = (step: any) => {
+  // If step requires guest status and user is authenticated, hide button
+  if (step.requiresGuest && authStore.isAuthenticated) {
+    return false
+  }
+  return true
+}
+
+const handleTryFeature = (step: any) => {
+  // Navigate to the specified route
+  router.push(step.route)
 }
 
 // Lifecycle
