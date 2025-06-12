@@ -298,9 +298,6 @@
       }
     }
   },
-  "footer": {
-    "copyright": "English Learning Platform. Built with Vue.js and Express.js."
-  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

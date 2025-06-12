@@ -298,9 +298,6 @@
       }
     }
   },
-  "footer": {
-    "copyright": "英语学习平台。使用Vue.js和Express.js构建。"
-  },
   "common": {
     "loading": "加载中...",
     "error": "发生错误",
