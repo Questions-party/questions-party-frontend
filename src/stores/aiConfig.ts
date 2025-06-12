@@ -110,6 +110,7 @@ export const useApiKeyStore = defineStore('apiKey', () => {
                     encryptedApiKey = 'rsa:' + encrypted
                 } catch (encryptError) {
                     toast.error(t('apiKey.encryptionFailed'))
+                    console.error(encryptedApiKey)
                     return {success: false, message: t('apiKey.encryptionError')}
                 }
             }
