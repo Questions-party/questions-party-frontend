@@ -34,10 +34,6 @@
     "profileUpdateSuccess": "Profile updated successfully!",
     "preferencesUpdateSuccess": "Preferences updated successfully!",
     "unexpectedError": "An unexpected error occurred",
-    "acceptTerms": "Please accept the terms and conditions",
-    "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy",
-    "agreeToTerms": "I agree to the",
     "fontSettingsUpdatedSuccessfully": "Font settings updated successfully",
     "serverErrorUpdatingFontSettings": "Server error updating font settings"
   },

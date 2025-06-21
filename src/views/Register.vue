@@ -115,25 +115,10 @@
           </div>
         </div>
 
-        <div class="flex items-center">
-          <input
-            id="terms"
-            v-model="form.acceptTerms"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label for="terms" class="ml-2 block text-sm text-secondary">
-            {{ $t('auth.agreeToTerms') }}
-            <a href="#" class="text-accent-color hover:underline">{{ $t('auth.termsOfService') }}</a>
-            {{ $t('auth.agreeToTerms') }}
-            <a href="#" class="text-accent-color hover:underline">{{ $t('auth.privacyPolicy') }}</a>
-          </label>
-        </div>
-
         <div>
           <button
             type="submit"
-            :disabled="authStore.loading || !form.acceptTerms"
+            :disabled="authStore.loading"
             class="w-full btn btn-primary flex justify-center items-center"
           >
             {{ authStore.loading ? $t('common.loading') : $t('auth.registerButton') }}
@@ -167,8 +152,7 @@ const form = reactive({
   username: '',
   email: '',
   password: '',
-  confirmPassword: '',
-  acceptTerms: false
+  confirmPassword: ''
 })
 
 const errors = reactive({
@@ -231,11 +215,6 @@ const handleRegister = async () => {
   registerError.value = ''
   
   if (!validateForm()) {
-    return
-  }
-  
-  if (!form.acceptTerms) {
-    registerError.value = t('auth.acceptTerms')
     return
   }
   

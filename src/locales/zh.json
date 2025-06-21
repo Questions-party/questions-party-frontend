@@ -34,10 +34,6 @@
     "profileUpdateSuccess": "个人资料更新成功！",
     "preferencesUpdateSuccess": "偏好设置更新成功！",
     "unexpectedError": "发生意外错误",
-    "acceptTerms": "请接受条款和条件",
-    "termsOfService": "服务条款",
-    "privacyPolicy": "隐私政策",
-    "agreeToTerms": "我同意",
     "fontSettingsUpdatedSuccessfully": "字体设置更新成功",
     "serverErrorUpdatingFontSettings": "更新字体设置时服务器错误"
   },
