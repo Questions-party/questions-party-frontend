@@ -96,19 +96,46 @@
 
             <!-- Show spelling suggestions if available -->
             <div v-if="spellingError && spellingSuggestions.length > 0"
-                 class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
-              <p class="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
-                {{ $t('words.didYouMean') }}
-              </p>
-              <div class="flex flex-wrap gap-2">
-                <button
-                    v-for="suggestion in spellingSuggestions"
-                    :key="suggestion"
-                    class="text-xs bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded hover:bg-yellow-200 dark:hover:bg-yellow-700 transition-colors"
-                    @click="selectSuggestion(suggestion)"
-                >
-                  {{ suggestion }}
-                </button>
+                 class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+              <div class="flex items-start space-x-2">
+                <div class="flex-shrink-0 mt-0.5">
+                  <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                    {{ $t('words.spellingNotRecognized') }}
+                  </p>
+                  <p class="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                    {{ $t('words.didYouMean') }}
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                        v-for="suggestion in spellingSuggestions"
+                        :key="suggestion"
+                        class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-200 bg-blue-100 dark:bg-blue-800 rounded-md hover:bg-blue-200 dark:hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        @click="selectSuggestion(suggestion)"
+                    >
+                      {{ suggestion }}
+                    </button>
+                  </div>
+                  <div class="mt-3 flex items-center space-x-2">
+                    <button
+                        class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
+                        @click="addWordAnyway"
+                    >
+                      {{ $t('words.addAnyway') }}
+                    </button>
+                    <span class="text-xs text-blue-500 dark:text-blue-400">{{ $t('words.or') }}</span>
+                    <button
+                        class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline"
+                        @click="cancelSpelling"
+                    >
+                      {{ $t('words.tryAgain') }}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </form>
@@ -369,7 +396,9 @@ const addWord = async () => {
   if (result.success) {
     newWord.word = ''
     showAddForm.value = false
-  } else if (result.suggestions) {
+    spellingError.value = false
+    spellingSuggestions.value = []
+  } else if (result.spellingError && result.suggestions?.length > 0) {
     spellingError.value = true
     spellingSuggestions.value = result.suggestions
   }
@@ -379,6 +408,30 @@ const selectSuggestion = (suggestion: string) => {
   newWord.word = suggestion
   spellingError.value = false
   spellingSuggestions.value = []
+}
+
+const addWordAnyway = async () => {
+  if (!newWord.word.trim()) return
+  
+  spellingError.value = false
+  spellingSuggestions.value = []
+  
+  // Force add the word by bypassing spelling check
+  const result = await wordsStore.addWord({
+    word: newWord.word.trim(),
+    forceAdd: true
+  })
+  
+  if (result.success) {
+    newWord.word = ''
+    showAddForm.value = false
+  }
+}
+
+const cancelSpelling = () => {
+  spellingError.value = false
+  spellingSuggestions.value = []
+  newWord.word = ''
 }
 
 const showDeleteConfirmation = (word: any) => {

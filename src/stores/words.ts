@@ -25,6 +25,7 @@ interface Word {
 
 interface NewWord {
   word: string
+  forceAdd?: boolean
 }
 
 interface WordStats {
@@ -152,16 +153,21 @@ export const useWordsStore = defineStore('words', () => {
         }
         return { success: true, word: response.data.word }
       } else {
-        const message = response.data.message || t('common.error')
-        // Check if it's a spelling error
-        if (response.data.error === 'SPELLING_ERROR') {
-          const suggestions = response.data.suggestions || []
-          const suggestionText = suggestions.length > 0 
-            ? t('words.spellingErrorWithSuggestions', { suggestions: suggestions.join(', ') })
-            : t('words.spellingError')
-          toast.error(suggestionText)
-          return { success: false, message: suggestionText, suggestions }
+        // Check if it's a spelling error with suggestions
+        if (response.data.spellingError && response.data.suggestions?.length > 0) {
+          // Don't show error toast for spelling suggestions - let UI handle it
+          return { 
+            success: false, 
+            spellingError: true,
+            suggestions: response.data.suggestions,
+            originalWord: response.data.originalWord,
+            suggestedCorrection: response.data.suggestedCorrection,
+            message: response.data.message || t('words.spellingError')
+          }
         }
+        
+        // Handle other types of errors
+        const message = response.data.message || t('common.error')
         toast.error(message)
         return { success: false, message }
       }
@@ -174,31 +180,7 @@ export const useWordsStore = defineStore('words', () => {
     }
   }
 
-  const updateWord = async (id: string, updatedWord: { usageCount?: number }) => {
-    loading.value = true
-    try {
-      const response = await wordsAPI.updateWord(id, updatedWord)
-      
-      if (response.data.success) {
-        const index = words.value.findIndex(w => w._id === id)
-        if (index !== -1) {
-          words.value[index] = { ...words.value[index], ...response.data.word }
-        }
-        toast.success(t('words.wordUpdated'))
-        return { success: true, word: response.data.word }
-      } else {
-        const message = response.data.message || t('common.error')
-        toast.error(message)
-        return { success: false, message }
-      }
-    } catch (error: any) {
-      const message = error.response?.data?.message || t('common.error')
-      toast.error(message)
-      return { success: false, message }
-    } finally {
-      loading.value = false
-    }
-  }
+
 
   const deleteWord = async (id: string) => {
     loading.value = true
@@ -319,7 +301,6 @@ export const useWordsStore = defineStore('words', () => {
     fetchWords,
     fetchPartsOfSpeech,
     addWord,
-    updateWord,
     deleteWord,
     getRandomWords,
     fetchStats,

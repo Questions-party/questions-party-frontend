@@ -78,8 +78,6 @@ export const wordsAPI = {
 
     addWord: (word: any) => api.post('/words', word),
 
-    updateWord: (id: string, word: any) => api.put(`/words/${id}`, word),
-
     deleteWord: (id: string) => api.delete(`/words/${id}`),
 
     getStats: () => api.get('/words/stats'),
