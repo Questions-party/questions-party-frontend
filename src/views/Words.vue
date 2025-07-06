@@ -15,13 +15,13 @@
             @click="showAddForm = !showAddForm"
         >
           <PlusIcon class="w-4 h-4 mr-2"/>
-          {{ $t('words.add') }}
+          <span class="whitespace-nowrap">{{ $t('words.add') }}</span>
         </button>
 
         <div class="flex items-center space-x-2">
           <select
-            v-model="randomWordCount"
-            class="input py-2 px-3 text-sm"
+              v-model="randomWordCount"
+              class="input py-2 px-3 text-sm"
           >
             <option value="5">5 {{ $t('words.words') }}</option>
             <option value="10">10 {{ $t('words.words') }}</option>
@@ -88,7 +88,8 @@
             </div>
 
             <!-- Show spelling suggestions if available -->
-            <div v-if="spellingError && spellingSuggestions.length > 0" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
+            <div v-if="spellingError && spellingSuggestions.length > 0"
+                 class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3">
               <p class="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
                 {{ $t('words.didYouMean') }}
               </p>
@@ -96,8 +97,8 @@
                 <button
                     v-for="suggestion in spellingSuggestions"
                     :key="suggestion"
-                    @click="selectSuggestion(suggestion)"
                     class="text-xs bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded hover:bg-yellow-200 dark:hover:bg-yellow-700 transition-colors"
+                    @click="selectSuggestion(suggestion)"
                 >
                   {{ suggestion }}
                 </button>
@@ -142,9 +143,9 @@
           <!-- Clear Filters -->
           <div class="flex items-end">
             <button
-                @click="clearFilters"
                 :disabled="selectedFilter === 'all' && !searchQuery.trim()"
                 class="btn btn-ghost w-full"
+                @click="clearFilters"
             >
               {{ $t('words.clearFilters') }}
             </button>
@@ -274,29 +275,29 @@
 
     <!-- Delete Confirmation Modal -->
     <ConfirmDialog
-      :show="showDeleteModal"
-      :title="$t('words.delete') + ' ' + $t('words.word')"
-      :message="$t('words.deleteConfirm', { word: wordToDelete?.word })"
-      :confirm-text="$t('words.delete')"
-      :cancel-text="$t('words.cancel')"
-      :loading="deleteLoading"
-      type="danger"
-      @confirm="confirmDelete"
-      @cancel="closeDeleteModal"
+        :cancel-text="$t('words.cancel')"
+        :confirm-text="$t('words.delete')"
+        :loading="deleteLoading"
+        :message="$t('words.deleteConfirm', { word: wordToDelete?.word })"
+        :show="showDeleteModal"
+        :title="$t('words.delete') + ' ' + $t('words.word')"
+        type="danger"
+        @cancel="closeDeleteModal"
+        @confirm="confirmDelete"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref, computed} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import {ArrowPathIcon, BookOpenIcon, PlusIcon, SparklesIcon} from '@heroicons/vue/24/outline'
 import {useWordsStore} from '../stores/words.ts'
 import WordCard from '../components/WordCard.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
-import { useI18n } from 'vue-i18n'
+import {useI18n} from 'vue-i18n'
 
 const wordsStore = useWordsStore()
-const { t } = useI18n()
+const {t} = useI18n()
 
 const showAddForm = ref(false)
 const loadingRandom = ref(false)
@@ -332,7 +333,7 @@ const debouncedSearch = () => {
   if (searchTimeout.value) {
     clearTimeout(searchTimeout.value)
   }
-  
+
   searchTimeout.value = setTimeout(() => {
     wordsStore.setSearchQuery(searchQuery.value)
   }, 300)
@@ -385,7 +386,7 @@ const closeDeleteModal = () => {
 
 const confirmDelete = async () => {
   if (!wordToDelete.value) return
-  
+
   deleteLoading.value = true
   try {
     await wordsStore.deleteWord(wordToDelete.value._id)
