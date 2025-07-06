@@ -19,16 +19,23 @@
         </button>
 
         <div class="flex items-center space-x-2">
-          <select
-              v-model="randomWordCount"
-              class="input py-2 px-3 text-sm"
-          >
-            <option value="5">5 {{ $t('words.words') }}</option>
-            <option value="10">10 {{ $t('words.words') }}</option>
-            <option value="15">15 {{ $t('words.words') }}</option>
-            <option value="20">20 {{ $t('words.words') }}</option>
-            <option value="30">30 {{ $t('words.words') }}</option>
-          </select>
+          <div class="relative">
+            <select
+                v-model="randomWordCount"
+                class="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 pr-8 text-sm font-medium text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer min-w-[120px]"
+            >
+              <option value="5">5 {{ $t('words.words') }}</option>
+              <option value="10">10 {{ $t('words.words') }}</option>
+              <option value="15">15 {{ $t('words.words') }}</option>
+              <option value="20">20 {{ $t('words.words') }}</option>
+              <option value="30">30 {{ $t('words.words') }}</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
 
           <button
               :disabled="wordsStore.loading"
